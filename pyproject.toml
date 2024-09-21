@@ -1,0 +1,12 @@
+[project]
+name = "engr-131-testing"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic>=1.13.2",
+  "bcrypt>=4.2.0",
+  "fastapi[standard]>=0.115.0",
+  "ruff>=0.6.7",
+]
