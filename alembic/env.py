@@ -6,6 +6,8 @@ from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
+# Load environment variables
+# Should fail silently (and be unnecessary) in production
 load_dotenv()
 
 # this is the Alembic Config object, which provides
