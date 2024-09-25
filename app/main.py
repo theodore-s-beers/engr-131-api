@@ -81,8 +81,22 @@ async def get_students(
 ):
     verify_admin(cred)  # Raises HTTPException on failure
 
-    students = crud_admin.get_students(db, skip=skip, limit=limit)
-    return students
+    return crud_admin.get_students(db=db, skip=skip, limit=limit)
+
+
+@app.get("/students/{email}", response_model=schemas.Student)
+async def get_student_by_email(
+    cred: Credentials,
+    email: str,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred)  # Raises HTTPException on failure
+
+    db_student = crud_admin.get_student_by_email(db=db, email=email)
+    if not db_student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    return db_student
 
 
 @app.post("/students", response_model=schemas.Student)
@@ -93,8 +107,8 @@ async def add_student(
 ):
     verify_admin(cred)  # Raises HTTPException on failure
 
-    db_student = crud_admin.get_student_by_email(db, email=student.email)
-    if db_student:
+    existing_entry = crud_admin.get_student_by_email(db=db, email=student.email)
+    if existing_entry:
         raise HTTPException(status_code=400, detail="Email already registered")
 
     return crud_admin.add_student(db=db, student=student)
