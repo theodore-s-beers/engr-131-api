@@ -7,8 +7,8 @@ class Student(BaseModel):
     email: str
     given_name: str
     family_name: str
-    lecture_section: Optional[int]
-    lab_section: Optional[int]
+    lecture_section: Optional[int] = None
+    lab_section: Optional[int] = None
 
     class Config:
         from_attributes = True

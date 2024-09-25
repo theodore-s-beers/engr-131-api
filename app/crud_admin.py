@@ -8,6 +8,8 @@ def add_student(db: Session, student: schemas.Student):
         email=student.email,
         given_name=student.given_name,
         family_name=student.family_name,
+        lecture_section=student.lecture_section or None,
+        lab_section=student.lab_section or None,
     )
 
     db.add(db_student)
