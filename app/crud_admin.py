@@ -6,8 +6,8 @@ from . import models, schemas
 def add_student(db: Session, student: schemas.Student):
     db_student = models.Student(
         email=student.email,
-        given_name=student.given_name,
         family_name=student.family_name,
+        given_name=student.given_name,
         lecture_section=student.lecture_section or None,
         lab_section=student.lab_section or None,
     )
@@ -24,4 +24,10 @@ def get_student_by_email(db: Session, email: str):
 
 
 def get_students(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Student).offset(skip).limit(limit).all()
+    return (
+        db.query(models.Student)
+        .order_by(models.Student.family_name)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
