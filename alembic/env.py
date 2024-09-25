@@ -1,6 +1,7 @@
 import os
 from logging.config import fileConfig
 
+from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
@@ -8,8 +9,9 @@ from app import models  # noqa: F401
 from app.db import Base
 
 # Get DB URL env variable
-db_url = os.getenv("DATABASE_URL") or ""
-db_url = db_url.replace("postgres://", "postgresql://")
+load_dotenv()  # Meaningless in prod
+db_url = os.getenv("DATABASE_URL") or ""  # Just to ensure str type
+db_url = db_url.replace("postgres://", "postgresql://")  # For SQLAlchemy
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
