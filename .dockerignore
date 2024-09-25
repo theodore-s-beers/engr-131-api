@@ -2,6 +2,6 @@
 **/__pycache__
 **/.ruff_cache
 **/.venv
-# **/.env
+**/.env
 
 fly.toml

@@ -1,16 +1,13 @@
 import os
 from logging.config import fileConfig
 
-from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 from app import models  # noqa: F401
 from app.db import Base
 
-# Load environment variables
-# Should fail silently (and be unnecessary) in production
-load_dotenv()
+# Get DB URL env variable
 db_url = os.getenv("DATABASE_URL") or ""
 db_url = db_url.replace("postgres://", "postgresql://")
 

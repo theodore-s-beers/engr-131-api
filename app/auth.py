@@ -1,11 +1,8 @@
 import os
 
 import bcrypt
-from dotenv import load_dotenv
 from fastapi import HTTPException, status
 from fastapi.security import HTTPBasicCredentials
-
-load_dotenv()
 
 adm_pw_env = os.getenv("ADMIN_PASSWORD") or ""
 adm_pw = bcrypt.hashpw(adm_pw_env.encode(), bcrypt.gensalt())
