@@ -6,7 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
-db_url = os.getenv("DATABASE_URL").replace("postgres://", "postgresql://")
+db_url = os.getenv("DATABASE_URL") or ""
+db_url = db_url.replace("postgres://", "postgresql://")
 
 engine = create_engine(db_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

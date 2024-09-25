@@ -7,10 +7,10 @@ from fastapi.security import HTTPBasicCredentials
 
 load_dotenv()
 
-adm_pw_env = os.getenv("ADMIN_PASSWORD")
+adm_pw_env = os.getenv("ADMIN_PASSWORD") or ""
 adm_pw = bcrypt.hashpw(adm_pw_env.encode(), bcrypt.gensalt())
 
-stud_pw_env = os.getenv("STUDENT_PASSWORD")
+stud_pw_env = os.getenv("STUDENT_PASSWORD") or ""
 stud_pw = bcrypt.hashpw(stud_pw_env.encode(), bcrypt.gensalt())
 
 

@@ -11,7 +11,8 @@ from app.db import Base
 # Load environment variables
 # Should fail silently (and be unnecessary) in production
 load_dotenv()
-db_url = os.getenv("DATABASE_URL")
+db_url = os.getenv("DATABASE_URL") or ""
+db_url = db_url.replace("postgres://", "postgresql://")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
