@@ -34,20 +34,20 @@ async def root():
 
 
 @app.post("/login")
-async def login(cr: Credentials):
+async def login(cred: Credentials):
     try:
-        verify_admin(cr)  # Raises HTTPException on failure
+        verify_admin(cred)  # Raises HTTPException on failure
         return "Admin credentials verified"
     except HTTPException:
         pass
 
-    verify_student(cr)  # Raises HTTPException on failure
+    verify_student(cred)  # Raises HTTPException on failure
     return "Student credentials verified"
 
 
 @app.post("/live-scorer")
-async def live_scorer(req: Request, cr: Credentials):
-    verify_student(cr)  # Raises HTTPException on failure
+async def live_scorer(req: Request, cred: Credentials):
+    verify_student(cred)  # Raises HTTPException on failure
 
     # This is just for debugging purposes
     body = await req.body()
@@ -57,8 +57,8 @@ async def live_scorer(req: Request, cr: Credentials):
 
 
 @app.post("/upload-score")
-async def upload_score(req: Request, cr: Credentials):
-    verify_student(cr)  # Raises HTTPException on failure
+async def upload_score(req: Request, cred: Credentials):
+    verify_student(cred)  # Raises HTTPException on failure
 
     # This is just for debugging purposes
     body = await req.body()
@@ -74,24 +74,27 @@ async def upload_score(req: Request, cr: Credentials):
 
 @app.get("/students", response_model=list[schemas.Student])
 async def get_students(
-    cr: Credentials,
+    cred: Credentials,
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
 ):
-    verify_admin(cr)
+    verify_admin(cred)  # Raises HTTPException on failure
+
     students = crud_admin.get_students(db, skip=skip, limit=limit)
     return students
 
 
 @app.post("/students", response_model=schemas.Student)
 async def add_student(
-    cr: Credentials,
+    cred: Credentials,
     student: schemas.Student,
     db: Session = Depends(get_db),
 ):
-    verify_admin(cr)
+    verify_admin(cred)  # Raises HTTPException on failure
+
     db_student = crud_admin.get_student_by_email(db, email=student.email)
     if db_student:
         raise HTTPException(status_code=400, detail="Email already registered")
+
     return crud_admin.add_student(db=db, student=student)

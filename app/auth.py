@@ -19,11 +19,13 @@ def auth_exception():
     )
 
 
-def verify_admin(cr: HTTPBasicCredentials):
-    if cr.username != "admin" or not bcrypt.checkpw(cr.password.encode(), adm_pw):
+def verify_admin(cred: HTTPBasicCredentials):
+    if cred.username != "admin" or not bcrypt.checkpw(cred.password.encode(), adm_pw):
         raise auth_exception()
 
 
-def verify_student(cr: HTTPBasicCredentials):
-    if cr.username != "student" or not bcrypt.checkpw(cr.password.encode(), stud_pw):
+def verify_student(cred: HTTPBasicCredentials):
+    if cred.username != "student" or not bcrypt.checkpw(
+        cred.password.encode(), stud_pw
+    ):
         raise auth_exception()

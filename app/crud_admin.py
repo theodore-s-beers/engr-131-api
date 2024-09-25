@@ -9,9 +9,11 @@ def add_student(db: Session, student: schemas.Student):
         given_name=student.given_name,
         family_name=student.family_name,
     )
+
     db.add(db_student)
     db.commit()
     db.refresh(db_student)
+
     return db_student
 
 
