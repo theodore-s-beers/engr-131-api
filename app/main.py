@@ -129,8 +129,12 @@ async def update_student(
 ):
     verify_admin(cred)
 
-    # Raises HTTPException (400) if emails don't match
+    # The email address in the path is used to identify the record to update. If
+    # student.email is different, the record will be updated with that address, unless
+    # it is already in use -- in which case an HTTPException (400) is raised.
     db_student = crud_admin.update_student(db=db, email=email, student=student)
+
+    # i.e., if no record was found with the email address in the path
     if not db_student:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

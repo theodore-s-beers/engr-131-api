@@ -35,18 +35,24 @@ def get_student_by_email(db: Session, email: str):
 
 
 def update_student(db: Session, email: str, student: schemas.Student):
-    if email != student.email:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email in path does not match email in request body",
-        )
-
-    db_student = (
-        db.query(models.Student).filter(models.Student.email == student.email).first()
-    )
-
+    db_student = db.query(models.Student).filter(models.Student.email == email).first()
     if not db_student:
         return None
+
+    if email != student.email:
+        existing_email = (
+            db.query(models.Student)
+            .filter(models.Student.email == student.email)
+            .first()
+        )
+
+        if existing_email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Requested email already registered",
+            )
+
+        db_student.email = student.email
 
     db_student.family_name = student.family_name
     db_student.given_name = student.given_name
