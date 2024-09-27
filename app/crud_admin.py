@@ -8,8 +8,8 @@ def add_student(db: Session, student: schemas.Student):
         email=student.email,
         family_name=student.family_name,
         given_name=student.given_name,
-        lecture_section=student.lecture_section or None,
-        lab_section=student.lab_section or None,
+        lecture_section=student.lecture_section,
+        lab_section=student.lab_section,
     )
 
     db.add(db_student)
@@ -43,8 +43,12 @@ def update_student(db: Session, student: schemas.Student):
 
     db_student.family_name = student.family_name
     db_student.given_name = student.given_name
-    db_student.lecture_section = student.lecture_section
-    db_student.lab_section = student.lab_section
+
+    if student.lecture_section is not None:
+        db_student.lecture_section = student.lecture_section
+
+    if student.lab_section is not None:
+        db_student.lab_section = student.lab_section
 
     db.commit()
     db.refresh(db_student)
