@@ -23,6 +23,18 @@ def get_student_by_email(db: Session, email: str):
     return db.query(models.Student).filter(models.Student.email == email).first()
 
 
+def delete_student_by_email(db: Session, email: str):
+    db_student = db.query(models.Student).filter(models.Student.email == email).first()
+
+    if not db_student:
+        return None
+
+    db.delete(db_student)
+    db.commit()
+
+    return db_student
+
+
 def get_students(db: Session, skip: int = 0, limit: int = 100):
     return (
         db.query(models.Student)

@@ -112,3 +112,18 @@ async def add_student(
         raise HTTPException(status_code=400, detail="Email already registered")
 
     return crud_admin.add_student(db=db, student=student)
+
+
+@app.delete("/students/{email}", response_model=schemas.Student)
+async def delete_student_by_email(
+    cred: Credentials,
+    email: str,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred)  # Raises HTTPException on failure
+
+    db_student = crud_admin.delete_student_by_email(db=db, email=email)
+    if not db_student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    return db_student
