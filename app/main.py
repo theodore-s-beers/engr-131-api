@@ -72,6 +72,21 @@ async def upload_score(req: Request, cred: Credentials):
 #
 
 
+@app.post("/students", response_model=schemas.Student)
+async def add_student(
+    cred: Credentials,
+    student: schemas.Student,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred)  # Raises HTTPException on failure
+
+    existing_entry = crud_admin.get_student_by_email(db=db, email=student.email)
+    if existing_entry:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    return crud_admin.add_student(db=db, student=student)
+
+
 @app.get("/students", response_model=list[schemas.Student])
 async def get_students(
     cred: Credentials,
@@ -97,21 +112,6 @@ async def get_student_by_email(
         raise HTTPException(status_code=404, detail="Student not found")
 
     return db_student
-
-
-@app.post("/students", response_model=schemas.Student)
-async def add_student(
-    cred: Credentials,
-    student: schemas.Student,
-    db: Session = Depends(get_db),
-):
-    verify_admin(cred)  # Raises HTTPException on failure
-
-    existing_entry = crud_admin.get_student_by_email(db=db, email=student.email)
-    if existing_entry:
-        raise HTTPException(status_code=400, detail="Email already registered")
-
-    return crud_admin.add_student(db=db, student=student)
 
 
 @app.delete("/students/{email}", response_model=schemas.Student)
