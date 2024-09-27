@@ -88,7 +88,7 @@ async def add_student(
 
 
 @app.get("/students", response_model=list[schemas.Student])
-async def get_students(
+async def get_all_students(
     cred: Credentials,
     skip: int = 0,
     limit: int = 100,
@@ -96,7 +96,7 @@ async def get_students(
 ):
     verify_admin(cred)  # Raises HTTPException on failure
 
-    return crud_admin.get_students(db=db, skip=skip, limit=limit)
+    return crud_admin.get_all_students(db=db, skip=skip, limit=limit)
 
 
 @app.get("/students/{email}", response_model=schemas.Student)
