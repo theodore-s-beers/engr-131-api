@@ -114,6 +114,21 @@ async def get_student_by_email(
     return db_student
 
 
+@app.put("/students", response_model=schemas.Student)
+async def update_student(
+    cred: Credentials,
+    student: schemas.Student,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred)
+
+    db_student = crud_admin.update_student(db=db, student=student)
+    if not db_student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    return db_student
+
+
 @app.delete("/students/{email}", response_model=schemas.Student)
 async def delete_student_by_email(
     cred: Credentials,

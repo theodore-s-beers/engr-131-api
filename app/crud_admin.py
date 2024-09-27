@@ -33,6 +33,25 @@ def get_student_by_email(db: Session, email: str):
     return db.query(models.Student).filter(models.Student.email == email).first()
 
 
+def update_student(db: Session, student: schemas.Student):
+    db_student = (
+        db.query(models.Student).filter(models.Student.email == student.email).first()
+    )
+
+    if not db_student:
+        return None
+
+    db_student.family_name = student.family_name
+    db_student.given_name = student.given_name
+    db_student.lecture_section = student.lecture_section
+    db_student.lab_section = student.lab_section
+
+    db.commit()
+    db.refresh(db_student)
+
+    return db_student
+
+
 def delete_student_by_email(db: Session, email: str):
     db_student = db.query(models.Student).filter(models.Student.email == email).first()
 
