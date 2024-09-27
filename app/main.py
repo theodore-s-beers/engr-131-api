@@ -127,7 +127,7 @@ async def update_student(
     student: schemas.Student,
     db: Session = Depends(get_db),
 ):
-    verify_admin(cred)
+    verify_admin(cred)  # Raises HTTPException (401) on failure
 
     # The email address in the path is used to identify the record to update. If
     # student.email is different, the record will be updated with that address, unless
