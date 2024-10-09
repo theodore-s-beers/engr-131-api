@@ -1,0 +1,24 @@
+apiVersion: acid.zalan.do/v1
+kind: postgresql
+metadata:
+  name: engr-131-test-pg-cluster
+spec:
+  teamId: engr-131-team
+  volume:
+    size: 10Gi
+  numberOfInstances: 2
+  users:
+    fastapi:
+      - superuser
+      - createdb
+  databases:
+    engr_131_test_db: fastapi
+  postgresql:
+    version: "16"
+  resources:
+    requests:
+      cpu: "1"
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 2Gi
