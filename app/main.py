@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from . import crud_admin, schemas
 from .auth import verify_admin, verify_student
 from .db import SessionLocal
+from .live_scorer import calculate_score
 
 app = FastAPI()
 
@@ -46,14 +47,23 @@ async def login(cred: Credentials):
 
 
 @app.post("/live-scorer")
-async def live_scorer(req: Request, cred: Credentials):
+async def live_scorer(req: schemas.ScoringRequest, cred: Credentials):
     verify_student(cred)  # Raises HTTPException (401) on failure
 
-    # This is just for debugging purposes
-    body = await req.body()
-    print(len(body.decode("utf-8")))
+    result = calculate_score(
+        term=req.term,
+        assignment=req.assignment,
+        question=req.question,
+        responses=req.responses,
+    )
 
-    return "Live-scoring request received"
+    if isinstance(result, str):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=result,
+        )
+
+    return result
 
 
 @app.post("/upload-score")

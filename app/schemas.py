@@ -12,3 +12,10 @@ class Student(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ScoringRequest(BaseModel):
+    term: str
+    assignment: str
+    question: str
+    responses: dict
