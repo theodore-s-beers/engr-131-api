@@ -23,6 +23,7 @@ class Student(Base):
     lab_section: Mapped[Optional[int]] = mapped_column(index=True)
 
     assignment_subs = relationship("AssignmentSubmission", back_populates="submitter")
+    scoring_subs = relationship("ScoringSubmission", back_populates="submitter")
 
 
 #
@@ -45,7 +46,8 @@ class AssignmentSubmission(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     student_email: Mapped[str] = mapped_column(ForeignKey("students.email"))
-    assignment_id: Mapped[int] = mapped_column(ForeignKey("assignments.id"))
+    assignment: Mapped[str] = mapped_column(ForeignKey("assignments.title"))
+
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -53,6 +55,24 @@ class AssignmentSubmission(Base):
     score: Mapped[int]
 
     submitter = relationship("Student", back_populates="assignment_subs")
+
+
+class ScoringSubmission(Base):
+    __tablename__ = "scoring_submissions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    student_email: Mapped[str] = mapped_column(ForeignKey("students.email"))
+    assignment: Mapped[str] = mapped_column(ForeignKey("assignments.title"))
+    question: Mapped[str]
+
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+    )
+    max_points: Mapped[int]
+    points_earned: Mapped[int]
+
+    submitter = relationship("Student", back_populates="scoring_subs")
 
 
 #
