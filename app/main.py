@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
-from . import crud_admin, schemas
+from . import crud_admin, crud_student, schemas
 from .auth import verify_admin, verify_student
 from .db import SessionLocal
 from .live_scorer import calculate_score
@@ -74,6 +74,13 @@ async def live_scorer(
             detail=result,
         )
 
+    # Raises HTTPException (500) if assignment not in database
+    _db_submission = crud_student.add_scoring_submission(
+        db=db,
+        submission=req,
+        score=result,
+    )
+
     return result
 
 
@@ -91,6 +98,26 @@ async def upload_score(req: Request, cred: Credentials):
 #
 # Admin-only endpoints
 #
+
+
+@app.post("/assignments", response_model=schemas.Assignment)
+async def add_assignment(
+    cred: Credentials,
+    assignment: schemas.Assignment,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
+    existing_assignment = crud_admin.get_assignment_by_title(
+        db=db, title=assignment.title
+    )
+    if existing_assignment:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Assignment title already in use",
+        )
+
+    return crud_admin.add_assignment(db=db, assignment=assignment)
 
 
 @app.post("/students", response_model=schemas.Student)

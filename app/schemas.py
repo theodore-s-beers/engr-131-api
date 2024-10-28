@@ -1,17 +1,14 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel
 
 
-class Student(BaseModel):
-    email: str
-    family_name: str
-    given_name: str
-    lecture_section: Optional[int] = None
-    lab_section: Optional[int] = None
-
-    class Config:
-        from_attributes = True
+class Assignment(BaseModel):
+    title: str
+    description: Optional[str] = None
+    max_score: int
+    due_date: datetime
 
 
 class ScoringSubmission(BaseModel):
@@ -20,3 +17,11 @@ class ScoringSubmission(BaseModel):
     assignment: str
     question: str
     responses: dict
+
+
+class Student(BaseModel):
+    email: str
+    family_name: str
+    given_name: str
+    lecture_section: Optional[int] = None
+    lab_section: Optional[int] = None

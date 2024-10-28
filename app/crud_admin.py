@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas
 
+#
+# Students table
+#
+
 
 def add_student(db: Session, student: schemas.Student):
     db_student = models.Student(
@@ -79,3 +83,27 @@ def delete_student_by_email(db: Session, email: str):
     db.commit()
 
     return db_student
+
+
+#
+# Assignments table
+#
+
+
+def add_assignment(db: Session, assignment: schemas.Assignment):
+    db_assignment = models.Assignment(
+        title=assignment.title,
+        description=assignment.description,
+        max_score=assignment.max_score,
+        due_date=assignment.due_date,
+    )
+
+    db.add(db_assignment)
+    db.commit()
+    db.refresh(db_assignment)
+
+    return db_assignment
+
+
+def get_assignment_by_title(db: Session, title: str):
+    return db.query(models.Assignment).filter(models.Assignment.title == title).first()
