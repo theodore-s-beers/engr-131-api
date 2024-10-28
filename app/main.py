@@ -47,8 +47,19 @@ async def login(cred: Credentials):
 
 
 @app.post("/live-scorer")
-async def live_scorer(req: schemas.ScoringRequest, cred: Credentials):
+async def live_scorer(
+    cred: Credentials,
+    req: schemas.ScoringSubmission,
+    db: Session = Depends(get_db),
+):
     verify_student(cred)  # Raises HTTPException (401) on failure
+
+    existing_student = crud_admin.get_student_by_email(db=db, email=req.student_email)
+    if not existing_student:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Student registration not found",
+        )
 
     result = calculate_score(
         term=req.term,

@@ -14,7 +14,8 @@ class Student(BaseModel):
         from_attributes = True
 
 
-class ScoringRequest(BaseModel):
+class ScoringSubmission(BaseModel):
+    student_email: str
     term: str
     assignment: str
     question: str
