@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import DateTime, ForeignKey, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base
 
@@ -21,9 +21,6 @@ class Student(Base):
     given_name: Mapped[str]
     lecture_section: Mapped[Optional[int]] = mapped_column(index=True)
     lab_section: Mapped[Optional[int]] = mapped_column(index=True)
-
-    assignment_subs = relationship("AssignmentSubmission", back_populates="submitter")
-    scoring_subs = relationship("ScoringSubmission", back_populates="submitter")
 
 
 #
@@ -54,8 +51,6 @@ class AssignmentSubmission(Base):
     )
     score: Mapped[int]
 
-    submitter = relationship("Student", back_populates="assignment_subs")
-
 
 class ScoringSubmission(Base):
     __tablename__ = "scoring_submissions"
@@ -71,8 +66,6 @@ class ScoringSubmission(Base):
     )
     max_points: Mapped[int]
     points_earned: Mapped[int]
-
-    submitter = relationship("Student", back_populates="scoring_subs")
 
 
 #
