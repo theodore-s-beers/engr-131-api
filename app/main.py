@@ -138,6 +138,17 @@ async def add_student(
     return crud_admin.add_student(db=db, student=student)
 
 
+@app.get("/scoring/{email}", response_model=list[schemas.ScoredSubmission])
+def get_scoring_subs_by_email(
+    cred: Credentials,
+    email: str,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
+    return crud_admin.get_scoring_subs_by_email(db=db, email=email)
+
+
 @app.get("/students", response_model=list[schemas.Student])
 async def get_all_students(
     cred: Credentials,

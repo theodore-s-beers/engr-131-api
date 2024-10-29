@@ -11,6 +11,15 @@ class Assignment(BaseModel):
     due_date: datetime
 
 
+class ScoredSubmission(BaseModel):
+    student_email: str
+    assignment: str
+    question: str
+    timestamp: datetime
+    max_points: int
+    points_earned: int
+
+
 class ScoringSubmission(BaseModel):
     student_email: str
     term: str

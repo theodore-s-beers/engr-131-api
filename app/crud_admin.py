@@ -110,3 +110,18 @@ def add_assignment(db: Session, assignment: schemas.Assignment):
 def get_assignment_by_title(db: Session, title: str):
     stmt = select(models.Assignment).where(models.Assignment.title == title)
     return db.execute(stmt).scalar_one_or_none()
+
+
+#
+# Scoring submissions table
+#
+
+
+def get_scoring_subs_by_email(db: Session, email: str):
+    stmt = (
+        select(models.ScoringSubmission)
+        .where(models.ScoringSubmission.student_email == email)
+        .order_by(models.ScoringSubmission.timestamp.desc())
+    )
+
+    return db.execute(stmt).scalars().all()
