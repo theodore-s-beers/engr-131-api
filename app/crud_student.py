@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -12,11 +13,8 @@ def add_scoring_submission(
 ):
     assignment_title = f"{submission.term}_{submission.assignment}"
 
-    db_assignment = (
-        db.query(models.Assignment)
-        .filter(models.Assignment.title == assignment_title)
-        .first()
-    )
+    stmt = select(models.Assignment).where(models.Assignment.title == assignment_title)
+    db_assignment = db.execute(stmt).scalar_one_or_none()
     if not db_assignment:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
