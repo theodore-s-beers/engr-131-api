@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -25,30 +26,30 @@ def add_student(db: Session, student: schemas.Student):
 
 
 def get_all_students(db: Session, skip: int = 0, limit: int = 100):
-    return (
-        db.query(models.Student)
+    stmt = (
+        select(models.Student)
         .order_by(models.Student.family_name)
         .offset(skip)
         .limit(limit)
-        .all()
     )
+
+    return db.execute(stmt).scalars().all()
 
 
 def get_student_by_email(db: Session, email: str):
-    return db.query(models.Student).filter(models.Student.email == email).first()
+    stmt = select(models.Student).where(models.Student.email == email)
+    return db.execute(stmt).scalar_one_or_none()
 
 
 def update_student(db: Session, email: str, student: schemas.Student):
-    db_student = db.query(models.Student).filter(models.Student.email == email).first()
+    stmt = select(models.Student).where(models.Student.email == email)
+    db_student = db.execute(stmt).scalar_one_or_none()
     if not db_student:
         return None
 
     if email != student.email:
-        existing_email = (
-            db.query(models.Student)
-            .filter(models.Student.email == student.email)
-            .first()
-        )
+        stmt = select(models.Student).where(models.Student.email == student.email)
+        existing_email = db.execute(stmt).scalar_one_or_none()
 
         if existing_email:
             raise HTTPException(
@@ -74,7 +75,8 @@ def update_student(db: Session, email: str, student: schemas.Student):
 
 
 def delete_student_by_email(db: Session, email: str):
-    db_student = db.query(models.Student).filter(models.Student.email == email).first()
+    stmt = select(models.Student).where(models.Student.email == email)
+    db_student = db.execute(stmt).scalar_one_or_none()
 
     if not db_student:
         return None
@@ -106,4 +108,5 @@ def add_assignment(db: Session, assignment: schemas.Assignment):
 
 
 def get_assignment_by_title(db: Session, title: str):
-    return db.query(models.Assignment).filter(models.Assignment.title == title).first()
+    stmt = select(models.Assignment).where(models.Assignment.title == title)
+    return db.execute(stmt).scalar_one_or_none()
