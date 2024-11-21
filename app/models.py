@@ -52,6 +52,23 @@ class AssignmentSubmission(Base):
     score: Mapped[int]
 
 
+class QuestionSubmission(Base):
+    __tablename__ = "question_submissions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    student_email: Mapped[str] = mapped_column(ForeignKey("students.email"))
+    assignment: Mapped[str] = mapped_column(ForeignKey("assignments.title"))
+    question: Mapped[str]
+
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+    )
+    responses: Mapped[dict]
+    max_points: Mapped[int]
+    points_earned: Mapped[int]
+
+
 class ScoringSubmission(Base):
     __tablename__ = "scoring_submissions"
 

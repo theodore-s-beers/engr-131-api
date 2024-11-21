@@ -3,6 +3,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from .live_scorer import Score
+
 
 class Assignment(BaseModel):
     title: str
@@ -26,6 +28,15 @@ class ScoringSubmission(BaseModel):
     assignment: str
     question: str
     responses: dict
+
+
+class QuestionSubmission(BaseModel):
+    student_email: str
+    term: str
+    assignment: str
+    question: str
+    responses: dict
+    score: Score
 
 
 class Student(BaseModel):

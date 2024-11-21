@@ -8,6 +8,7 @@ from . import crud_admin, crud_student, schemas
 from .auth import verify_admin, verify_student
 from .db import SessionLocal
 from .live_scorer import calculate_score
+from .question import valid_submission
 
 app = FastAPI()
 
@@ -82,6 +83,44 @@ async def live_scorer(
     )
 
     return result
+
+
+@app.post("/submit-question")
+async def submit_question(
+    cred: Credentials,
+    req: schemas.QuestionSubmission,
+    db: Session = Depends(get_db),
+):
+    verify_student(cred)
+
+    existing_student = crud_admin.get_student_by_email(db=db, email=req.student_email)
+    if not existing_student:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Student registration not found",
+        )
+
+    validity = valid_submission(
+        term=req.term,
+        assignment=req.assignment,
+        question=req.question,
+        responses=req.responses,
+        score=req.score,
+    )
+
+    if isinstance(validity, str):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=validity,
+        )
+
+    # Raises HTTPException (500) if assignment not in database
+    _db_submission = crud_student.add_question_submission(
+        db=db,
+        submission=req,
+    )
+
+    return "Question responses and score saved to database"
 
 
 @app.post("/upload-score")
