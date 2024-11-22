@@ -1,6 +1,6 @@
 from typing import Annotated, TypeAlias
 
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
@@ -124,12 +124,10 @@ async def submit_question(
 
 
 @app.post("/upload-score")
-async def upload_score(req: Request, cred: Credentials):
+async def upload_score(cred: Credentials, submission: schemas.FullSubmission):
     verify_student(cred)  # Raises HTTPException (401) on failure
 
-    # This is just for debugging purposes
-    body = await req.body()
-    print(len(body.decode("utf-8")))
+    print(submission.scores)
 
     return "Score-upload request received"
 
@@ -175,6 +173,9 @@ async def add_student(
         )
 
     return crud_admin.add_student(db=db, student=student)
+
+
+# @app.get("/assignment/{title}", response_model=schemas.Assignment)
 
 
 @app.get("/scoring/{email}", response_model=list[schemas.ScoredSubmission])

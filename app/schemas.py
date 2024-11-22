@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -6,11 +7,26 @@ from pydantic import BaseModel
 from .live_scorer import Score
 
 
+@dataclass
+class QuestionScoreFinal:
+    name: str
+    score: int
+    max_score: int
+
+
 class Assignment(BaseModel):
     title: str
     description: Optional[str] = None
     max_score: int
     due_date: datetime
+
+
+class FullSubmission(BaseModel):
+    student_email: str
+    assignment: str
+    start_time: datetime
+    end_time: datetime
+    scores: list[QuestionScoreFinal]
 
 
 class ScoredSubmission(BaseModel):
