@@ -37,19 +37,18 @@ def calculate_score(
 
     try:
         solution: dict = question_module.solution
-        points_per_part: int = question_module.points_per_part
+        points: list[int] = question_module.points
     except AttributeError:
         return "Error fetching solution"
 
-    max_points: int = len(solution) * points_per_part
-
+    max_points: int = sum(points)
     points_earned = 0
 
-    for k, v in solution.items():
+    for i, (k, v) in enumerate(solution.items()):
         if k not in responses:
             return "Incomplete submission"
 
         if responses[k] == v:
-            points_earned += points_per_part
+            points_earned += points[i]
 
     return Score(max_points=max_points, points_earned=points_earned)

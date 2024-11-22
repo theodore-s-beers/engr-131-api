@@ -24,14 +24,14 @@ def valid_submission(
 
     try:
         solution: dict = question_module.solution
-        points_per_part: int = question_module.points_per_part
+        points: list[int] = question_module.points
     except AttributeError:
         return "Error fetching solution"
 
     if len(responses) != len(solution):
         return "Invalid response length"
 
-    max_points: int = len(solution) * points_per_part
+    max_points: int = sum(points)
     if score.max_points != max_points:
         return "Invalid score data"
 
