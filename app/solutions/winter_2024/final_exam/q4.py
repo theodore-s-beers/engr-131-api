@@ -1,4 +1,4 @@
-points_per_part = 3
+points = [3] * 15
 
 solution = {
     "q4_1": "Initializes a list `numbers` with integers and floats",
