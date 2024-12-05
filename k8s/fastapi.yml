@@ -23,6 +23,11 @@ spec:
                 secretKeyRef:
                   name: test-fastapi-secret
                   key: DATABASE_URL
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: test-fastapi-secret
+                  key: ADMIN_PASSWORD
           resources:
             requests:
               memory: 1Gi
