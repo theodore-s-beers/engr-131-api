@@ -65,7 +65,7 @@ class Student(BaseModel):
 
 class TokenRequest(BaseModel):
     value: str
-    duration: int
+    duration: int = 120
 
 
 class Token(BaseModel):
