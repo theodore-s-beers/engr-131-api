@@ -70,7 +70,7 @@ def downgrade() -> None:
         "assignment_submissions",
         sa.Column("assignment_id", sa.INTEGER(), autoincrement=False, nullable=False),
     )
-    op.drop_constraint(None, "assignment_submissions", type_="foreignkey")
+    op.drop_constraint(None, "assignment_submissions", type_="foreignkey")  # type: ignore[arg-type]
     op.create_foreign_key(
         "assignment_submissions_assignment_id_fkey",
         "assignment_submissions",
