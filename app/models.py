@@ -106,3 +106,17 @@ class Login(Base):
     role: Mapped[Role]
     ip_address: Mapped[str]
     student_email: Mapped[Optional[str]] = mapped_column(ForeignKey("students.email"))
+
+
+#
+# Other
+#
+
+
+class Token(Base):
+    __tablename__ = "tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    value: Mapped[str] = mapped_column(index=True, unique=True)
+    created: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires: Mapped[datetime] = mapped_column(DateTime(timezone=True))

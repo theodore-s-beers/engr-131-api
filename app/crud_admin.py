@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from typing import Optional, Sequence
+
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -9,7 +12,7 @@ from . import models, schemas
 #
 
 
-def add_student(db: Session, student: schemas.Student):
+def add_student(db: Session, student: schemas.Student) -> models.Student:
     db_student = models.Student(
         email=student.email,
         family_name=student.family_name,
@@ -25,7 +28,9 @@ def add_student(db: Session, student: schemas.Student):
     return db_student
 
 
-def get_all_students(db: Session, skip: int = 0, limit: int = 100):
+def get_all_students(
+    db: Session, skip: int = 0, limit: int = 100
+) -> Sequence[models.Student]:
     stmt = (
         select(models.Student)
         .order_by(models.Student.family_name)
@@ -36,12 +41,14 @@ def get_all_students(db: Session, skip: int = 0, limit: int = 100):
     return db.execute(stmt).scalars().all()
 
 
-def get_student_by_email(db: Session, email: str):
+def get_student_by_email(db: Session, email: str) -> Optional[models.Student]:
     stmt = select(models.Student).where(models.Student.email == email)
     return db.execute(stmt).scalar_one_or_none()
 
 
-def update_student(db: Session, email: str, student: schemas.Student):
+def update_student(
+    db: Session, email: str, student: schemas.Student
+) -> Optional[models.Student]:
     stmt = select(models.Student).where(models.Student.email == email)
     db_student = db.execute(stmt).scalar_one_or_none()
     if not db_student:
@@ -74,7 +81,7 @@ def update_student(db: Session, email: str, student: schemas.Student):
     return db_student
 
 
-def delete_student_by_email(db: Session, email: str):
+def delete_student_by_email(db: Session, email: str) -> Optional[models.Student]:
     stmt = select(models.Student).where(models.Student.email == email)
     db_student = db.execute(stmt).scalar_one_or_none()
 
@@ -92,7 +99,7 @@ def delete_student_by_email(db: Session, email: str):
 #
 
 
-def add_assignment(db: Session, assignment: schemas.Assignment):
+def add_assignment(db: Session, assignment: schemas.Assignment) -> models.Assignment:
     db_assignment = models.Assignment(
         title=assignment.title,
         description=assignment.description,
@@ -107,7 +114,7 @@ def add_assignment(db: Session, assignment: schemas.Assignment):
     return db_assignment
 
 
-def get_assignment_by_title(db: Session, title: str):
+def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignment]:
     stmt = select(models.Assignment).where(models.Assignment.title == title)
     return db.execute(stmt).scalar_one_or_none()
 
@@ -117,7 +124,9 @@ def get_assignment_by_title(db: Session, title: str):
 #
 
 
-def get_scoring_subs_by_email(db: Session, email: str):
+def get_scoring_subs_by_email(
+    db: Session, email: str
+) -> Sequence[models.ScoringSubmission]:
     stmt = (
         select(models.ScoringSubmission)
         .where(models.ScoringSubmission.student_email == email)
@@ -125,3 +134,30 @@ def get_scoring_subs_by_email(db: Session, email: str):
     )
 
     return db.execute(stmt).scalars().all()
+
+
+#
+# Other
+#
+
+
+def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
+    stmt = select(models.Token).where(models.Token.value == value)
+    return db.execute(stmt).scalar_one_or_none()
+
+
+def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
+    created: datetime = datetime.now()
+    expires: datetime = created + timedelta(minutes=token_req.duration)
+
+    db_token = models.Token(
+        value=token_req.value,
+        created=created,
+        expires=expires,
+    )
+
+    db.add(db_token)
+    db.commit()
+    db.refresh(db_token)
+
+    return db_token

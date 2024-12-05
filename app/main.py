@@ -175,6 +175,25 @@ async def add_student(
     return crud_admin.add_student(db=db, student=student)
 
 
+@app.post("/tokens", response_model=schemas.Token)
+async def create_token(
+    cred: Credentials,
+    token_req: schemas.TokenRequest,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred)
+
+    existing_token = crud_admin.get_token_by_value(db=db, value=token_req.value)
+    if existing_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Token value already used",
+        )
+
+    return crud_admin.create_token(db=db, token_req=token_req)
+
+
+# To be implemented
 # @app.get("/assignment/{title}", response_model=schemas.Assignment)
 
 

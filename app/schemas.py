@@ -61,3 +61,14 @@ class Student(BaseModel):
     given_name: str
     lecture_section: Optional[int] = None
     lab_section: Optional[int] = None
+
+
+class TokenRequest(BaseModel):
+    value: str
+    duration: int
+
+
+class Token(BaseModel):
+    value: str
+    created: datetime
+    expires: datetime
