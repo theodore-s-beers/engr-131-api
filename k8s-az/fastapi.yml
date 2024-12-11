@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: engr-131-test-fastapi
+  name: engr-131-api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: test-fastapi-app
+      app: fastapi-app
   template:
     metadata:
       labels:
-        app: test-fastapi-app
+        app: fastapi-app
     spec:
       containers:
-        - name: test-fastapi-container
+        - name: fastapi-container
           image: katomyomachia/engr-131-testing:latest
           ports:
             - containerPort: 8080
@@ -21,12 +21,12 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: test-fastapi-secret
+                  name: fastapi-secret
                   key: DATABASE_URL
             - name: ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: test-fastapi-secret
+                  name: fastapi-secret
                   key: ADMIN_PASSWORD
           resources:
             requests:
@@ -39,20 +39,20 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: engr-131-test-fastapi-service
+  name: fastapi-service
 spec:
   selector:
-    app: test-fastapi-app
+    app: fastapi-app
   ports:
     - protocol: TCP
-      port: 80 # The port this service will expose
-      targetPort: 8080 # The port that FastAPI listens on inside the container
+      port: 80 # Exposed within the cluster
+      targetPort: 8080 # FastAPI listens on this port
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: engr-131-test-fastapi-ingress
+  name: fastapi-ingress
   namespace: fastapi
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -62,11 +62,9 @@ spec:
     - host: engr-131-api.t6e.dev
       http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
+          - backend:
               service:
-                name: engr-131-test-fastapi-service
+                name: fastapi-service
                 port:
                   number: 80
   tls:
