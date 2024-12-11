@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engr-131-test-fastapi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-fastapi-app
+  template:
+    metadata:
+      labels:
+        app: test-fastapi-app
+    spec:
+      containers:
+        - name: test-fastapi-container
+          image: katomyomachia/engr-131-testing:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: test-fastapi-secret
+                  key: DATABASE_URL
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: test-fastapi-secret
+                  key: ADMIN_PASSWORD
+          resources:
+            requests:
+              memory: 1Gi
+              cpu: "1"
+            limits:
+              memory: 2Gi
+              cpu: "2"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: engr-131-test-fastapi-service
+spec:
+  selector:
+    app: test-fastapi-app
+  ports:
+    - protocol: TCP
+      port: 80 # The port this service will expose
+      targetPort: 8080 # The port that FastAPI listens on inside the container
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: engr-131-test-fastapi-ingress
+  namespace: fastapi
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: engr-131-api.t6e.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: engr-131-test-fastapi-service
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - engr-131-api.t6e.dev
+      secretName: engr-131-api-tls-secret
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: theo.beers@drexel.edu
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
