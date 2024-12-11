@@ -12,7 +12,7 @@ spec:
       - superuser
       - createdb
   databases:
-    engr_131_test_db: fastapi
+    engr_131_db: fastapi
   postgresql:
     version: "16"
   resources:
