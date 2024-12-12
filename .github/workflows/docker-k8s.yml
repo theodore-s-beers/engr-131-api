@@ -27,8 +27,8 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --ulimit nofile=2048:2048 \
-            --tag katomyomachia/engr-131-testing:$TAG \
-            --tag katomyomachia/engr-131-testing:latest \
+            --tag katomyomachia/engr-131-api:$TAG \
+            --tag katomyomachia/engr-131-api:latest \
             --push .
           echo "tag=$TAG" >> $GITHUB_ENV
 
@@ -36,4 +36,4 @@ jobs:
         run: |
           kubectl set image -n fastapi \
           deployment/engr-131-api \
-          fastapi-container=katomyomachia/engr-131-testing:${{ env.tag }}
+          fastapi-container=katomyomachia/engr-131-api:${{ env.tag }}

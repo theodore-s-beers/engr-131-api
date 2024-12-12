@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: fastapi-container
-          image: katomyomachia/engr-131-testing:latest
+          image: katomyomachia/engr-131-api:latest
           ports:
             - containerPort: 8080
           env:
