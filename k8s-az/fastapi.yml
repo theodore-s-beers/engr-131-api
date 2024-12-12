@@ -4,6 +4,10 @@ metadata:
   name: engr-131-api
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
   selector:
     matchLabels:
       app: fastapi-app
