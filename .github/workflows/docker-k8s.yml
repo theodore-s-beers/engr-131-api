@@ -28,6 +28,7 @@ jobs:
             --platform linux/amd64,linux/arm64 \
             --ulimit nofile=2048:2048 \
             --tag katomyomachia/engr-131-testing:$TAG \
+            --tag katomyomachia/engr-131-testing:latest \
             --push .
           echo "tag=$TAG" >> $GITHUB_ENV
 
