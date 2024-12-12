@@ -31,9 +31,14 @@ jobs:
             --push .
           echo "tag=$TAG" >> $GITHUB_ENV
 
-      - name: Update Kubernetes Deployment
+      - name: Scale Down Kubernetes Deployment
+        run: kubectl scale deployment engr-131-api --replicas=1 -n fastapi
+
+      - name: Update Deployment Image
         run: |
           kubectl set image -n fastapi \
           deployment/engr-131-api \
-          fastapi-container=katomyomachia/engr-131-testing:${{ env.tag }} \
-          --record
+          fastapi-container=katomyomachia/engr-131-testing:${{ env.tag }}
+
+      - name: Scale Up Deployment
+        run: kubectl scale deployment engr-131-api --replicas=2 -n fastapi
