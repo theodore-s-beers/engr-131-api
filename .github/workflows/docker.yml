@@ -23,8 +23,17 @@ jobs:
 
       - name: Build and Push Multi-Platform Docker Image
         run: |
+          TAG=$(date +%s)
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
             --ulimit nofile=2048:2048 \
-            --tag katomyomachia/engr-131-testing:$(date +%s) \
+            --tag katomyomachia/engr-131-testing:$TAG \
             --push .
+          echo "tag=$TAG" >> $GITHUB_ENV
+
+      - name: Update Kubernetes Deployment
+        run: |
+          kubectl set image -n fastapi \
+          deployment/engr-131-api \
+          fastapi-container=katomyomachia/engr-131-testing:${{ env.tag }} \
+          --record
