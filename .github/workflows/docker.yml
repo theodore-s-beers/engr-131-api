@@ -12,5 +12,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Build the Docker image
-        run: DOCKER_BUILDKIT=1 docker build --ulimit nofile=2048:2048 . --file Dockerfile --tag katomyomachia/engr-131-testing:$(date +%s)
+
+      - name: Set up Buildx
+        run: docker buildx inspect --bootstrap || docker buildx create --use
+
+      - name: Build Multi-Platform Docker Image
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --ulimit nofile=2048:2048 \
+            --tag katomyomachia/engr-131-testing:$(date +%s) \
+            .
