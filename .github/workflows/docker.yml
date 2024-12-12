@@ -2,17 +2,15 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-
   build:
-
     runs-on: self-hosted
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: DOCKER_BUILDKIT=1 docker build --ulimit nofile=2048:2048 . --file Dockerfile --tag katomyomachia/engr-131-testing:$(date +%s)
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: DOCKER_BUILDKIT=1 docker build --ulimit nofile=2048:2048 . --file Dockerfile --tag katomyomachia/engr-131-testing:$(date +%s)
