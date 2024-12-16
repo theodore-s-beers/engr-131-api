@@ -1,0 +1,3 @@
+[submodule "vendor/course-content"]
+	path = vendor/course-content
+	url = https://github.com/jagar2/ENGR131_W25_dev
