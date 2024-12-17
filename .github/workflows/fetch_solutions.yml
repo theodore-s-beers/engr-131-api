@@ -1,4 +1,4 @@
-name: Update Submodule and Move Solution Files
+name: Update Submodule & Fetch Solutions
 
 on:
   workflow_dispatch:
