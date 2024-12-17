@@ -1,6 +1,8 @@
 name: Update Submodule & Fetch Solutions
 
 on:
+  schedule:
+    - cron: "20 */4 * * *"
   workflow_dispatch:
 
 jobs:
