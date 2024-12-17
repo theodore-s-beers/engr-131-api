@@ -1,0 +1,36 @@
+name: Update Submodule and Move Solution Files
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: self-hosted
+
+    steps:
+      - name: Check out repository with submodules
+        uses: actions/checkout@v4
+
+      - name: Update submodule to latest
+        run: |
+          git submodule update --init --recursive
+          git submodule update --remote --recursive
+          git status
+
+      - name: Set up venv; run script; format files
+        run: |
+          uv venv
+          source .venv/bin/activate
+          uv sync
+          python move_solutions.py
+          ruff format
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update submodule and move solution files"
+            git push
+          else
+            echo "No changes to commit"
+          fi
