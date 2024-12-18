@@ -1,3 +1,30 @@
+"""
+crud_students.py
+
+This module provides CRUD operations for managing question and scoring submissions 
+in the database using SQLAlchemy and FastAPI.
+
+Functions:
+    add_question_submission(
+        db: Session,
+        submission: schemas.QuestionSubmission,
+    ) -> models.QuestionSubmission:
+        Adds a question submission to the database and associates it with an assignment.
+
+    add_scoring_submission(
+        db: Session,
+        submission: schemas.ScoringSubmission,
+        score: Score,
+    ) -> models.ScoringSubmission:
+        Adds a scoring submission to the database and associates it with an assignment.
+
+Dependencies:
+    - FastAPI for HTTP exception handling and status codes.
+    - SQLAlchemy for database interaction.
+    - models and schemas modules for defining database models and input schemas.
+    - live_scorer.Score for representing score-related data.
+"""
+
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -10,6 +37,19 @@ def add_question_submission(
     db: Session,
     submission: schemas.QuestionSubmission,
 ):
+    """
+    Adds a question submission to the database.
+
+    Args:
+        db (Session): The database session.
+        submission (schemas.QuestionSubmission): The submission data containing student email, assignment, question, responses, and score.
+
+    Raises:
+        HTTPException: If the assignment is not found in the database.
+
+    Returns:
+        models.QuestionSubmission: The newly created question submission record.
+    """
     assignment_title = f"{submission.term}_{submission.assignment}"
 
     stmt = select(models.Assignment).where(models.Assignment.title == assignment_title)
@@ -41,6 +81,20 @@ def add_scoring_submission(
     submission: schemas.ScoringSubmission,
     score: Score,
 ):
+    """
+    Add a scoring submission to the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        submission (schemas.ScoringSubmission): The scoring submission data.
+        score (Score): The score details including max points and points earned.
+
+    Raises:
+        HTTPException: If the assignment is not found in the database.
+
+    Returns:
+        models.ScoringSubmission: The newly created scoring submission record.
+    """
     assignment_title = f"{submission.term}_{submission.assignment}"
 
     stmt = select(models.Assignment).where(models.Assignment.title == assignment_title)
