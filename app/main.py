@@ -1,6 +1,6 @@
 from typing import Annotated, TypeAlias
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Request, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
@@ -31,8 +31,19 @@ def get_db():
 
 
 @app.get("/")
-async def root():
-    return "Server is running"
+async def root(request: Request):
+    client_host = getattr(request.client, "host", "Unknown")
+    headers = request.headers
+    method = request.method
+    url = str(request.url)
+
+    return {
+        "message": "Server is running",
+        "client_host": client_host,
+        "method": method,
+        "url": url,
+        "headers": {key: value for key, value in headers.items()},
+    }
 
 
 @app.post("/login")
