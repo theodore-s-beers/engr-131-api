@@ -1,6 +1,7 @@
 from typing import Annotated, TypeAlias
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
@@ -11,6 +12,14 @@ from .live_scorer import calculate_score
 from .question import valid_submission
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for testing; restrict in production
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
 
 security = HTTPBasic()
 Credentials: TypeAlias = Annotated[HTTPBasicCredentials, Depends(security)]
