@@ -1,3 +1,26 @@
+"""
+scoring_utils.py
+
+This module provides utility functions and classes for dynamically loading modules,
+calculating scores for assignments, and handling responses for academic questions.
+
+Classes:
+    - Score: A data class to represent the maximum points and earned points for a question or assignment.
+
+Functions:
+    - load_module(path: str) -> Optional[ModuleType]:
+        Dynamically loads a Python module based on the provided path.
+
+    - calculate_score(term: str, assignment: str, question: str, responses: dict) -> Score | str:
+        Calculates the score for a given question based on the provided responses.
+
+Dependencies:
+    - importlib: For dynamic module importing.
+    - dataclasses: To define the Score class.
+    - types.ModuleType: For type hinting loaded modules.
+    - typing.Optional: To handle optional return types.
+"""
+
 import importlib
 from dataclasses import dataclass
 from types import ModuleType
