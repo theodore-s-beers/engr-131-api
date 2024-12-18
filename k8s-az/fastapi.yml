@@ -11,6 +11,8 @@ spec:
     metadata:
       labels:
         app: fastapi-app
+      annotations:
+        ttl.kubernetes.io/replicaSet: "172800" # Clean up ReplicaSets after 2 days
     spec:
       containers:
         - name: fastapi-container
@@ -59,7 +61,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: engr-131-api.t6e.dev
+    - host: engr-131-api.eastus.cloudapp.azure.com
       http:
         paths:
           - path: /
@@ -71,8 +73,8 @@ spec:
                   number: 80
   tls:
     - hosts:
-        - engr-131-api.t6e.dev
-      secretName: engr-131-api-tls-secret
+        - engr-131-api.eastus.cloudapp.azure.com
+      secretName: engr-131-api-azure-tls-secret
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
