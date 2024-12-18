@@ -1,3 +1,22 @@
+"""
+crud_admin.py
+
+This module provides CRUD operations for managing students, assignments, scoring submissions,
+and tokens in the database using SQLAlchemy and FastAPI.
+
+Functions:
+    add_student(db: Session, student: schemas.Student) -> models.Student
+    get_all_students(db: Session, skip: int = 0, limit: int = 100) -> Sequence[models.Student]
+    get_student_by_email(db: Session, email: str) -> Optional[models.Student]
+    update_student(db: Session, email: str, student: schemas.Student) -> Optional[models.Student]
+    delete_student_by_email(db: Session, email: str) -> Optional[models.Student]
+    add_assignment(db: Session, assignment: schemas.Assignment) -> models.Assignment
+    get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignment]
+    get_scoring_subs_by_email(db: Session, email: str) -> Sequence[models.ScoringSubmission]
+    get_token_by_value(db: Session, value: str) -> Optional[models.Token]
+    create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token
+"""
+
 from datetime import datetime, timedelta
 from typing import Optional, Sequence
 
@@ -13,6 +32,16 @@ from . import models, schemas
 
 
 def add_student(db: Session, student: schemas.Student) -> models.Student:
+    """
+    Add a new student to the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        student (schemas.Student): The student data to be added.
+
+    Returns:
+        models.Student: The newly added student record.
+    """
     db_student = models.Student(
         email=student.email,
         family_name=student.family_name,
@@ -31,6 +60,17 @@ def add_student(db: Session, student: schemas.Student) -> models.Student:
 def get_all_students(
     db: Session, skip: int = 0, limit: int = 100
 ) -> Sequence[models.Student]:
+    """
+    Retrieve a list of students from the database, ordered by family name.
+
+    Args:
+        db (Session): The database session to use for the query.
+        skip (int, optional): The number of records to skip. Defaults to 0.
+        limit (int, optional): The maximum number of records to return. Defaults to 100.
+
+    Returns:
+        Sequence[models.Student]: A list of student records.
+    """
     stmt = (
         select(models.Student)
         .order_by(models.Student.family_name)
@@ -42,6 +82,16 @@ def get_all_students(
 
 
 def get_student_by_email(db: Session, email: str) -> Optional[models.Student]:
+    """
+    Retrieve a student record from the database by email.
+
+    Args:
+        db (Session): The database session to use for the query.
+        email (str): The email address of the student to retrieve.
+
+    Returns:
+        Optional[models.Student]: The student record if found, otherwise None.
+    """
     stmt = select(models.Student).where(models.Student.email == email)
     return db.execute(stmt).scalar_one_or_none()
 
@@ -49,6 +99,21 @@ def get_student_by_email(db: Session, email: str) -> Optional[models.Student]:
 def update_student(
     db: Session, email: str, student: schemas.Student
 ) -> Optional[models.Student]:
+    """
+    Update a student's information in the database.
+
+    Args:
+        db (Session): The database session to use for the update.
+        email (str): The email of the student to update.
+        student (schemas.Student): The new student data to update.
+
+    Returns:
+        Optional[models.Student]: The updated student object if the update was successful, 
+        or None if the student with the given email was not found.
+
+    Raises:
+        HTTPException: If the new email is already registered to another student.
+    """
     stmt = select(models.Student).where(models.Student.email == email)
     db_student = db.execute(stmt).scalar_one_or_none()
     if not db_student:
@@ -82,6 +147,16 @@ def update_student(
 
 
 def delete_student_by_email(db: Session, email: str) -> Optional[models.Student]:
+    """
+    Delete a student from the database by their email.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        email (str): The email of the student to delete.
+
+    Returns:
+        Optional[models.Student]: The deleted student object if found and deleted, otherwise None.
+    """
     stmt = select(models.Student).where(models.Student.email == email)
     db_student = db.execute(stmt).scalar_one_or_none()
 
@@ -100,6 +175,16 @@ def delete_student_by_email(db: Session, email: str) -> Optional[models.Student]
 
 
 def add_assignment(db: Session, assignment: schemas.Assignment) -> models.Assignment:
+    """
+    Add a new assignment to the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        assignment (schemas.Assignment): The assignment data to be added.
+
+    Returns:
+        models.Assignment: The newly created assignment object.
+    """
     db_assignment = models.Assignment(
         title=assignment.title,
         description=assignment.description,
@@ -115,6 +200,16 @@ def add_assignment(db: Session, assignment: schemas.Assignment) -> models.Assign
 
 
 def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignment]:
+    """
+    Retrieve an assignment from the database by its title.
+
+    Args:
+        db (Session): The database session to use for the query.
+        title (str): The title of the assignment to retrieve.
+
+    Returns:
+        Optional[models.Assignment]: The assignment object if found, otherwise None.
+    """
     stmt = select(models.Assignment).where(models.Assignment.title == title)
     return db.execute(stmt).scalar_one_or_none()
 
@@ -127,6 +222,17 @@ def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignme
 def get_scoring_subs_by_email(
     db: Session, email: str
 ) -> Sequence[models.ScoringSubmission]:
+    """
+    Retrieve scoring submissions by student email.
+
+    Args:
+        db (Session): The database session to use for the query.
+        email (str): The email address of the student.
+
+    Returns:
+        Sequence[models.ScoringSubmission]: A sequence of ScoringSubmission objects
+        associated with the given email, ordered by timestamp in descending order.
+    """
     stmt = (
         select(models.ScoringSubmission)
         .where(models.ScoringSubmission.student_email == email)
@@ -142,11 +248,31 @@ def get_scoring_subs_by_email(
 
 
 def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
+    """
+    Retrieve a token from the database by its value.
+
+    Args:
+        db (Session): The database session to use for the query.
+        value (str): The value of the token to retrieve.
+
+    Returns:
+        Optional[models.Token]: The token object if found, otherwise None.
+    """
     stmt = select(models.Token).where(models.Token.value == value)
     return db.execute(stmt).scalar_one_or_none()
 
 
 def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
+    """
+    Create a new token and store it in the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        token_req (schemas.TokenRequest): The token request containing the value and duration for the token.
+
+    Returns:
+        models.Token: The created token object with value, created, and expires fields populated.
+    """
     created: datetime = datetime.now()
     expires: datetime = created + timedelta(minutes=token_req.duration)
 
