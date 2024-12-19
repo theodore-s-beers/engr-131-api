@@ -1,6 +1,6 @@
 from typing import Annotated, TypeAlias
 
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
@@ -31,19 +31,18 @@ def get_db():
 
 
 @app.get("/")
-async def root(request: Request):
-    client_host = getattr(request.client, "host", "Unknown")
-    headers = request.headers
-    method = request.method
-    url = str(request.url)
+async def root(req: Request, jhub_user: str = Query(None)):
+    client_host = getattr(req.client, "host", "unknown")
 
-    return {
+    response = {
         "message": "Server is running",
-        "client_host": client_host,
-        "method": method,
-        "url": url,
-        "headers": {key: value for key, value in headers.items()},
+        "client_ip": req.headers.get("x-real-ip", client_host),
     }
+
+    if jhub_user:
+        response["jhub_user"] = jhub_user
+
+    return response
 
 
 @app.post("/login")
