@@ -1,7 +1,7 @@
 """
 crud_students.py
 
-This module provides CRUD operations for managing question and scoring submissions 
+This module provides CRUD operations for managing question and scoring submissions
 in the database using SQLAlchemy and FastAPI.
 
 Functions:

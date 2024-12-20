@@ -108,7 +108,7 @@ def update_student(
         student (schemas.Student): The new student data to update.
 
     Returns:
-        Optional[models.Student]: The updated student object if the update was successful, 
+        Optional[models.Student]: The updated student object if the update was successful,
         or None if the student with the given email was not found.
 
     Raises:
