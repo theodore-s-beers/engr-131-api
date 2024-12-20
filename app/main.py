@@ -16,8 +16,13 @@ security = HTTPBasic()
 Credentials: TypeAlias = Annotated[HTTPBasicCredentials, Depends(security)]
 
 
-# DB dependency
+# Dependency for obtaining a database session
 def get_db():
+    """
+    Yields a database session for use in route handlers.
+
+    Closes the session automatically after the request is handled.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -25,9 +30,9 @@ def get_db():
         db.close()
 
 
-#
+# ----------------------
 # Student-accessible endpoints
-#
+# ----------------------
 
 
 @app.get("/")
@@ -47,6 +52,15 @@ async def root(req: Request, jhub_user: str = Query(None)):
 
 @app.post("/login")
 async def login(cred: Credentials):
+    """
+    Endpoint for logging in as an admin or student.
+
+    Args:
+        cred (Credentials): Basic authentication credentials.
+
+    Returns:
+        str: A message indicating whether the credentials are valid for an admin or student.
+    """
     try:
         verify_admin(cred)  # Raises HTTPException (401) on failure
         return "Admin credentials verified"
@@ -63,7 +77,18 @@ async def live_scorer(
     req: schemas.ScoringSubmission,
     db: Session = Depends(get_db),
 ):
-    verify_student(cred)  # Raises HTTPException (401) on failure
+    """
+    Endpoint for scoring a student's live submission.
+
+    Args:
+        cred (Credentials): Basic authentication credentials for the student.
+        req (schemas.ScoringSubmission): The submission details including responses.
+        db (Session): Database session dependency.
+
+    Returns:
+        Score: A score object with max_points and points_earned.
+    """
+    verify_student(cred)
 
     existing_student = crud_admin.get_student_by_email(db=db, email=req.student_email)
     if not existing_student:
@@ -85,8 +110,7 @@ async def live_scorer(
             detail=result,
         )
 
-    # Raises HTTPException (500) if assignment not in database
-    _db_submission = crud_student.add_scoring_submission(
+    crud_student.add_scoring_submission(
         db=db,
         submission=req,
         score=result,
@@ -101,6 +125,18 @@ async def submit_question(
     req: schemas.QuestionSubmission,
     db: Session = Depends(get_db),
 ):
+    """
+    Endpoint for submitting question responses and scores.
+
+    Args:
+        cred (Credentials): Basic authentication credentials for the student.
+        req (schemas.QuestionSubmission): The question submission details.
+        db (Session): Database session dependency.
+
+    Returns:
+        str: A message indicating successful submission to the database.
+    """
+
     verify_student(cred)
 
     existing_student = crud_admin.get_student_by_email(db=db, email=req.student_email)
@@ -135,16 +171,26 @@ async def submit_question(
 
 @app.post("/upload-score")
 async def upload_score(cred: Credentials, submission: schemas.FullSubmission):
-    verify_student(cred)  # Raises HTTPException (401) on failure
+    """
+    Endpoint for uploading a student's score.
+
+    Args:
+        cred (Credentials): Basic authentication credentials for the student.
+        submission (schemas.FullSubmission): The full submission details.
+
+    Returns:
+        str: A message indicating that the score upload request was received.
+    """
+    verify_student(cred)
 
     print(submission.scores)
 
     return "Score-upload request received"
 
 
-#
+# ----------------------
 # Admin-only endpoints
-#
+# ----------------------
 
 
 @app.post("/assignments", response_model=schemas.Assignment)
@@ -173,6 +219,18 @@ async def add_student(
     student: schemas.Student,
     db: Session = Depends(get_db),
 ):
+    """
+    Endpoint for adding a new student to the database.
+
+    Args:
+        cred (Credentials): Basic authentication credentials for the admin.
+        student (schemas.Student): The student details.
+        db (Session): Database session dependency.
+
+    Returns:
+        schemas.Student: The newly created student object.
+    """
+
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
     existing_entry = crud_admin.get_student_by_email(db=db, email=student.email)
