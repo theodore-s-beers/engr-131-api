@@ -1,6 +1,6 @@
 from typing import Annotated, TypeAlias
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
@@ -36,14 +36,18 @@ def get_db():
 
 
 @app.get("/")
-async def root():
-    """
-    Root endpoint to verify server status.
+async def root(req: Request, jhub_user: str = Query(None)):
+    client_host = getattr(req.client, "host", "unknown")
 
-    Returns:
-        str: A message indicating that the server is running.
-    """
-    return "Server is running"
+    response = {
+        "message": "Server is running",
+        "client_ip": req.headers.get("x-real-ip", client_host),
+    }
+
+    if jhub_user:
+        response["jhub_user"] = jhub_user
+
+    return response
 
 
 @app.post("/login")
