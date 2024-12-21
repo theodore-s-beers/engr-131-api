@@ -28,6 +28,7 @@ class Student(Base):
 #
 
 
+# TODO: Grading mechanism
 class Assignment(Base):
     __tablename__ = "assignments"
 
