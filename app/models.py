@@ -86,7 +86,8 @@ class ScoringSubmission(Base):
         server_default=func.now(),
     )
     max_points: Mapped[int]
-    points_earned: Mapped[int]  
+    points_earned: Mapped[int]
+
 
 #
 # Logins
