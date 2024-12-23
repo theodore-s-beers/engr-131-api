@@ -17,8 +17,8 @@ class Student(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(index=True, unique=True)
-    family_name: Mapped[str]
-    given_name: Mapped[str]
+    family_name: Mapped[Optional[str]] = mapped_column()
+    given_name: Mapped[Optional[str]] = mapped_column()
     lecture_section: Mapped[Optional[int]] = mapped_column(index=True)
     lab_section: Mapped[Optional[int]] = mapped_column(index=True)
 
