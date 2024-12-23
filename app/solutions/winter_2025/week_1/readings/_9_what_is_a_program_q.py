@@ -1,6 +1,6 @@
 from typing import Any
 
-total_points: float = 13.0
+total_points: float = [2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
 solutions: dict[str, Any] = {
     "q1-1-What-is-a-Program": "A sequence of instructions for a computer to execute.",

@@ -1,6 +1,25 @@
 from typing import Any
 
-total_points: float = 21.0
+total_points: float = [
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    2.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    4.0,
+]
 
 solutions: dict[str, Any] = {
     "q1-1-Natural-v-Formal Languages": "Formal languages are designed to be unambiguous, while natural languages rely on context.",

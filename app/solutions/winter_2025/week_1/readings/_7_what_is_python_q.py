@@ -1,6 +1,6 @@
 from typing import Any
 
-total_points: float = 6.0
+total_points: float = [2.0, 2.0, 2.0]
 
 solutions: dict[str, Any] = {
     "q1-1-High-Level-v-Low-Level": "High-level languages are closer to human language and must be translated for computers to execute.",
