@@ -50,7 +50,10 @@ class AssignmentSubmission(Base):
         DateTime(timezone=True),
         server_default=func.now(),
     )
-    score: Mapped[int]
+
+    raw_score: Mapped[int]
+    late_assignment_percentage: Mapped[int]
+    final_score: Mapped[int]
 
 
 class QuestionSubmission(Base):
@@ -83,8 +86,7 @@ class ScoringSubmission(Base):
         server_default=func.now(),
     )
     max_points: Mapped[int]
-    points_earned: Mapped[int]
-
+    points_earned: Mapped[int]  
 
 #
 # Logins
