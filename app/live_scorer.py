@@ -37,8 +37,8 @@ class Score:
         points_earned (int): The points earned by the student.
     """
 
-    max_points: int
-    points_earned: int
+    max_points: float
+    points_earned: float
 
 
 def load_module(path: str) -> Optional[ModuleType]:
@@ -125,19 +125,19 @@ def calculate_score(
         return f"Invalid question: {question}"
 
     try:
-        solution: dict = question_module.solution
-        points: list[int] = question_module.points
+        solutions: dict = question_module.solutions
+        max_points: float = question_module.total_points
     except AttributeError:
         return "Error fetching solution"
 
-    max_points: int = sum(points)
-    points_earned = 0
+    points_each: float = max_points / len(solutions)
+    points_earned: float = 0.0
 
-    for i, (k, v) in enumerate(solution.items()):
-        if k not in responses:
-            return "Incomplete submission"
+    for k, v in solutions.items():
+        # if k not in responses:
+        #     return "Incomplete submission"
 
         if responses[k] == v:
-            points_earned += points[i]
+            points_earned += points_each
 
     return Score(max_points=max_points, points_earned=points_earned)
