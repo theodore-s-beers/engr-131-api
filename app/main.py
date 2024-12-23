@@ -9,6 +9,8 @@ from .auth import verify_admin, verify_student
 from .db import SessionLocal
 from .live_scorer import calculate_score
 from .question import valid_submission
+from .models import Token
+from datetime import datetime
 
 app = FastAPI()
 
@@ -69,6 +71,37 @@ async def login(cred: Credentials):
 
     verify_student(cred)  # Raises HTTPException (401) on failure
     return "Student credentials verified"
+
+
+@app.get("/validate-token/{token_value}")
+def validate_token(token_value: str, db: Session = Depends(get_db)):
+    """
+    Validate if a token exists and is not expired.
+
+    Args:
+        token_value (str): The value of the token to validate.
+        db (Session): Database session dependency.
+
+    Returns:
+        dict: Validation result.
+
+    Raises:
+        HTTPException: If the token does not exist or is expired.
+    """
+    # Query the database for the token
+    stmt = select(Token).where(Token.value == token_value)
+    token = db.execute(stmt).scalar_one_or_none()
+
+    # Check if token exists
+    if not token:
+        raise HTTPException(status_code=404, detail="Token not found")
+
+    # Check if token is expired
+    if token.expires < datetime.utcnow():
+        raise HTTPException(status_code=401, detail="Token has expired")
+
+    # Return validation result if the token is valid
+    return {"status": "valid", "expires_at": token.expires.isoformat()}
 
 
 @app.post("/live-scorer")
