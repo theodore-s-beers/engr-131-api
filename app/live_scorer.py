@@ -134,8 +134,9 @@ def calculate_score(
     points_earned: float = 0.0
 
     for k, v in solutions.items():
-        # if k not in responses:
-        #     return "Incomplete submission"
+        if k not in responses:
+            # return "Incomplete submission"
+            continue
 
         if responses[k] == v:
             points_earned += points_each
