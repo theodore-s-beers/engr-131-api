@@ -30,6 +30,11 @@ spec:
                 secretKeyRef:
                   name: fastapi-secret
                   key: ADMIN_PASSWORD
+            - name: STUDENT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-secret
+                  key: STUDENT_PASSWORD
           resources:
             requests:
               memory: 512Mi
