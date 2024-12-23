@@ -92,10 +92,8 @@ async def live_scorer(
 
     existing_student = crud_admin.get_student_by_email(db=db, email=req.student_email)
     if not existing_student:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Student registration not found",
-        )
+        new_student = schemas.Student(email=req.student_email)
+        crud_admin.add_student(db=db, student=new_student)
 
     result = calculate_score(
         term=req.term,

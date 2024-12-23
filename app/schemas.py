@@ -57,8 +57,8 @@ class QuestionSubmission(BaseModel):
 
 class Student(BaseModel):
     email: str
-    family_name: str
-    given_name: str
+    family_name: Optional[str] = None
+    given_name: Optional[str] = None
     lecture_section: Optional[int] = None
     lab_section: Optional[int] = None
 
