@@ -97,6 +97,7 @@ async def live_scorer(
 
     result = calculate_score(
         term=req.term,
+        week=req.week,
         assignment=req.assignment,
         question=req.question,
         responses=req.responses,

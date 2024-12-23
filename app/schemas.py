@@ -41,6 +41,7 @@ class ScoredSubmission(BaseModel):
 class ScoringSubmission(BaseModel):
     student_email: str
     term: str
+    week: str
     assignment: str
     question: str
     responses: dict

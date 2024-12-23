@@ -71,6 +71,7 @@ def load_module(path: str) -> Optional[ModuleType]:
 
 def calculate_score(
     term: str,
+    week: str,
     assignment: str,
     question: str,
     responses: dict,
@@ -111,11 +112,15 @@ def calculate_score(
     if not term_module:
         return f"Invalid term: {term}"
 
-    assignment_module = load_module(f".solutions.{term}.{assignment}")
+    week_module = load_module(f".solutions.{term}.{week}")
+    if not week_module:
+        return f"Invalid week: {week}"
+
+    assignment_module = load_module(f".solutions.{term}.{week}.{assignment}")
     if not assignment_module:
         return f"Invalid assignment: {assignment}"
 
-    question_module = load_module(f".solutions.{term}.{assignment}.{question}")
+    question_module = load_module(f".solutions.{term}.{week}.{assignment}.{question}")
     if not question_module:
         return f"Invalid question: {question}"
 
