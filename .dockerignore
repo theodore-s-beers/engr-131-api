@@ -5,5 +5,5 @@
 **/.env
 
 fly.toml
-secret.yml
+*secret.yml
 *.bin

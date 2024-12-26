@@ -5,5 +5,5 @@ __pycache__/
 .vscode/
 
 .env
-secret.yml
+*secret.yml
 *.bin
