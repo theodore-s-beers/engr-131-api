@@ -6,3 +6,4 @@
 
 fly.toml
 secret.yml
+*.bin
