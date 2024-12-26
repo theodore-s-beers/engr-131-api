@@ -6,4 +6,5 @@ __pycache__/
 
 .env
 *secret.yml
+*secrets.yml
 *.bin
