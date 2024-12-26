@@ -1,16 +1,17 @@
+from datetime import datetime
 from typing import Annotated, TypeAlias
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import crud_admin, crud_student, schemas
 from .auth import verify_admin, verify_student
 from .db import SessionLocal
 from .live_scorer import calculate_score
-from .question import valid_submission
 from .models import Token
-from datetime import datetime
+from .question import valid_submission
 
 app = FastAPI()
 
