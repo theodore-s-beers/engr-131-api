@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-if ! kubectl get pods -n fastapi &>/dev/null; then
+if ! kubectl get namespace fastapi &>/dev/null; then
 	echo "Error: Are you properly connected to the cluster?"
 	exit 1
 fi
