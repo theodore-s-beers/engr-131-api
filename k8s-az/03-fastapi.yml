@@ -25,11 +25,21 @@ spec:
                 secretKeyRef:
                   name: fastapi-secret
                   key: ADMIN_PASSWORD
+            - name: CLIENT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-secret
+                  key: CLIENT_PUBLIC_KEY
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: fastapi-secret
                   key: DATABASE_URL
+            - name: SERVER_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-secret
+                  key: SERVER_PRIVATE_KEY
             - name: STUDENT_PASSWORD
               valueFrom:
                 secretKeyRef:
