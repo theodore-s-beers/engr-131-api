@@ -1,8 +1,11 @@
+import base64
+import os
 from datetime import datetime
 from typing import Annotated, TypeAlias
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, UploadFile, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from nacl.public import Box, PrivateKey, PublicKey
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -219,6 +222,45 @@ async def upload_score(cred: Credentials, submission: schemas.FullSubmission):
     print(submission.scores)
 
     return "Score-upload request received"
+
+
+# TODO: Complete implementation
+@app.post("/validate-log-decryption")
+async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
+    """
+    Endpoint for validating the decryption of a log file.
+
+    Returns:
+        str: A message indicating that the log file was successfully decrypted.
+    """
+    verify_student(cred)
+
+    SERVER_PRIVATE_KEY_B64 = os.getenv("SERVER_PRIVATE_KEY")
+    CLIENT_PUBLIC_KEY_B64 = os.getenv("CLIENT_PUBLIC_KEY")
+
+    if not SERVER_PRIVATE_KEY_B64 or not CLIENT_PUBLIC_KEY_B64:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Server or client key not found",
+        )
+
+    SERVER_PRIVATE_KEY = PrivateKey(base64.b64decode(SERVER_PRIVATE_KEY_B64))
+    CLIENT_PUBLIC_KEY = PublicKey(base64.b64decode(CLIENT_PUBLIC_KEY_B64))
+    box = Box(SERVER_PRIVATE_KEY, CLIENT_PUBLIC_KEY)
+
+    try:
+        encrypted_data = await log_file.read()
+
+        decrypted_data = box.decrypt(encrypted_data)
+
+        print(len(decrypted_data.splitlines()))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to decrypt log file: {e}",
+        )
+
+    return "Log file successfully decrypted"
 
 
 # ----------------------
