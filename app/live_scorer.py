@@ -24,7 +24,7 @@ Dependencies:
 import importlib
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Optional
+from typing import Any, Optional
 
 
 @dataclass
@@ -125,20 +125,19 @@ def calculate_score(
         return f"Invalid question: {question}"
 
     try:
-        solutions: dict = question_module.solutions
-        max_points: float = question_module.total_points
+        solutions: dict[str, Any] = question_module.solutions
+        points: list[float] = question_module.total_points
     except AttributeError:
         return "Error fetching solution"
 
-    points_each: float = max_points / len(solutions)
+    max_points: float = sum(points)
     points_earned: float = 0.0
 
-    for k, v in solutions.items():
+    for i, (k, v) in enumerate(solutions.items()):
         if k not in responses:
-            # return "Incomplete submission"
-            continue
+            return "Incomplete submission"
 
         if responses[k] == v:
-            points_earned += points_each
+            points_earned += points[i]
 
     return Score(max_points=max_points, points_earned=points_earned)
