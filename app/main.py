@@ -146,11 +146,15 @@ async def live_scorer(
             detail=result,
         )
 
-    crud_student.add_scoring_submission(
-        db=db,
-        submission=req,
-        score=result,
-    )
+    # For the time being, allow this to fail silently
+    try:
+        crud_student.add_scoring_submission(
+            db=db,
+            submission=req,
+            score=result,
+        )
+    except HTTPException:
+        pass
 
     return result
 
