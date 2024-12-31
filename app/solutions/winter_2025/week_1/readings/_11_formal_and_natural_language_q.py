@@ -1,6 +1,6 @@
 from typing import Any
 
-total_points: list[float] = [
+total_points: float = [
     2.0,
     2.0,
     2.0,

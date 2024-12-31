@@ -1,6 +1,6 @@
 from typing import Any
 
-total_points: list[float] = [2.0, 2.0, 1.0, 1.0, 4.0, 4.0]
+total_points: float = [2.0, 2.0, 1.0, 1.0, 4.0, 4.0]
 
 solutions: dict[str, Any] = {
     "q1-1-Python-Operators": "Perform operations on one or more operands",
