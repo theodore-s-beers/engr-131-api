@@ -1,6 +1,6 @@
 import base64
+import datetime
 import os
-from datetime import datetime
 from typing import Annotated, TypeAlias
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, UploadFile, status
@@ -63,9 +63,7 @@ async def root(req: Request, jhub_user: str = Query(None)):
 
 @app.post("/live-scorer")
 async def live_scorer(
-    cred: Credentials,
-    req: schemas.ScoringSubmission,
-    db: Session = Depends(get_db),
+    cred: Credentials, req: schemas.ScoringSubmission, db: Session = Depends(get_db)
 ):
     """
     Endpoint for scoring a student's live submission.
@@ -135,9 +133,7 @@ async def login(cred: Credentials):
 
 @app.post("/submit-question")
 async def submit_question(
-    cred: Credentials,
-    req: schemas.QuestionSubmission,
-    db: Session = Depends(get_db),
+    cred: Credentials, req: schemas.QuestionSubmission, db: Session = Depends(get_db)
 ):
     """
     Endpoint for submitting question responses and scores.
@@ -150,7 +146,6 @@ async def submit_question(
     Returns:
         str: A message indicating successful submission to the database.
     """
-
     verify_student(cred)
 
     existing_student = crud_admin.get_student_by_email(db=db, email=req.student_email)
@@ -242,7 +237,9 @@ async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
 
 
 @app.get("/validate-token/{token_value}")
-def validate_token(token_value: str, db: Session = Depends(get_db)):
+async def validate_token(
+    cred: Credentials, token_value: str, db: Session = Depends(get_db)
+):
     """
     Validate if a token exists and is not expired.
 
@@ -256,19 +253,22 @@ def validate_token(token_value: str, db: Session = Depends(get_db)):
     Raises:
         HTTPException: If the token does not exist or is expired.
     """
-    # Query the database for the token
+    verify_student(cred)
+
     stmt = select(Token).where(Token.value == token_value)
     token = db.execute(stmt).scalar_one_or_none()
 
-    # Check if token exists
     if not token:
-        raise HTTPException(status_code=404, detail="Token not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Token not found"
+        )
 
-    # Check if token is expired
-    if token.expires < datetime.utcnow():
-        raise HTTPException(status_code=401, detail="Token has expired")
+    # TODO: Return 200 in this case, with a message indicating the token is expired
+    if token.expires < datetime.datetime.now(datetime.UTC):
+        raise HTTPException(
+            status_code=status.HTTP_418_IM_A_TEAPOT, detail="Token has expired"
+        )
 
-    # Return validation result if the token is valid
     return {"status": "valid", "expires_at": token.expires.isoformat()}
 
 
@@ -279,9 +279,7 @@ def validate_token(token_value: str, db: Session = Depends(get_db)):
 
 @app.post("/assignments", response_model=schemas.Assignment)
 async def add_assignment(
-    cred: Credentials,
-    assignment: schemas.Assignment,
-    db: Session = Depends(get_db),
+    cred: Credentials, assignment: schemas.Assignment, db: Session = Depends(get_db)
 ):
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
@@ -299,9 +297,7 @@ async def add_assignment(
 
 @app.post("/students", response_model=schemas.Student)
 async def add_student(
-    cred: Credentials,
-    student: schemas.Student,
-    db: Session = Depends(get_db),
+    cred: Credentials, student: schemas.Student, db: Session = Depends(get_db)
 ):
     """
     Endpoint for adding a new student to the database.
@@ -314,7 +310,6 @@ async def add_student(
     Returns:
         schemas.Student: The newly created student object.
     """
-
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
     existing_entry = crud_admin.get_student_by_email(db=db, email=student.email)
@@ -329,9 +324,7 @@ async def add_student(
 
 @app.post("/tokens", response_model=schemas.Token)
 async def create_token(
-    cred: Credentials,
-    token_req: schemas.TokenRequest,
-    db: Session = Depends(get_db),
+    cred: Credentials, token_req: schemas.TokenRequest, db: Session = Depends(get_db)
 ):
     verify_admin(cred)
 
@@ -345,15 +338,13 @@ async def create_token(
     return crud_admin.create_token(db=db, token_req=token_req)
 
 
-# To be implemented
+# TODO: Implement
 # @app.get("/assignment/{title}", response_model=schemas.Assignment)
 
 
 @app.get("/scoring/{email}", response_model=list[schemas.ScoredSubmission])
-def get_scoring_subs_by_email(
-    cred: Credentials,
-    email: str,
-    db: Session = Depends(get_db),
+async def get_scoring_subs_by_email(
+    cred: Credentials, email: str, db: Session = Depends(get_db)
 ):
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
@@ -362,10 +353,7 @@ def get_scoring_subs_by_email(
 
 @app.get("/students", response_model=list[schemas.Student])
 async def get_all_students(
-    cred: Credentials,
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db),
+    cred: Credentials, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ):
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
@@ -374,9 +362,7 @@ async def get_all_students(
 
 @app.get("/students/{email}", response_model=schemas.Student)
 async def get_student_by_email(
-    cred: Credentials,
-    email: str,
-    db: Session = Depends(get_db),
+    cred: Credentials, email: str, db: Session = Depends(get_db)
 ):
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
@@ -416,9 +402,7 @@ async def update_student(
 
 @app.delete("/students/{email}", response_model=schemas.Student)
 async def delete_student_by_email(
-    cred: Credentials,
-    email: str,
-    db: Session = Depends(get_db),
+    cred: Credentials, email: str, db: Session = Depends(get_db)
 ):
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
