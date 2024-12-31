@@ -75,7 +75,7 @@ def calculate_score(
     assignment: str,
     question: str,
     responses: dict,
-) -> Score | str:
+) -> dict[str, tuple[float, float]] | str:
     """
     Calculates the score for a given question based on the provided responses.
 
@@ -130,14 +130,16 @@ def calculate_score(
     except AttributeError:
         return "Error fetching solution"
 
-    max_points: float = sum(points)
-    points_earned: float = 0.0
+    scores = {}
 
     for i, (k, v) in enumerate(solutions.items()):
         if k not in responses:
-            return "Incomplete submission"
+            # return "Incomplete submission"
+            pass  # TODO: Revisit this logic
 
         if responses[k] == v:
-            points_earned += points[i]
+            scores[k] = (points[i], points[i])
+        else:
+            scores[k] = (0, points[i])
 
-    return Score(max_points=max_points, points_earned=points_earned)
+    return scores
