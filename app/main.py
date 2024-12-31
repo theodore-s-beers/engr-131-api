@@ -36,9 +36,9 @@ def get_db():
         db.close()
 
 
-# ----------------------
-# Student-accessible endpoints
-# ----------------------
+# -----------------------------
+# Globally accessible endpoints
+# -----------------------------
 
 
 @app.get("/")
@@ -56,56 +56,9 @@ async def root(req: Request, jhub_user: str = Query(None)):
     return response
 
 
-@app.post("/login")
-async def login(cred: Credentials):
-    """
-    Endpoint for logging in as an admin or student.
-
-    Args:
-        cred (Credentials): Basic authentication credentials.
-
-    Returns:
-        str: A message indicating whether the credentials are valid for an admin or student.
-    """
-    try:
-        verify_admin(cred)  # Raises HTTPException (401) on failure
-        return "Admin credentials verified"
-    except HTTPException:
-        pass
-
-    verify_student(cred)  # Raises HTTPException (401) on failure
-    return "Student credentials verified"
-
-
-@app.get("/validate-token/{token_value}")
-def validate_token(token_value: str, db: Session = Depends(get_db)):
-    """
-    Validate if a token exists and is not expired.
-
-    Args:
-        token_value (str): The value of the token to validate.
-        db (Session): Database session dependency.
-
-    Returns:
-        dict: Validation result.
-
-    Raises:
-        HTTPException: If the token does not exist or is expired.
-    """
-    # Query the database for the token
-    stmt = select(Token).where(Token.value == token_value)
-    token = db.execute(stmt).scalar_one_or_none()
-
-    # Check if token exists
-    if not token:
-        raise HTTPException(status_code=404, detail="Token not found")
-
-    # Check if token is expired
-    if token.expires < datetime.utcnow():
-        raise HTTPException(status_code=401, detail="Token has expired")
-
-    # Return validation result if the token is valid
-    return {"status": "valid", "expires_at": token.expires.isoformat()}
+# ----------------------------
+# Student-accessible endpoints
+# ----------------------------
 
 
 @app.post("/live-scorer")
@@ -157,6 +110,27 @@ async def live_scorer(
         pass
 
     return result
+
+
+@app.post("/login")
+async def login(cred: Credentials):
+    """
+    Endpoint for logging in as an admin or student.
+
+    Args:
+        cred (Credentials): Basic authentication credentials.
+
+    Returns:
+        str: A message indicating whether the credentials are valid for an admin or student.
+    """
+    try:
+        verify_admin(cred)  # Raises HTTPException (401) on failure
+        return "Admin credentials verified"
+    except HTTPException:
+        pass
+
+    verify_student(cred)  # Raises HTTPException (401) on failure
+    return "Student credentials verified"
 
 
 @app.post("/submit-question")
@@ -265,6 +239,37 @@ async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
         )
 
     return "Log file successfully decrypted"
+
+
+@app.get("/validate-token/{token_value}")
+def validate_token(token_value: str, db: Session = Depends(get_db)):
+    """
+    Validate if a token exists and is not expired.
+
+    Args:
+        token_value (str): The value of the token to validate.
+        db (Session): Database session dependency.
+
+    Returns:
+        dict: Validation result.
+
+    Raises:
+        HTTPException: If the token does not exist or is expired.
+    """
+    # Query the database for the token
+    stmt = select(Token).where(Token.value == token_value)
+    token = db.execute(stmt).scalar_one_or_none()
+
+    # Check if token exists
+    if not token:
+        raise HTTPException(status_code=404, detail="Token not found")
+
+    # Check if token is expired
+    if token.expires < datetime.utcnow():
+        raise HTTPException(status_code=401, detail="Token has expired")
+
+    # Return validation result if the token is valid
+    return {"status": "valid", "expires_at": token.expires.isoformat()}
 
 
 # ----------------------
