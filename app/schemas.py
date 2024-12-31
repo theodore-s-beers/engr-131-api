@@ -29,6 +29,15 @@ class FullSubmission(BaseModel):
     scores: list[QuestionScoreFinal]
 
 
+class QuestionSubmission(BaseModel):
+    student_email: str
+    term: str
+    assignment: str
+    question: str
+    responses: dict
+    score: Score
+
+
 class ScoredSubmission(BaseModel):
     student_email: str
     assignment: str
@@ -47,15 +56,6 @@ class ScoringSubmission(BaseModel):
     responses: dict
 
 
-class QuestionSubmission(BaseModel):
-    student_email: str
-    term: str
-    assignment: str
-    question: str
-    responses: dict
-    score: Score
-
-
 class Student(BaseModel):
     email: str
     family_name: Optional[str] = None
@@ -64,12 +64,12 @@ class Student(BaseModel):
     lab_section: Optional[int] = None
 
 
-class TokenRequest(BaseModel):
-    value: str
-    duration: int = 120
-
-
 class Token(BaseModel):
     value: str
     created: datetime
     expires: datetime
+
+
+class TokenRequest(BaseModel):
+    value: str
+    duration: int = 120

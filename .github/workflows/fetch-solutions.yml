@@ -30,6 +30,8 @@ jobs:
           source .venv/bin/activate
           uv sync
           python move_solutions.py
+          fd -e py . 'app/solutions/winter_2025' \
+          -x sd 'total_points: float' 'total_points: list[float]'
           ruff format
 
       - name: Commit and push changes
