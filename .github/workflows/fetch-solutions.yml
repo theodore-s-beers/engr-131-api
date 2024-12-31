@@ -25,7 +25,7 @@ jobs:
 
       - name: Set up venv; run script; format files
         run: |
-          export PATH=$PATH:~/.local/bin
+          export PATH=$PATH:~/.local/bin:~/.cargo/bin
           uv venv
           source .venv/bin/activate
           uv sync
