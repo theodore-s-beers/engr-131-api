@@ -287,7 +287,9 @@ async def add_assignment(
         db=db, title=assignment.title
     )
     if existing_assignment:
-        crud_admin.update_assignment(db=db, title=assignment.title, assignment=assignment)
+        crud_admin.update_assignment(
+            db=db, title=assignment.title, assignment=assignment
+        )
 
     return crud_admin.add_assignment(db=db, assignment=assignment)
 
@@ -404,10 +406,12 @@ async def update_assignment(
     assignment: schemas.Assignment,
     db: Session = Depends(get_db),
 ):
-    verify_admin(cred) # Raises HTTPException (401) on failure
-    
-    db_assignment = crud_admin.update_assignment(db=db, title=title, assignment=assignment)
-    
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
+    db_assignment = crud_admin.update_assignment(
+        db=db, title=title, assignment=assignment
+    )
+
     return db_assignment
 
 

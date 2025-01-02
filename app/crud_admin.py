@@ -289,7 +289,9 @@ def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
     return db.execute(stmt).scalar_one_or_none()
 
 
-def update_assignment(db: Session, title: str, assignment: schemas.Assignment) -> models.Assignment:
+def update_assignment(
+    db: Session, title: str, assignment: schemas.Assignment
+) -> models.Assignment:
     """
     Add a new assignment to the database.
 
@@ -300,19 +302,19 @@ def update_assignment(db: Session, title: str, assignment: schemas.Assignment) -
     Returns:
         models.Assignment: The newly created assignment object.
     """
-    
+
     stmt = select(models.Assignment).where(models.Assignment.title == title)
     db_assignment = db.execute(stmt).scalar_one_or_none()
-    
+
     if not db_assignment:
         return None
-    
+
     db_assignment.title = assignment.title
     db_assignment.description = assignment.description
     db_assignment.max_score = assignment.max_score
     db_assignment.due_date = assignment.due_date
-    
+
     db.commit()
     db.refresh(db_assignment)
-    
+
     return db_assignment
