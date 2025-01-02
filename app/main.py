@@ -299,11 +299,16 @@ async def add_assignment(
     existing_assignment = crud_admin.get_assignment_by_title(
         db=db, title=assignment.title
     )
+
     if existing_assignment:
-        crud_admin.update_assignment(
+        # Update existing assignment
+        updated_assignment = crud_admin.update_assignment(
             db=db, title=assignment.title, assignment=assignment
         )
+        if updated_assignment:
+            return updated_assignment
 
+    # Create a new assignment
     return crud_admin.add_assignment(db=db, assignment=assignment)
 
 
