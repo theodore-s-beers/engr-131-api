@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from . import crud_admin, crud_student, schemas
 from .auth import verify_admin, verify_student
 from .db import SessionLocal
-from .live_scorer import calculate_score
+from .live_scorer import Score, calculate_score
 from .models import Token
 from .question import valid_submission
 
@@ -98,11 +98,16 @@ async def live_scorer(
         )
 
     # For the time being, allow this to fail silently
+    # TODO: Revisit, fix logic...
     try:
+        result_max = sum([score[1] for score in result.values()])
+        result_earned = sum([score[0] for score in result.values()])
+        score_for_db = Score(max_points=result_max, points_earned=result_earned)
+
         crud_student.add_scoring_submission(
             db=db,
             submission=req,
-            score=result,
+            score=score_for_db,
         )
     except HTTPException:
         pass
