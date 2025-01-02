@@ -16,7 +16,8 @@ from .live_scorer import Score, calculate_score
 from .models import Token
 from .question import valid_submission
 
-# from pykubegrader.log_parser.parse import LogParser
+from pykubegrader.log_parser.parse import LogParser
+from pykubegrader.validate import read_logfile
 
 app = FastAPI()
 
@@ -184,13 +185,12 @@ async def submit_question(
 
     return "Question responses and score saved to database"
 
-
-# TODO: Not working yet
+#TODO: Not working yet
 @app.post("/upload-score")
 async def upload_score(
     cred: Credentials,
     submission: schemas.FullSubmission,
-    log_file: UploadFile = File(...),
+    log_file: UploadFile = File(...)
 ):
     """
     Endpoint for uploading a student's score along with a log file.
@@ -204,29 +204,32 @@ async def upload_score(
         str: A message indicating that the file and submission were received.
     """
     verify_student(cred)  # Verify the student's credentials
+    
+    box = get_keybox()
+    
+    out, b = read_logfile(
+    "/home/jca92/ENGR131_W25_dev/testing/output-testing/.output_reduced.log"
+        )
+    
+    # print(out)
 
-    # Save the uploaded log file to disk (optional)
-    log_file_path = f"uploaded_{log_file.filename}"
-    with open(log_file_path, "wb") as f:
-        f.write(await log_file.read())
+    # # Save the uploaded log file to disk (optional)
+    # log_file_path = f"uploaded_{log_file.filename}"
+    
+    
 
-    print(f"Received file: {log_file.filename}")
-    print(submission.scores)
+    # print(f"Received file: {log_file.filename}")
+    # print(submission.scores)
+    #{"message": f"File {log_file.filename} received and processed."}
+    return {"message": f"File {out} received and processed."}
 
-    return {"message": f"File {log_file.filename} received and processed."}
-
-
-# TODO: Complete implementation
-@app.post("/validate-log-decryption")
-async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
+def get_keybox():
     """
-    Endpoint for validating the decryption of a log file.
+    Generate a public/private keypair for use with NaCl.
 
     Returns:
-        str: A message indicating that the log file was successfully decrypted.
+        tuple[PublicKey, PrivateKey]: A tuple containing the public and private keys.
     """
-    verify_student(cred)
-
     SERVER_PRIVATE_KEY_B64 = os.getenv("SERVER_PRIVATE_KEY")
     CLIENT_PUBLIC_KEY_B64 = os.getenv("CLIENT_PUBLIC_KEY")
 
@@ -239,6 +242,21 @@ async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
     SERVER_PRIVATE_KEY = PrivateKey(base64.b64decode(SERVER_PRIVATE_KEY_B64))
     CLIENT_PUBLIC_KEY = PublicKey(base64.b64decode(CLIENT_PUBLIC_KEY_B64))
     box = Box(SERVER_PRIVATE_KEY, CLIENT_PUBLIC_KEY)
+    
+    return box
+
+# TODO: Complete implementation
+@app.post("/validate-log-decryption")
+async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
+    """
+    Endpoint for validating the decryption of a log file.
+
+    Returns:
+        str: A message indicating that the log file was successfully decrypted.
+    """
+    verify_student(cred)
+
+    box = get_keybox()
 
     try:
         encrypted_data = await log_file.read()
@@ -295,11 +313,12 @@ async def validate_token(
 # Admin-only endpoints
 # ----------------------
 
-
 @app.get("/assignments", response_model=list[schemas.Assignment])
-async def get_all_assignments(cred: Credentials, db: Session = Depends(get_db)):
+async def get_all_assignments(
+    cred: Credentials, db: Session = Depends(get_db)
+):
     verify_admin(cred)
-
+    
     return crud_admin.get_assignments(db=db)
 
 
