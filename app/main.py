@@ -287,10 +287,7 @@ async def add_assignment(
         db=db, title=assignment.title
     )
     if existing_assignment:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Assignment title already in use",
-        )
+        crud_admin.update_assignment(db=db, title=assignment.title, assignment=assignment)
 
     return crud_admin.add_assignment(db=db, assignment=assignment)
 
@@ -398,6 +395,20 @@ async def update_student(
         )
 
     return db_student
+
+
+@app.put("/assignments/{title}", response_model=schemas.Assignment)
+async def update_assignment(
+    cred: Credentials,
+    title: str,
+    assignment: schemas.Assignment,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred) # Raises HTTPException (401) on failure
+    
+    db_assignment = crud_admin.update_assignment(db=db, title=title, assignment=assignment)
+    
+    return db_assignment
 
 
 @app.delete("/students/{email}", response_model=schemas.Student)
