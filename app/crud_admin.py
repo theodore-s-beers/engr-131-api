@@ -213,6 +213,19 @@ def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignme
     stmt = select(models.Assignment).where(models.Assignment.title == title)
     return db.execute(stmt).scalar_one_or_none()
 
+def get_assignments(db: Session) -> Sequence[models.Assignment]:
+    """
+    Retrieve all assignments from the database.
+
+    Args:
+        db (Session): The database session to use for the query.
+
+    Returns:
+        Sequence[models.Assignment]: A sequence of Assignment objects.
+    """
+    stmt = select(models.Assignment)
+    return db.execute(stmt).scalars().all()
+
 
 #
 # Scoring submissions table

@@ -276,6 +276,14 @@ async def validate_token(
 # Admin-only endpoints
 # ----------------------
 
+@app.get("/assignments", response_model=list[schemas.Assignment])
+async def get_all_assignments(
+    cred: Credentials, db: Session = Depends(get_db)
+):
+    verify_admin(cred)
+    
+    return crud_admin.get_assignments(db=db)
+
 
 @app.post("/assignments", response_model=schemas.Assignment)
 async def add_assignment(
