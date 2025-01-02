@@ -69,6 +69,12 @@ def copy_files(solutions: dict[Path, SolutionDetails]) -> None:
         module_dir = BASE_PATH / solution.week / solution.category
         module_dir.mkdir(parents=True, exist_ok=True)
 
+        # Ensure __init__.py exists in each directory
+        for directory in [BASE_PATH, BASE_PATH / solution.week, module_dir]:
+            init_file = directory / "__init__.py"
+            if not init_file.exists():
+                init_file.touch()
+
         shutil.copy(path, module_dir / path.name)
 
 
