@@ -69,8 +69,8 @@ class QuestionSubmission(Base):
         server_default=func.now(),
     )
     responses: Mapped[dict]
-    max_points: Mapped[int]
-    points_earned: Mapped[int]
+    max_points: Mapped[float]
+    points_earned: Mapped[float]
 
 
 class ScoringSubmission(Base):
@@ -85,8 +85,8 @@ class ScoringSubmission(Base):
         DateTime(timezone=True),
         server_default=func.now(),
     )
-    max_points: Mapped[int]
-    points_earned: Mapped[int]
+    max_points: Mapped[float]
+    points_earned: Mapped[float]
 
 
 #
