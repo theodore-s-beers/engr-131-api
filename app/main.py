@@ -184,12 +184,13 @@ async def submit_question(
 
     return "Question responses and score saved to database"
 
-#TODO: Not working yet
+
+# TODO: Not working yet
 @app.post("/upload-score")
 async def upload_score(
     cred: Credentials,
     submission: schemas.FullSubmission,
-    log_file: UploadFile = File(...)
+    log_file: UploadFile = File(...),
 ):
     """
     Endpoint for uploading a student's score along with a log file.
@@ -294,12 +295,11 @@ async def validate_token(
 # Admin-only endpoints
 # ----------------------
 
+
 @app.get("/assignments", response_model=list[schemas.Assignment])
-async def get_all_assignments(
-    cred: Credentials, db: Session = Depends(get_db)
-):
+async def get_all_assignments(cred: Credentials, db: Session = Depends(get_db)):
     verify_admin(cred)
-    
+
     return crud_admin.get_assignments(db=db)
 
 
