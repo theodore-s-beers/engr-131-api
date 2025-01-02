@@ -35,7 +35,7 @@ class Assignment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(index=True, unique=True)
     description: Mapped[Optional[str]]
-    max_score: Mapped[int]
+    max_score: Mapped[float]
     due_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
@@ -51,9 +51,9 @@ class AssignmentSubmission(Base):
         server_default=func.now(),
     )
 
-    raw_score: Mapped[int]
-    late_assignment_percentage: Mapped[int]
-    final_score: Mapped[int]
+    raw_score: Mapped[float]
+    late_assignment_percentage: Mapped[float]
+    final_score: Mapped[float]
 
 
 class QuestionSubmission(Base):
