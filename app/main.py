@@ -16,6 +16,8 @@ from .live_scorer import Score, calculate_score
 from .models import Token
 from .question import valid_submission
 
+# from pykubegrader.log_parser.parse import LogParser
+
 app = FastAPI()
 
 security = HTTPBasic()
@@ -182,24 +184,34 @@ async def submit_question(
 
     return "Question responses and score saved to database"
 
-
 @app.post("/upload-score")
-async def upload_score(cred: Credentials, submission: schemas.FullSubmission):
+async def upload_score(
+    cred: Credentials,
+    submission: schemas.FullSubmission,
+    log_file: UploadFile = File(...)
+):
     """
-    Endpoint for uploading a student's score.
+    Endpoint for uploading a student's score along with a log file.
 
     Args:
         cred (Credentials): Basic authentication credentials for the student.
         submission (schemas.FullSubmission): The full submission details.
+        log_file (UploadFile): The log file being uploaded.
 
     Returns:
-        str: A message indicating that the score upload request was received.
+        str: A message indicating that the file and submission were received.
     """
-    verify_student(cred)
+    verify_student(cred)  # Verify the student's credentials
 
+    # Save the uploaded log file to disk (optional)
+    log_file_path = f"uploaded_{log_file.filename}"
+    with open(log_file_path, "wb") as f:
+        f.write(await log_file.read())
+
+    print(f"Received file: {log_file.filename}")
     print(submission.scores)
 
-    return "Score-upload request received"
+    return {"message": f"File {log_file.filename} received and processed."}
 
 
 # TODO: Complete implementation
