@@ -15,11 +15,14 @@ jobs:
       - name: Check out repository with submodules
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          persist-credentials: true
+          submodules: recursive
 
       - name: Update submodule to latest
         run: |
           git submodule update --init --recursive
+          git submodule foreach git fetch --all
+          git submodule foreach 'git checkout main || true'
           git submodule update --remote --recursive
           git status
 
@@ -37,8 +40,11 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
+          if [ -n "$(git submodule status | grep -E '^[-+]|^ [^-]')" ]; then
+            git commit -m "Update submodule to latest"
+          fi
           if ! git diff-index --quiet HEAD; then
-            git commit -m "Update submodule and move solution files"
+            git commit -m "Move solution files and update submodule"
             git push
           else
             echo "No changes to commit"
