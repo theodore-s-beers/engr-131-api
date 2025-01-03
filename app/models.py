@@ -53,10 +53,12 @@ class AssignmentSubmission(Base):
         DateTime(timezone=True),
         server_default=func.now(),
     )
-    raw_score: Mapped[float]
-    score_modifier:
+    student_seed: Mapped[int]
+    due_date: Mapped[datetime]
+    raw_score: Mapped[float]    
     late_assignment_percentage: Mapped[float]
-    final_score: Mapped[float]
+    submitted_score: Mapped[float]
+    current_max_score: Mapped[float]
 
 
 class QuestionSubmission(Base):

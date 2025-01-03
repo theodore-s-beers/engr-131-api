@@ -126,6 +126,63 @@ def add_scoring_submission(
     return db_submission
 
 
+def get_best_score(
+    db: Session, student_email: str, assignment: str
+) -> Optional[models.AssignmentSubmission]:
+    """
+    Retrieve the best score for a student on a specific assignment.
+
+    Args:
+        db (Session): The database session to use for the query.
+        student_email (str): The email of the student.
+        assignment (str): The title of the assignment.
+
+    Returns:
+        Optional[models.AssignmentSubmission]: The best assignment submission for the student,
+        or None if no submission exists.
+    """
+    # Query to get the best score (highest `submitted_score`) for the given student and assignment
+    stmt = (
+        select(models.AssignmentSubmission)
+        .where(
+            models.AssignmentSubmission.student_email == student_email,
+            models.AssignmentSubmission.assignment == assignment,
+        )
+        .order_by(models.AssignmentSubmission.submitted_score.desc())
+        .limit(1)  # Limit to 1 to explicitly fetch the best
+    )
+
+    # Execute the query and return the first result
+    result = db.execute(stmt).scalars().first()
+    return result
+
+
+def add_submitted_assignment_score(
+    db: Session,
+    submission: schemas.AssignmentSubmission):
+    
+    db_submission = models.AssignmentSubmission(
+        student_email=submission.student_email,
+        assignment=submission.assignment,
+        week_number=submission.week_number,
+        assignment_type=submission.assignment_type,
+        timestamp=submission.timestamp,
+        student_seed=submission.student_seed,
+        due_date=submission.due_date,
+        raw_score=submission.raw_score,
+        late_assignment_percentage=submission.late_assignment_percentage,
+        submitted_score=submission.submitted_score,
+        current_max_score=submission.current_max_score
+    )
+    
+    db.add(db_submission)
+    
+    db.commit()
+    
+    db.refresh(db_submission)
+    
+    return db_submission
+
 def get_assignments_by_week_and_type(
     db: Session, week_number: int, assignment_type: str
 ) -> Optional[models.Assignment]:

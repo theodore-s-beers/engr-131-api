@@ -284,23 +284,65 @@ async def score_assignment(
     for assignment in assignments_graded:
         total_score += results["assignment_information"][assignment]["total_score"]
 
-    # Need to get assignment information for total points and due date.
+    student_email = results["student_information"]["username"]
 
-    # Need to calculate scoring based on function.
+    modified_grade = total_score * grade_modifier / 100
 
-    # need to return a nice string to print.
+    # checks the student database for their best score, and returns their current best score.
+    current_best = crud_student.get_best_score(
+        db=db, student_email=student_email, assignment=assignment_title
+    )
 
-    # print(out)
+    if current_best is None or modified_grade > current_best:
+        current_best = modified_grade
 
-    # # Save the uploaded log file to disk (optional)
-    # log_file_path = f"uploaded_{log_file.filename}"
+    crud_student.add_submitted_assignment_score(
+        db=db,
+        submission=schemas.AssignmentSubmission(
+            student_email=student_email,
+            assignment=assignment_title,
+            week_number=week_number,
+            assignment_type=assignment_type,
+            timestamp=submission_time,
+            student_seed=results["student_information"]["student_id"],
+            due_date=due_date_db,
+            raw_score=total_score,
+            late_assignment_percentage=grade_modifier,
+            submitted_score=modified_grade,
+            current_max_score=current_best,
+        ),
+    )
 
-    # print(f"Received file: {log_file.filename}")
-    # print(submission.scores)
-    # {"message": f"File {log_file.filename} received and processed."}
     return {
         "message": f"{total_score} and {time_delta} File {results} received and processed."
     }
+
+
+# def add_submitted_assignment_score(
+#     db: Session, submission: schemas.AssignmentSubmission
+# ):
+
+#     db_submission = models.AssignmentSubmission(
+#         student_email=submission.student_email,
+#         assignment=submission.assignment,
+#         week_number=submission.week_number,
+#         assignment_type=submission.assignment_type,
+#         timestamp=submission.timestamp,
+#         student_seed=submission.student_seed,
+#         due_date=submission.due_date,
+#         raw_score=submission.raw_score,
+#         late_assignment_percentage=submission.late_assignment_percentage,
+#         submitted_score=submission.submitted_score,
+#         current_max_score=submission.current_max_score,
+#     )
+
+#     db.add(db_submission)
+
+#     db.commit()
+
+#     db.refresh(db_submission)
+
+#     return db_submission
 
 
 def get_keybox():

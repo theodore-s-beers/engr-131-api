@@ -75,3 +75,17 @@ class Token(BaseModel):
 class TokenRequest(BaseModel):
     value: str
     duration: int = 120
+
+
+class AssignmentSubmission(BaseModel):
+    student_email: str
+    assignment: str
+    week_number: Optional[int]
+    assignment_type: Optional[str]
+    timestamp: datetime
+    student_seed: int
+    due_date: datetime
+    raw_score: float
+    late_assignment_percentage: float
+    submitted_score: float
+    current_max_score: float
