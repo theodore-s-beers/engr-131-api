@@ -120,16 +120,16 @@ def add_scoring_submission(
     return db_submission
 
 
-def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignment]:
-    """
-    Retrieve an assignment from the database by its title.
+# def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignment]:
+#     """
+#     Retrieve an assignment from the database by its title.
 
-    Args:
-        db (Session): The database session to use for the query.
-        title (str): The title of the assignment to retrieve.
+#     Args:
+#         db (Session): The database session to use for the query.
+#         title (str): The title of the assignment to retrieve.
 
-    Returns:
-        Optional[models.Assignment]: The assignment object if found, otherwise None.
-    """
-    stmt = select(models.Assignment).where(models.Assignment.title == title)
-    return db.execute(stmt).scalar_one_or_none()
+#     Returns:
+#         Optional[models.Assignment]: The assignment object if found, otherwise None.
+#     """
+#     stmt = select(models.Assignment).where(models.Assignment.title == title)
+#     return db.execute(stmt).scalar_one_or_none()

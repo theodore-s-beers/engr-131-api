@@ -70,23 +70,23 @@ async def root(req: Request, jhub_user: str = Query(None)):
 # Student-accessible endpoints
 # ----------------------------
 
-@app.get("/get-assignment", response_model=list[schemas.Assignment])
-async def get_assignments(
-    cred: Credentials,
-    title: str = Query(None),  # Add title as an optional query parameter
-    db: Session = Depends(get_db),
-):
-    verify_student(cred)
+# @app.get("/get-assignment", response_model=list[schemas.Assignment])
+# async def get_assignments(
+#     cred: Credentials,
+#     title: str = Query(None),  # Add title as an optional query parameter
+#     db: Session = Depends(get_db),
+# ):
+#     verify_student(cred)
     
-    if title:
-        db_assignment = crud_admin.get_assignment_by_title(db=db, title=title)
-        if not db_assignment:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Assignment not found",
-            )
+#     if title:
+#         db_assignment = crud_admin.get_assignment_by_title(db=db, title=title)
+#         if not db_assignment:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail="Assignment not found",
+#             )
 
-        return [db_assignment]
+#         return [db_assignment]
 
 
 @app.post("/live-scorer")
