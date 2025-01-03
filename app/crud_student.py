@@ -25,15 +25,14 @@ Dependencies:
     - live_scorer.Score for representing score-related data.
 """
 
-from fastapi import HTTPException, status
-from sqlalchemy import select, func
-from sqlalchemy.orm import Session
-import numpy as np
-import dateutil
-
-from datetime import datetime
+import datetime
 from typing import Optional
 
+import numpy as np
+from dateutil import parser as date_parser
+from fastapi import HTTPException, status
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 from . import models, schemas
 from .live_scorer import Score
@@ -149,7 +148,7 @@ def get_assignments_by_week_and_type(
 
 def get_max_score_and_due_date_by_week_and_type(
     db: Session, week_number: int, assignment_type: str
-) -> tuple[Optional[float], Optional[datetime]]:
+) -> tuple[Optional[float], Optional[datetime.datetime]]:
     """
     Retrieve the maximum score and latest due date for assignments based on week number and type.
 
@@ -168,11 +167,13 @@ def get_max_score_and_due_date_by_week_and_type(
         models.Assignment.week_number == week_number,
         models.Assignment.assignment_type == assignment_type,
     )
-    result = db.execute(stmt).one_or_none()
+    result = db.execute(stmt).scalar_one_or_none()
     return result if result else (None, None)
 
 
-def calculate_time_delta_in_seconds(submission_time: str, due_date: str) -> int:
+def calculate_time_delta_in_seconds(
+    submission_time: str | datetime.datetime, due_date: str | datetime.datetime
+) -> int:
     """
     Calculate the time delta between two timestamps in seconds.
 
@@ -186,15 +187,18 @@ def calculate_time_delta_in_seconds(submission_time: str, due_date: str) -> int:
 
     # Parse the timestamps into datetime objects with the timezone
     # submission_time = datetime.strptime(submission_time, "%Y-%m-%d %H:%M:%S%z")
-    if type(submission_time) is str:
-        submission_time = dateutil.parser.parse(submission_time)
-    
+    submission_datetime = (
+        date_parser.parse(submission_time)
+        if isinstance(submission_time, str)
+        else submission_time
+    )
     # due_date = datetime.strptime(due_date, "%Y-%m-%d %H:%M:%S%z")
-    if type(due_date) is str:
-        due_date = dateutil.parser.parse(due_date)
+    due_datetime = (
+        date_parser.parse(due_date) if isinstance(due_date, str) else due_date
+    )
 
     # Calculate the time delta
-    time_delta = submission_time - due_date
+    time_delta = submission_datetime - due_datetime
 
     # Return the time delta in seconds
     return int(time_delta.total_seconds())
