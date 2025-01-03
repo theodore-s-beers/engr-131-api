@@ -28,7 +28,6 @@ Dependencies:
 from fastapi import HTTPException, status
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
-import pzyt
 import numpy as np
 
 from datetime import datetime
@@ -183,16 +182,10 @@ def calculate_time_delta_in_seconds(timestamp1_str: str, timestamp2_str: str) ->
     Returns:
         int: The time delta between the two timestamps in seconds.
     """
-    # Define the EST timezone
-    est = pytz.timezone("America/New_York")
 
     # Parse the timestamps into datetime objects with the timezone
     timestamp1 = datetime.strptime(timestamp1_str, "%Y-%m-%d %H:%M:%S %Z")
     timestamp2 = datetime.strptime(timestamp2_str, "%Y-%m-%d %H:%M:%S %Z")
-
-    # Assign the EST timezone to the parsed timestamps
-    timestamp1 = est.localize(timestamp1)
-    timestamp2 = est.localize(timestamp2)
 
     # Calculate the time delta
     time_delta = timestamp2 - timestamp1
