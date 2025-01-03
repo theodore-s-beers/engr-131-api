@@ -184,8 +184,8 @@ def calculate_time_delta_in_seconds(submission_time: str, due_date: str) -> int:
     """
 
     # Parse the timestamps into datetime objects with the timezone
-    submission_time = datetime.strptime(submission_time, "%Y-%m-%d %H:%M:%S %Z")
-    due_date = datetime.strptime(due_date, "%Y-%m-%d %H:%M:%S %Z")
+    submission_time = datetime.strptime(submission_time, "%Y-%m-%d %H:%M:%S%z")
+    due_date = datetime.strptime(due_date, "%Y-%m-%d %H:%M:%S%z")
 
     # Calculate the time delta
     time_delta = submission_time - due_date
