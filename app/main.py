@@ -194,8 +194,8 @@ async def submit_question(
 
 
 # TODO: Not working yet
-@app.post("/upload-score")
-async def upload_score(
+@app.post("/score-assignment")
+async def score_assignment(
     cred: Credentials,
     log_file: UploadFile = File(...),
     assignment_title: str,
