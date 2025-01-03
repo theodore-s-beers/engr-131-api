@@ -47,13 +47,14 @@ class AssignmentSubmission(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     student_email: Mapped[str] = mapped_column(ForeignKey("students.email"))
     assignment: Mapped[str] = mapped_column(ForeignKey("assignments.title"))
-
+    week_number: Mapped[Optional[int]]
+    assignment_type: Mapped[Optional[str]]
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
     )
-
     raw_score: Mapped[float]
+    score_modifier:
     late_assignment_percentage: Mapped[float]
     final_score: Mapped[float]
 

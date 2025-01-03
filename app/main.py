@@ -282,9 +282,7 @@ async def score_assignment(
     assignments_graded = results["assignment_information"].keys()
     total_score = 0
     for assignment in assignments_graded:
-        total_score = results["assignment_information"][assignment]["total_score"]
-        
-    
+        total_score += results["assignment_information"][assignment]["total_score"]
 
     # Need to get assignment information for total points and due date.
 
