@@ -33,6 +33,7 @@ from dateutil import parser as date_parser
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+from datetime import timezone
 
 from . import models, schemas
 from .live_scorer import Score
@@ -196,6 +197,12 @@ def calculate_time_delta_in_seconds(
     due_datetime = (
         date_parser.parse(due_date) if isinstance(due_date, str) else due_date
     )
+
+    # Ensure both timestamps are timezone-aware (default to UTC if timezone is missing)
+    if submission_datetime.tzinfo is None:
+        submission_datetime = submission_datetime.replace(tzinfo=timezone.utc)
+    if due_datetime.tzinfo is None:
+        due_datetime = due_datetime.replace(tzinfo=timezone.utc)
 
     # Calculate the time delta
     time_delta = submission_datetime - due_datetime
