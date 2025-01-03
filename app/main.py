@@ -218,6 +218,7 @@ async def submit_question(
 async def score_assignment(
     cred: Credentials,
     assignment_title: str,
+    db: Session = Depends(get_db),
     log_file: UploadFile = File(...),
 ):
     """
@@ -249,6 +250,11 @@ async def score_assignment(
     parser.calculate_total_scores()
     results = parser.get_results()
     
+    week_number = results["week_num"]
+    assignment_type = results['assignment_type']
+    
+    db_response = crud_student.get_assignments_by_week_and_type(db=db, week_number=week_number, assignment_type=assignment_type)
+    
     # Need to get assignment information for total points and due date.
     
     # Need to calculate scoring based on function.
@@ -263,7 +269,7 @@ async def score_assignment(
     # print(f"Received file: {log_file.filename}")
     # print(submission.scores)
     # {"message": f"File {log_file.filename} received and processed."}
-    return {"message": f"File {results} received and processed."}
+    return {"message": f"{db_response} File {results} received and processed."}
 
 
 def get_keybox():
