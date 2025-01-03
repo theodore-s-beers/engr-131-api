@@ -258,6 +258,8 @@ async def score_assignment(
             db=db, week_number=week_number, assignment_type=assignment_type
         )
     )
+    
+    time_delta = crud_student.calculate_time_delta_in_seconds(
 
     # Need to get assignment information for total points and due date.
 

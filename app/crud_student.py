@@ -171,7 +171,7 @@ def get_max_score_and_due_date_by_week_and_type(
     return result if result else (None, None)
 
 
-def calculate_time_delta_in_seconds(timestamp1_str: str, timestamp2_str: str) -> int:
+def calculate_time_delta_in_seconds(submission_time: str, due_date: str) -> int:
     """
     Calculate the time delta between two timestamps in seconds.
 
@@ -184,11 +184,11 @@ def calculate_time_delta_in_seconds(timestamp1_str: str, timestamp2_str: str) ->
     """
 
     # Parse the timestamps into datetime objects with the timezone
-    timestamp1 = datetime.strptime(timestamp1_str, "%Y-%m-%d %H:%M:%S %Z")
-    timestamp2 = datetime.strptime(timestamp2_str, "%Y-%m-%d %H:%M:%S %Z")
+    submission_time = datetime.strptime(submission_time, "%Y-%m-%d %H:%M:%S %Z")
+    due_date = datetime.strptime(due_date, "%Y-%m-%d %H:%M:%S %Z")
 
     # Calculate the time delta
-    time_delta = timestamp2 - timestamp1
+    time_delta = submission_time - due_date
 
     # Return the time delta in seconds
     return int(time_delta.total_seconds())
