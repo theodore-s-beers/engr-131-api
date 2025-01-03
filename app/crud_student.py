@@ -26,8 +26,12 @@ Dependencies:
 """
 
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
+
+from datetime import datetime
+from typing import Optional
+
 
 from . import models, schemas
 from .live_scorer import Score
@@ -138,7 +142,33 @@ def get_assignments_by_week_and_type(
         models.Assignment.week_number == week_number,
         models.Assignment.assignment_type == assignment_type,
     )
-    return db.execute(stmt).scalars().all()
+    return db.execute(stmt).scalars().one_or_none()
+
+
+def get_max_score_and_due_date_by_week_and_type(
+    db: Session, week_number: int, assignment_type: str
+) -> tuple[Optional[float], Optional[datetime]]:
+    """
+    Retrieve the maximum score and latest due date for assignments based on week number and type.
+
+    Args:
+        db (Session): The database session to use for the query.
+        week_number (int): The week number to filter assignments by.
+        assignment_type (str): The type of assignments to retrieve.
+
+    Returns:
+        tuple[Optional[float], Optional[datetime]]: A tuple containing the maximum score
+        and the latest due date for the matching assignments. Returns (None, None) if no match is found.
+    """
+    stmt = select(
+        func.max(models.Assignment.max_score), func.max(models.Assignment.due_date)
+    ).where(
+        models.Assignment.week_number == week_number,
+        models.Assignment.assignment_type == assignment_type,
+    )
+    result = db.execute(stmt).one_or_none()
+    return result if result else (None, None)
+
 
 # def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignment]:
 #     """
