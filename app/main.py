@@ -3,9 +3,19 @@ import datetime
 import os
 from typing import Annotated, TypeAlias
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Request, UploadFile, status, File
+from fastapi import (
+    Depends,
+    FastAPI,
+    File,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from nacl.public import Box, PrivateKey, PublicKey
+from pykubegrader.validate import read_logfile  # type: ignore
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -15,9 +25,6 @@ from .db import SessionLocal
 from .live_scorer import Score, calculate_score
 from .models import Token
 from .question import valid_submission
-
-from pykubegrader.log_parser.parse import LogParser
-from pykubegrader.validate import read_logfile
 
 app = FastAPI()
 
@@ -185,12 +192,13 @@ async def submit_question(
 
     return "Question responses and score saved to database"
 
-#TODO: Not working yet
+
+# TODO: Not working yet
 @app.post("/upload-score")
 async def upload_score(
     cred: Credentials,
     submission: schemas.FullSubmission,
-    log_file: UploadFile = File(...)
+    log_file: UploadFile = File(...),
 ):
     """
     Endpoint for uploading a student's score along with a log file.
@@ -204,24 +212,23 @@ async def upload_score(
         str: A message indicating that the file and submission were received.
     """
     verify_student(cred)  # Verify the student's credentials
-    
-    box = get_keybox()
-    
+
+    _box = get_keybox()
+
     out, b = read_logfile(
-    "/home/jca92/ENGR131_W25_dev/testing/output-testing/.output_reduced.log"
-        )
-    
+        "/home/jca92/ENGR131_W25_dev/testing/output-testing/.output_reduced.log"
+    )
+
     # print(out)
 
     # # Save the uploaded log file to disk (optional)
     # log_file_path = f"uploaded_{log_file.filename}"
-    
-    
 
     # print(f"Received file: {log_file.filename}")
     # print(submission.scores)
-    #{"message": f"File {log_file.filename} received and processed."}
+    # {"message": f"File {log_file.filename} received and processed."}
     return {"message": f"File {out} received and processed."}
+
 
 def get_keybox():
     """
@@ -242,8 +249,9 @@ def get_keybox():
     SERVER_PRIVATE_KEY = PrivateKey(base64.b64decode(SERVER_PRIVATE_KEY_B64))
     CLIENT_PUBLIC_KEY = PublicKey(base64.b64decode(CLIENT_PUBLIC_KEY_B64))
     box = Box(SERVER_PRIVATE_KEY, CLIENT_PUBLIC_KEY)
-    
+
     return box
+
 
 # TODO: Complete implementation
 @app.post("/validate-log-decryption")
@@ -313,12 +321,11 @@ async def validate_token(
 # Admin-only endpoints
 # ----------------------
 
+
 @app.get("/assignments", response_model=list[schemas.Assignment])
-async def get_all_assignments(
-    cred: Credentials, db: Session = Depends(get_db)
-):
+async def get_all_assignments(cred: Credentials, db: Session = Depends(get_db)):
     verify_admin(cred)
-    
+
     return crud_admin.get_assignments(db=db)
 
 

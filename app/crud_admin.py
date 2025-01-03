@@ -321,7 +321,10 @@ def update_assignment(
     db_assignment = db.execute(stmt).scalar_one_or_none()
 
     if not db_assignment:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Assignment not found",
+        )
 
     db_assignment.title = assignment.title
     db_assignment.description = assignment.description
