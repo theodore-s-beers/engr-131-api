@@ -221,7 +221,7 @@ name = "click"
 version = "8.1.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/96/d3/f04c7bfcf5c1862a2a5b845c6b2b360488cf47af55dfa79c98f6a6bf98b5/click-8.1.7.tar.gz", hash = "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de", size = 336121 }
 wheels = [
@@ -340,7 +340,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.0" },
     { name = "mypy", specifier = ">=1.13.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.9" },
-    { name = "pykubegrader" },
+    { name = "pykubegrader", specifier = ">=0.2.3" },
     { name = "pynacl", specifier = ">=1.5.0" },
     { name = "ruff", specifier = ">=0.6.7" },
 ]
@@ -1056,7 +1056,7 @@ wheels = [
 
 [[package]]
 name = "pykubegrader"
-version = "0.1.23"
+version = "0.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ipython" },
@@ -1070,12 +1070,14 @@ dependencies = [
     { name = "ruff" },
     { name = "setuptools" },
     { name = "sphinx" },
+    { name = "types-python-dateutil" },
+    { name = "types-pyyaml" },
     { name = "types-requests" },
     { name = "types-setuptools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b1/60/07efaba2927cb5d99000bbfda8d8bc16f09a2f0ea93ec608ae915a2f7f8d/pykubegrader-0.1.23.tar.gz", hash = "sha256:1fc68665f157f359f503129795ac18cfdd43cd60a6ee2fd5fcb6ea64ee12b101", size = 501731 }
+sdist = { url = "https://files.pythonhosted.org/packages/c1/cc/62105354b7e0d0dd5f29deb20e807194183965c3c7330114d6e35499bfdf/pykubegrader-0.2.3.tar.gz", hash = "sha256:2ee070537dda2a635165484e1a1542a6d7abd40cd9773feb3161b5daa976103b", size = 503464 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/2f/2706ce8ca7545161104beb483779bff1da18f28ef028e6d3845513bf8496/PyKubeGrader-0.1.23-py3-none-any.whl", hash = "sha256:cd1012d9cd3372670f380cf04619704cd9bf09bfae8322675b9eb5711c50aba7", size = 46040 },
+    { url = "https://files.pythonhosted.org/packages/30/b8/53d805a1f84f45942d5d17306160e58db212511e19bc4f1b324271b23a87/PyKubeGrader-0.2.3-py3-none-any.whl", hash = "sha256:b89b53d4a0f6b15ee8fac104c6b842cca9ae35e03bbcd6f20f1c6f670283aaac", size = 48298 },
 ]
 
 [[package]]
@@ -1512,7 +1514,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "platform_system == 'Windows'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [
@@ -1541,6 +1543,24 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c5/58/a79003b91ac2c6890fc5d90145c662fd5771c6f11447f116b63300436bc9/typer-0.12.5.tar.gz", hash = "sha256:f592f089bedcc8ec1b974125d64851029c3b1af145f04aca64d69410f0c9b722", size = 98953 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a8/2b/886d13e742e514f704c33c4caa7df0f3b89e5a25ef8db02aa9ca3d9535d5/typer-0.12.5-py3-none-any.whl", hash = "sha256:62fe4e471711b147e3365034133904df3e235698399bc4de2b36c8579298d52b", size = 47288 },
+]
+
+[[package]]
+name = "types-python-dateutil"
+version = "2.9.0.20241206"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/60/47d92293d9bc521cd2301e423a358abfac0ad409b3a1606d8fbae1321961/types_python_dateutil-2.9.0.20241206.tar.gz", hash = "sha256:18f493414c26ffba692a72369fea7a154c502646301ebfe3d56a04b3767284cb", size = 13802 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0f/b3/ca41df24db5eb99b00d97f89d7674a90cb6b3134c52fb8121b6d8d30f15c/types_python_dateutil-2.9.0.20241206-py3-none-any.whl", hash = "sha256:e248a4bc70a486d3e3ec84d0dc30eec3a5f979d6e7ee4123ae043eedbb987f53", size = 14384 },
+]
+
+[[package]]
+name = "types-pyyaml"
+version = "6.0.12.20241230"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9a/f9/4d566925bcf9396136c0a2e5dc7e230ff08d86fa011a69888dd184469d80/types_pyyaml-6.0.12.20241230.tar.gz", hash = "sha256:7f07622dbd34bb9c8b264fe860a17e0efcad00d50b5f27e93984909d9363498c", size = 17078 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/c1/48474fbead512b70ccdb4f81ba5eb4a58f69d100ba19f17c92c0c4f50ae6/types_PyYAML-6.0.12.20241230-py3-none-any.whl", hash = "sha256:fa4d32565219b68e6dee5f67534c722e53c00d1cfc09c435ef04d7353e1e96e6", size = 20029 },
 ]
 
 [[package]]
