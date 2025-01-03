@@ -45,7 +45,7 @@ class AssignmentSubmission(Base):
     __tablename__ = "assignment_submissions"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    student_email: Mapped[str] = mapped_column(ForeignKey("students.email"))
+    student_email: Mapped[str] = mapped_column("students.email")
     assignment: Mapped[str] = mapped_column(ForeignKey("assignments.title"))
     week_number: Mapped[Optional[int]]
     assignment_type: Mapped[Optional[str]]
@@ -55,7 +55,7 @@ class AssignmentSubmission(Base):
     )
     student_seed: Mapped[int]
     due_date: Mapped[datetime]
-    raw_score: Mapped[float]    
+    raw_score: Mapped[float]
     late_assignment_percentage: Mapped[float]
     submitted_score: Mapped[float]
     current_max_score: Mapped[float]
