@@ -216,7 +216,7 @@ async def upload_score(
     _box = get_keybox()
 
     out, b = read_logfile(
-        "/home/jca92/ENGR131_W25_dev/testing/output-testing/.output_reduced.log"
+        log_file.file,
     )
 
     # print(out)
