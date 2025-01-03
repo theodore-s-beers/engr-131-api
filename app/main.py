@@ -1,6 +1,7 @@
 import base64
 import datetime
 import os
+import tempfile
 from typing import Annotated, TypeAlias
 
 from fastapi import (
@@ -235,8 +236,12 @@ async def score_assignment(
     # Get the public/private keypair for decryption
     key_box = get_keybox()
 
-    # decrypt the log file
-    out, b = read_logfile(log_file.file, key_box)
+    with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+        temp_file.write(await log_file.read())
+        temp_file.flush()
+
+        # decrypt the log file
+        out, b = read_logfile(temp_file.name, key_box)
 
     # print(out)
 
