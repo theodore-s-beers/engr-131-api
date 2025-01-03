@@ -330,6 +330,8 @@ def update_assignment(
     db_assignment.description = assignment.description
     db_assignment.max_score = assignment.max_score
     db_assignment.due_date = assignment.due_date
+    db_assignment.week_number = assignment.week_number
+    db_assignment.assignment_type = assignment.assignment_type
 
     db.commit()
     db.refresh(db_assignment)
