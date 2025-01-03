@@ -2,7 +2,7 @@ import base64
 import datetime
 import os
 import tempfile
-from typing import Annotated, TypeAlias
+from typing import Annotated, Optional, TypeAlias
 
 from fastapi import (
     Depends,
@@ -250,15 +250,27 @@ async def score_assignment(
     parser.calculate_total_scores()
     results = parser.get_results()
 
-    week_number = results["week_num"]
-    assignment_type = results["assignment_type"]
-    submission_time = results["student_information"]["timestamp"]
+    week_number: Optional[int] = results["week_num"]  # type: ignore
+    assignment_type: Optional[str] = results["assignment_type"]  # type: ignore
+    submission_time: str = results["student_information"]["timestamp"]
+
+    if not week_number or not assignment_type:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Week number or assignment type not found",
+        )
 
     max_score_db, due_date_db = (
         crud_student.get_max_score_and_due_date_by_week_and_type(
             db=db, week_number=week_number, assignment_type=assignment_type
         )
     )
+
+    if not due_date_db:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Due date not found",
+        )
 
     time_delta = crud_student.calculate_time_delta_in_seconds(
         submission_time,

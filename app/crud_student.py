@@ -159,7 +159,7 @@ def get_max_score_and_due_date_by_week_and_type(
         assignment_type (str): The type of assignments to retrieve.
 
     Returns:
-        tuple[Optional[float], Optional[datetime]]: A tuple containing the maximum score
+        tuple[Optional[float], Optional[datetime.datetime]]: A tuple containing the maximum score
         and the latest due date for the matching assignments. Returns (None, None) if no match is found.
     """
     stmt = select(
@@ -168,8 +168,8 @@ def get_max_score_and_due_date_by_week_and_type(
         models.Assignment.week_number == week_number,
         models.Assignment.assignment_type == assignment_type,
     )
-    result = db.execute(stmt).scalar_one_or_none()
-    return result if result else (None, None)
+    result = db.execute(stmt).one_or_none()
+    return (result[0], result[1]) if result else (None, None)
 
 
 def calculate_time_delta_in_seconds(
