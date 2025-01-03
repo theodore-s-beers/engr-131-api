@@ -197,8 +197,8 @@ async def submit_question(
 @app.post("/upload-score")
 async def upload_score(
     cred: Credentials,
-    submission: schemas.FullSubmission,
     log_file: UploadFile = File(...),
+    assignment_title: str,
 ):
     """
     Endpoint for uploading a student's score along with a log file.
@@ -211,10 +211,13 @@ async def upload_score(
     Returns:
         str: A message indicating that the file and submission were received.
     """
+    # Validate the student's credentials
     verify_student(cred)  # Verify the student's credentials
 
+    # Get the public/private keypair for decryption
     _box = get_keybox()
 
+    # decrypt the log file
     out, b = read_logfile(
         log_file.file,
     )
