@@ -245,6 +245,15 @@ async def score_assignment(
         out, b = read_logfile(temp_file.name, key_box)
 
     parser = LogParser(log_lines=out, week_tag=assignment_title)
+    parser.parse_logs()
+    parser.calculate_total_scores()
+    results = parser.get_results()
+    
+    # Need to get assignment information for total points and due date.
+    
+    # Need to calculate scoring based on function.
+    
+    # need to return a nice string to print. 
 
     # print(out)
 
@@ -254,7 +263,7 @@ async def score_assignment(
     # print(f"Received file: {log_file.filename}")
     # print(submission.scores)
     # {"message": f"File {log_file.filename} received and processed."}
-    return {"message": f"File {parser} received and processed."}
+    return {"message": f"File {results} received and processed."}
 
 
 def get_keybox():
