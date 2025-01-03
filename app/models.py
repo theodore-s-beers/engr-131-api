@@ -35,8 +35,8 @@ class Assignment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(index=True, unique=True)
     description: Mapped[Optional[str]]
-    week_number: Mapped[int]
-    assignment_type: Mapped[str]
+    week_number: Mapped[Optional[int]]
+    assignment_type: Mapped[Optional[str]]
     max_score: Mapped[float]
     due_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
