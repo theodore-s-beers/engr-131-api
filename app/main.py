@@ -233,12 +233,10 @@ async def score_assignment(
     verify_student(cred)  # Verify the student's credentials
 
     # Get the public/private keypair for decryption
-    _box = get_keybox()
+    key_box = get_keybox()
 
     # decrypt the log file
-    out, b = read_logfile(
-        log_file.file,
-    )
+    out, b = read_logfile(log_file.file, key_box)
 
     # print(out)
 
