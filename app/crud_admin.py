@@ -188,6 +188,8 @@ def add_assignment(db: Session, assignment: schemas.Assignment) -> models.Assign
     db_assignment = models.Assignment(
         title=assignment.title,
         description=assignment.description,
+        week_number=assignment.week_number,
+        assignment_type=assignment.assignment_type,
         max_score=assignment.max_score,
         due_date=assignment.due_date,
     )
