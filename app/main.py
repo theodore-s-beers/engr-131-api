@@ -1,3 +1,4 @@
+import base64
 import datetime
 import os
 from typing import Annotated, TypeAlias
@@ -257,20 +258,17 @@ def get_keybox():
     Returns:
         tuple[PublicKey, PrivateKey]: A tuple containing the public and private keys.
     """
-    SERVER_PRIVATE_KEY_ENV = os.getenv("SERVER_PRIVATE_KEY")
-    CLIENT_PUBLIC_KEY_ENV = os.getenv("CLIENT_PUBLIC_KEY")
+    server_private_key_b64 = os.getenv("SERVER_PRIVATE_KEY")
+    client_public_key_b64 = os.getenv("CLIENT_PUBLIC_KEY")
 
-    if not SERVER_PRIVATE_KEY_ENV or not CLIENT_PUBLIC_KEY_ENV:
+    if not server_private_key_b64 or not client_public_key_b64:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Server or client key not found",
         )
 
-    server_private_key_bytes = SERVER_PRIVATE_KEY_ENV.encode("latin1")
-    client_public_key_bytes = CLIENT_PUBLIC_KEY_ENV.encode("latin1")
-
-    server_private_key = PrivateKey(server_private_key_bytes)
-    client_public_key = PublicKey(client_public_key_bytes)
+    server_private_key = PrivateKey(base64.b64decode(server_private_key_b64))
+    client_public_key = PublicKey(base64.b64decode(client_public_key_b64))
 
     box = Box(server_private_key, client_public_key)
 
