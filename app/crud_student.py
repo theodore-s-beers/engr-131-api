@@ -28,6 +28,8 @@ Dependencies:
 from fastapi import HTTPException, status
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
+import pzyt
+import numpy as np
 
 from datetime import datetime
 from typing import Optional
@@ -168,6 +170,59 @@ def get_max_score_and_due_date_by_week_and_type(
     )
     result = db.execute(stmt).one_or_none()
     return result if result else (None, None)
+
+
+def calculate_time_delta_in_seconds(timestamp1_str: str, timestamp2_str: str) -> int:
+    """
+    Calculate the time delta between two timestamps in seconds.
+
+    Args:
+        timestamp1_str (str): The first timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
+        timestamp2_str (str): The second timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
+
+    Returns:
+        int: The time delta between the two timestamps in seconds.
+    """
+    # Define the EST timezone
+    est = pytz.timezone("America/New_York")
+
+    # Parse the timestamps into datetime objects with the timezone
+    timestamp1 = datetime.strptime(timestamp1_str, "%Y-%m-%d %H:%M:%S %Z")
+    timestamp2 = datetime.strptime(timestamp2_str, "%Y-%m-%d %H:%M:%S %Z")
+
+    # Assign the EST timezone to the parsed timestamps
+    timestamp1 = est.localize(timestamp1)
+    timestamp2 = est.localize(timestamp2)
+
+    # Calculate the time delta
+    time_delta = timestamp2 - timestamp1
+
+    # Return the time delta in seconds
+    return int(time_delta.total_seconds())
+
+
+def get_modified_grade_percentage(time_delta: int) -> float:
+    """
+    Calculate the grade modifier based on the time delta between two timestamps.
+
+    Args:
+        time_delta (int): The time delta between two timestamps in seconds.
+
+    Returns:
+        float: The grade modifier percentage based on the time delta.
+    """
+
+    # Parameters
+    Q0 = 100  # Initial quantity
+    Q_min = 40  # Minimum grade/quantity
+    k = 6.88e-5  # Decay constant per minute
+
+    # Exponential decay function with piecewise definition
+    Q = Q0 * np.exp(-k * time_delta / 60)  # Convert seconds to minutes
+    Q = np.maximum(Q, Q_min)  # Apply floor condition
+    Q = np.minimum(Q, 100)  # Apply ceiling condition
+
+    return Q
 
 
 # def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignment]:
