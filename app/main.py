@@ -279,6 +279,13 @@ async def score_assignment(
 
     grade_modifier = crud_student.get_modified_grade_percentage(time_delta)
 
+    assignments_graded = results["assignment_information"].keys()
+    total_score = 0
+    for assignment in assignments_graded:
+        total_score = results["assignment_information"][assignment]["total_score"]
+        
+    
+
     # Need to get assignment information for total points and due date.
 
     # Need to calculate scoring based on function.
@@ -294,7 +301,7 @@ async def score_assignment(
     # print(submission.scores)
     # {"message": f"File {log_file.filename} received and processed."}
     return {
-        "message": f"{grade_modifier} and {time_delta} File {results} received and processed."
+        "message": f"{total_score} and {time_delta} File {results} received and processed."
     }
 
 
