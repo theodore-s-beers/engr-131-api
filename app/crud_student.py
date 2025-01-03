@@ -120,6 +120,26 @@ def add_scoring_submission(
     return db_submission
 
 
+def get_assignments_by_week_and_type(
+    db: Session, week_number: int, assignment_type: str
+) -> list[models.Assignment]:
+    """
+    Retrieve assignments from the database based on week number and assignment type.
+
+    Args:
+        db (Session): The database session to use for the query.
+        week_number (int): The week number to filter assignments by.
+        assignment_type (str): The type of assignments to retrieve.
+
+    Returns:
+        list[models.Assignment]: A list of assignment objects matching the criteria.
+    """
+    stmt = select(models.Assignment).where(
+        models.Assignment.week_number == week_number,
+        models.Assignment.assignment_type == assignment_type,
+    )
+    return db.execute(stmt).scalars().all()
+
 # def get_assignment_by_title(db: Session, title: str) -> Optional[models.Assignment]:
 #     """
 #     Retrieve an assignment from the database by its title.
