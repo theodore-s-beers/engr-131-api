@@ -252,14 +252,19 @@ async def score_assignment(
 
     week_number = results["week_num"]
     assignment_type = results["assignment_type"]
+    submission_time = results["student_information"]["timestamp"]
 
     max_score_db, due_date_db = (
         crud_student.get_max_score_and_due_date_by_week_and_type(
             db=db, week_number=week_number, assignment_type=assignment_type
         )
     )
-    
+
     time_delta = crud_student.calculate_time_delta_in_seconds(
+        submission_time, due_date_db
+    )
+
+    grade_modifier = crud_student.get_modified_grade_percentage(time_delta)
 
     # Need to get assignment information for total points and due date.
 
@@ -276,7 +281,7 @@ async def score_assignment(
     # print(submission.scores)
     # {"message": f"File {log_file.filename} received and processed."}
     return {
-        "message": f"{max_score_db} and {due_date_db} File {results} received and processed."
+        "message": f"{grade_modifier} and {time_delta} File {results} received and processed."
     }
 
 
