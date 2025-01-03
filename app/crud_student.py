@@ -176,8 +176,8 @@ def calculate_time_delta_in_seconds(submission_time: str, due_date: str) -> int:
     Calculate the time delta between two timestamps in seconds.
 
     Args:
-        timestamp1_str (str): The first timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
-        timestamp2_str (str): The second timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
+        submission_time (str): The first timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
+        due_date (str): The second timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
 
     Returns:
         int: The time delta between the two timestamps in seconds.
