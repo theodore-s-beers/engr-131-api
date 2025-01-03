@@ -197,8 +197,8 @@ async def submit_question(
 @app.post("/score-assignment")
 async def score_assignment(
     cred: Credentials,
-    log_file: UploadFile = File(...),
     assignment_title: str,
+    log_file: UploadFile = File(...),
 ):
     """
     Endpoint for uploading a student's score along with a log file.
