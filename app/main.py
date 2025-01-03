@@ -261,7 +261,8 @@ async def score_assignment(
     )
 
     time_delta = crud_student.calculate_time_delta_in_seconds(
-        submission_time, due_date_db,
+        submission_time,
+        due_date_db,
     )
 
     grade_modifier = crud_student.get_modified_grade_percentage(time_delta)
