@@ -19,6 +19,8 @@ class Assignment(BaseModel):
     description: Optional[str] = None
     max_score: int
     due_date: datetime
+    week_number: int
+    assignment_type: str
 
 
 class FullSubmission(BaseModel):
