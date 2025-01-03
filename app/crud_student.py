@@ -29,6 +29,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 import numpy as np
+import dateutil
 
 from datetime import datetime
 from typing import Optional
@@ -127,7 +128,7 @@ def add_scoring_submission(
 
 def get_assignments_by_week_and_type(
     db: Session, week_number: int, assignment_type: str
-) -> list[models.Assignment]:
+) -> Optional[models.Assignment]:
     """
     Retrieve assignments from the database based on week number and assignment type.
 
@@ -184,8 +185,10 @@ def calculate_time_delta_in_seconds(submission_time: str, due_date: str) -> int:
     """
 
     # Parse the timestamps into datetime objects with the timezone
-    submission_time = datetime.strptime(submission_time, "%Y-%m-%d %H:%M:%S%z")
-    due_date = datetime.strptime(due_date, "%Y-%m-%d %H:%M:%S%z")
+    # submission_time = datetime.strptime(submission_time, "%Y-%m-%d %H:%M:%S%z")
+    submission_time = dateutil.parser.parse(submission_time)
+    # due_date = datetime.strptime(due_date, "%Y-%m-%d %H:%M:%S%z")
+    due_date = dateutil.parser.parse(due_date)
 
     # Calculate the time delta
     time_delta = submission_time - due_date
