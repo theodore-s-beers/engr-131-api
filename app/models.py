@@ -46,7 +46,7 @@ class AssignmentSubmission(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     student_email: Mapped[str] = mapped_column("students.email")
-    assignment: Mapped[str] = mapped_column(ForeignKey("assignments.title"))
+    assignment: Mapped[str] = mapped_column("assignments.title")
     week_number: Mapped[Optional[int]]
     assignment_type: Mapped[Optional[str]]
     timestamp: Mapped[datetime] = mapped_column(

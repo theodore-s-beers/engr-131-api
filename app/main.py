@@ -318,33 +318,6 @@ async def score_assignment(
     }
 
 
-# def add_submitted_assignment_score(
-#     db: Session, submission: schemas.AssignmentSubmission
-# ):
-
-#     db_submission = models.AssignmentSubmission(
-#         student_email=submission.student_email,
-#         assignment=submission.assignment,
-#         week_number=submission.week_number,
-#         assignment_type=submission.assignment_type,
-#         timestamp=submission.timestamp,
-#         student_seed=submission.student_seed,
-#         due_date=submission.due_date,
-#         raw_score=submission.raw_score,
-#         late_assignment_percentage=submission.late_assignment_percentage,
-#         submitted_score=submission.submitted_score,
-#         current_max_score=submission.current_max_score,
-#     )
-
-#     db.add(db_submission)
-
-#     db.commit()
-
-#     db.refresh(db_submission)
-
-#     return db_submission
-
-
 def get_keybox():
     """
     Generate a public/private keypair for use with NaCl.
