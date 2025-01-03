@@ -17,6 +17,7 @@ from fastapi import (
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from nacl.public import Box, PrivateKey, PublicKey
 from pykubegrader.validate import read_logfile  # type: ignore
+from pykubegrader.log_parser.parse import LogParser  # type: ignore
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -243,6 +244,8 @@ async def score_assignment(
         # decrypt the log file
         out, b = read_logfile(temp_file.name, key_box)
 
+    parser = LogParser(log_lines=out, week_tag=assignment_title)
+
     # print(out)
 
     # # Save the uploaded log file to disk (optional)
@@ -251,7 +254,7 @@ async def score_assignment(
     # print(f"Received file: {log_file.filename}")
     # print(submission.scores)
     # {"message": f"File {log_file.filename} received and processed."}
-    return {"message": f"File {out} received and processed."}
+    return {"message": f"File {parser} received and processed."}
 
 
 def get_keybox():
