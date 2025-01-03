@@ -135,7 +135,7 @@ def calculate_score(
     for i, (k, v) in enumerate(solutions.items()):
         if k not in responses:
             # return "Incomplete submission"
-            pass  # TODO: Revisit this logic
+            continue  # TODO: Revisit this logic
 
         if responses[k] == v:
             scores[k] = (points[i], points[i])
