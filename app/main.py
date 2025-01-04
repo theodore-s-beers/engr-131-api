@@ -318,14 +318,20 @@ async def score_assignment(
     )
 
     build_message = f"Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
-    build_message += f"Your raw score on this submission is {total_score}.\n"
+    build_message += (
+        f"Your raw score on this submission is {total_score} - out of {max_score_db}.\n"
+    )
     if time_delta < 0:
-        build_message += "This submission is on time. You have received full credit -- Great Job.\n"
+        build_message += (
+            "This submission is on time. You have received full credit -- Great Job.\n"
+        )
     else:
         build_message += f"This submission is {time_delta} seconds late.\n"
         build_message += f"Your grade for this submission has been modified by {grade_modifier}%, of the points earned.\n"
 
-    build_message += f"Your current best score for this assignment is {current_best}.\n"
+    percentage_score = 100 * current_best / max_score_db
+
+    build_message += f"Your current best percentage score for this assignment is {percentage_score}%.\n"
 
     # Define a list of perfect messages
     perfect_messages = [
@@ -345,17 +351,17 @@ async def score_assignment(
     selected_message = random.choice(perfect_messages)
 
     # Add endearing messages based on the score
-    if current_best >= 100:
+    if percentage_score >= 100:
         build_message += f"{selected_message}\n"
-    if current_best >= 90:
+    if percentage_score >= 90:
         build_message += (
             "Fantastic work! You're mastering this material like a pro! 🌟\n"
         )
-    elif 80 <= current_best < 90:
+    elif 80 <= percentage_score < 90:
         build_message += "Great effort! You're doing really well—keep pushing for that next level! 💪\n"
-    elif 70 <= current_best < 80:
+    elif 70 <= percentage_score < 80:
         build_message += "Good job! You're building a strong foundation—keep up the steady progress! 👍\n"
-    elif 60 <= current_best < 70:
+    elif 60 <= percentage_score < 70:
         build_message += "Keep going! You're on the right track—stay focused and you'll improve even more! 🌱\n"
     else:
         build_message += "Don't get discouraged! Every submission is a step toward improvement. You've got this! 🚀\n"
