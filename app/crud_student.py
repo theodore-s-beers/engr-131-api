@@ -158,9 +158,8 @@ def get_best_score(
 
 
 def add_submitted_assignment_score(
-    db: Session,
-    submission: schemas.AssignmentSubmission):
-    
+    db: Session, submission: schemas.AssignmentSubmission
+):
     db_submission = models.AssignmentSubmission(
         student_email=submission.student_email,
         assignment=submission.assignment,
@@ -172,16 +171,17 @@ def add_submitted_assignment_score(
         raw_score=submission.raw_score,
         late_assignment_percentage=submission.late_assignment_percentage,
         submitted_score=submission.submitted_score,
-        current_max_score=submission.current_max_score
+        current_max_score=submission.current_max_score,
     )
-    
+
     db.add(db_submission)
-    
+
     db.commit()
-    
+
     db.refresh(db_submission)
-    
+
     return db_submission
+
 
 def get_assignments_by_week_and_type(
     db: Session, week_number: int, assignment_type: str

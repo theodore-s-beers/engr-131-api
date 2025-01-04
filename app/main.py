@@ -292,7 +292,7 @@ async def score_assignment(
     current_best = crud_student.get_best_score(
         db=db, student_email=student_email, assignment=assignment_title
     )
-    
+
     current_best = float(current_best)
 
     if current_best is None or modified_grade > current_best:
