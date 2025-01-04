@@ -313,9 +313,31 @@ async def score_assignment(
         ),
     )
 
-    return {
-        "message": f"{total_score} and {time_delta} File {results} received and processed."
-    }
+    build_message = "Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
+    build_message += f"Your raw score on this submission is {total_score}.\n"
+    if time_delta < 0:
+        build_message += "This submission is on time.\n"
+    else:
+        build_message += f"This submission is {time_delta} seconds late.\n"
+    build_message += f"Your grade for this submission has been modified by {grade_modifier}%, of the points earned.\n"
+
+    build_message += f"Your current best score for this assignment is {current_best}.\n"
+
+    # Add endearing messages based on the score
+    if current_best >= 90:
+        build_message += (
+            "Fantastic work! You're mastering this material like a pro! 🌟\n"
+        )
+    elif 80 <= current_best < 90:
+        build_message += "Great effort! You're doing really well—keep pushing for that next level! 💪\n"
+    elif 70 <= current_best < 80:
+        build_message += "Good job! You're building a strong foundation—keep up the steady progress! 👍\n"
+    elif 60 <= current_best < 70:
+        build_message += "Keep going! You're on the right track—stay focused and you'll improve even more! 🌱\n"
+    else:
+        build_message += "Don't get discouraged! Every submission is a step toward improvement. You've got this! 🚀\n"
+
+    return {"message": f"{build_message}"}
 
 
 def get_keybox():
