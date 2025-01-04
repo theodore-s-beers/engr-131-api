@@ -3,6 +3,7 @@ import datetime
 import os
 import tempfile
 from typing import Annotated, Optional, TypeAlias
+import random
 
 from fastapi import (
     Depends,
@@ -316,7 +317,7 @@ async def score_assignment(
         ),
     )
 
-    build_message = "Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
+    build_message = f"Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
     build_message += f"Your raw score on this submission is {total_score}.\n"
     if time_delta < 0:
         build_message += "This submission is on time.\n"
@@ -326,7 +327,26 @@ async def score_assignment(
 
     build_message += f"Your current best score for this assignment is {current_best}.\n"
 
+    # Define a list of perfect messages
+    perfect_messages = [
+        "Fantastic work! You're mastering this material like a pro! 🌟",
+        "Incredible! Your performance is shining like a star! 🌠",
+        "Amazing effort! You're at the top of your game! 🏆",
+        "Outstanding! You're demonstrating excellent mastery! 👏",
+        "Exceptional work! You're setting a gold standard! 🥇",
+        "You're crushing it! Keep up the incredible momentum! 🚀",
+        "Phenomenal! Your hard work is clearly paying off! 🌟",
+        "Bravo! You're making this look easy! 🎉",
+        "Superb performance! You should be very proud of yourself! 🌈",
+        "You're a rockstar! Keep dazzling us with your brilliance! 🎸",
+    ]
+
+    # Randomly select a perfect message
+    selected_message = random.choice(perfect_messages)
+
     # Add endearing messages based on the score
+    if current_best >= 100:
+        build_message += f"{selected_message}\n"
     if current_best >= 90:
         build_message += (
             "Fantastic work! You're mastering this material like a pro! 🌟\n"
