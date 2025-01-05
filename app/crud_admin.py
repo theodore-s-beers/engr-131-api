@@ -30,6 +30,17 @@ from . import models, schemas
 # Students table
 #
 
+def TAs():
+    return ["cnp68",
+            "jca92",
+            "tb3367",
+            "xz498",
+            "dak329",
+            "rg897",
+            "jce63",
+            "ag4328",
+    ]
+            
 
 def add_student(db: Session, student: schemas.Student) -> models.Student:
     """
