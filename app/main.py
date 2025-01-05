@@ -327,9 +327,7 @@ async def score_assignment(
     )
 
     build_message = f"Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
-    build_message += (
-        f"Your raw score on this submission is {total_score} - out of {max_score_notebook}.\n"
-    )
+    build_message += f"Your raw score on this submission is {total_score} - out of {max_score_notebook}.\n"
     if time_delta < 0:
         build_message += (
             "This submission is on time. You have received full credit -- Great Job.\n"
@@ -375,12 +373,10 @@ async def score_assignment(
     else:
         build_message += "Don't get discouraged! Every submission is a step toward improvement. You've got this! 🚀\n"
 
-    
     build_message += f"Your current score for this submission {week_number} - {assignment_type} is {modified_grade}%.\n"
     build_message += f"Your current best score for this notebook is {current_best}%.\n"
     if time_delta > 0:
         build_message += "This score includes all deductions for late grade submission if applicable.\n"
-    
 
     return {"message": f"{build_message}"}
 

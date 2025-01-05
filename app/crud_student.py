@@ -261,6 +261,7 @@ def get_notebook_max_score_by_notebook(
     )
     return db.execute(stmt).scalar_one_or_none()
 
+
 def get_max_score_and_due_date_by_week_and_type(
     db: Session, week_number: int, assignment_type: str
 ) -> tuple[Optional[float], Optional[datetime.datetime]]:
