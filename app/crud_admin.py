@@ -40,7 +40,15 @@ def TAs():
             "jce63",
             "ag4328",
     ]
-            
+
+def verify_user_access(user: str):
+    if user in TAs():
+        return True
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have access to this operation",
+        )
 
 def add_student(db: Session, student: schemas.Student) -> models.Student:
     """
@@ -345,6 +353,7 @@ def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
         value=token_req.value,
         created=created,
         expires=expires,
+        requester=token_req.requester
     )
 
     db.add(db_token)
@@ -404,6 +413,29 @@ def update_assignment(
 
     return db_assignment
 
+# TODO: Add a way to track history of all tokens
+def update_token(
+    db:Session, token: schemas.TokenRequest
+):
+    
+    stmt = select(models.Token).where(models.Token.value == token.value)
+    db_token = db.execute(stmt).scalar_one_or_none()
+
+    if not db_token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Token not found",
+        )
+
+    db_token.value = token.value
+    db_token.created = datetime.now()
+    db_token.expires = db_token.created + timedelta(minutes=token.duration)
+    db_token.requester = token.requester
+
+    db.commit()
+    db.refresh(db_token)
+
+    return db_token
 
 def update_notebook(
     db: Session, title: str, notebook: schemas.Notebook

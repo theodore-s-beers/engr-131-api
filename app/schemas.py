@@ -70,11 +70,13 @@ class Token(BaseModel):
     value: str
     created: datetime
     expires: datetime
+    requester: str
 
 
 class TokenRequest(BaseModel):
     value: str
     duration: int = 120
+    requester: str
 
 
 class AssignmentSubmission(BaseModel):

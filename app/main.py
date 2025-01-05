@@ -541,22 +541,32 @@ async def add_student(
 
 @app.post("/tokens", response_model=schemas.Token)
 async def create_token(
-    cred: Credentials, token_req: schemas.TokenRequest, db: Session = Depends(get_db)
+    cred: Credentials, token: schemas.TokenRequest, db: Session = Depends(get_db)
 ):
     verify_admin(cred)
+    
+    crud_admin.verify_user_access(user=token.requester)
 
-    existing_token = crud_admin.get_token_by_value(db=db, value=token_req.value)
+    existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
     if existing_token:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Token value already used",
-        )
+        updated_token = crud_admin.update_token(db=db, token=token)
+        if updated_token:
+            return updated_token
+        
+    return crud_admin.create_token(db=db, token_req=token)
+        
+    
+    # Josh - there is no problem with reusing a token value, as long as the token is not expired. 
+    # if existing_token:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail="Token value already used",
+    #     )
 
     return crud_admin.create_token(db=db, token_req=token_req)
 
 
-# TODO: Implement
-# @app.get("/assignment/{title}", response_model=schemas.Assignment)
+#TODO add an update token endpoint
 
 
 @app.get("/scoring/{email}", response_model=list[schemas.ScoredSubmission])
