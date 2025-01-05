@@ -473,7 +473,7 @@ async def get_all_assignments(cred: Credentials, db: Session = Depends(get_db)):
     return crud_admin.get_assignments(db=db)
 
 
-@app.post("/noteook", response_model=schemas.Notebook)
+@app.post("/notebook", response_model=schemas.Notebook)
 async def add_notebook(
     cred: Credentials, notebook: schemas.Notebook, db: Session = Depends(get_db)
 ):
