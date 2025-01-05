@@ -73,23 +73,6 @@ async def root(req: Request, jhub_user: str = Query(None)):
 # Student-accessible endpoints
 # ----------------------------
 
-# @app.get("/get-assignment", response_model=list[schemas.Assignment])
-# async def get_assignments(
-#     cred: Credentials,
-#     title: str = Query(None),  # Add title as an optional query parameter
-#     db: Session = Depends(get_db),
-# ):
-#     verify_student(cred)
-
-#     if title:
-#         db_assignment = crud_admin.get_assignment_by_title(db=db, title=title)
-#         if not db_assignment:
-#             raise HTTPException(
-#                 status_code=status.HTTP_404_NOT_FOUND,
-#                 detail="Assignment not found",
-#             )
-
-#         return [db_assignment]
 
 
 @app.post("/live-scorer")
@@ -479,6 +462,12 @@ async def get_all_assignments(cred: Credentials, db: Session = Depends(get_db)):
     verify_admin(cred)
 
     return crud_admin.get_assignments(db=db)
+
+@app.get("/notebooks", response_model=list[schemas.Notebook])
+async def get_all_notebooks(cred: Credentials, db: Session = Depends(get_db)):
+    verify_admin(cred)
+
+    return crud_admin.get_notebooks(db=db)
 
 
 @app.post("/notebook", response_model=schemas.Notebook)

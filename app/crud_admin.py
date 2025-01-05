@@ -199,6 +199,18 @@ def add_notebook(db: Session, notebook: schemas.Notebook) -> models.Notebook:
 
     return db_notebook
 
+def get_notebooks(db: Session) -> Sequence[models.Notebook]:
+    """
+    Retrieve all notebooks from the database.
+
+    Args:
+        db (Session): The database session to use for the query.
+
+    Returns:
+        Sequence[models.Notebook]: A sequence of Notebook objects.
+    """
+    stmt = select(models.Notebook)
+    return db.execute(stmt).scalars().all()
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
     """
