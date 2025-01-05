@@ -61,7 +61,7 @@ class AssignmentSubmission(Base):
     current_max_score: Mapped[float]
     
 class Notebook(Base):
-    __tablename__ = "notebooks"
+    __tablename__ = "notebook"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str]
@@ -71,7 +71,7 @@ class Notebook(Base):
     max_score: Mapped[float]
     
 class NotebookSubmission(Base):
-    __tablename__ = "notebooks_submissions"
+    __tablename__ = "notebook_submissions"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     student_email: Mapped[str]

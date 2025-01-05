@@ -173,6 +173,7 @@ def delete_student_by_email(db: Session, email: str) -> Optional[models.Student]
 # Assignments table
 #
 
+
 def add_notebook(db: Session, notebook: schemas.Notebook) -> models.Notebook:
     """
     Add a new notebook to the database.
@@ -197,6 +198,7 @@ def add_notebook(db: Session, notebook: schemas.Notebook) -> models.Notebook:
     db.refresh(db_notebook)
 
     return db_notebook
+
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
     """
@@ -378,3 +380,37 @@ def update_assignment(
     db.refresh(db_assignment)
 
     return db_assignment
+
+
+def update_notebook(
+    db: Session, title: str, notebook: schemas.Notebook
+) -> models.Notebook:
+    """
+    Adds a new notebook to the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        notebook (schemas.Notebook): The notebook data to be added
+
+    Returns:
+        models.Notebook: The newly created notebook object.
+    """
+    stmt = select(models.Notebook).where(models.Notebook.title == title)
+    db_notebook = db.execute(stmt).scalar_one_or_none()
+
+    if not db_notebook:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Notebook not found",
+        )
+
+    db_notebook.title = notebook.title
+    db_notebook.week_number = notebook.week_number
+    db_notebook.assignment_type = notebook.assignment_type
+    db_notebook.max_score = notebook.max_score
+    db_notebook.due_date = notebook.due_date
+
+    db.commit()
+    db.refresh(db_notebook)
+
+    return db_notebook

@@ -90,6 +90,7 @@ class AssignmentSubmission(BaseModel):
     submitted_score: float
     current_max_score: float
 
+
 class Notebook(BaseModel):
     title: str
     week_number: Optional[int]

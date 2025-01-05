@@ -157,9 +157,9 @@ def get_best_score(
     return result
 
 def add_notebook_submission(
-    db: Session, submission: schemas.NotebooksSubmission
+    db: Session, submission: schemas.NotebookSubmission
 ):
-    db_submission = models.NotebooksSubmission(
+    db_submission = models.NotebookSubmission(
         student_email=submission.student_email,
         notebook=submission.notebook,
         week_number=submission.week_number,
@@ -181,7 +181,7 @@ def add_notebook_submission(
 
     return db_submission
 
-def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebooks]:
+def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
     """
     Retrieve a notebook from the database by its title.
 
@@ -190,9 +190,9 @@ def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebooks]
         title (str): The title of the notebook to retrieve.
 
     Returns:
-        Optional[models.Notebooks]: The notebook object if found, otherwise None.
+        Optional[models.Notebook]: The notebook object if found, otherwise None.
     """
-    stmt = select(models.Notebooks).where(models.Notebooks.title == title)
+    stmt = select(models.Notebook).where(models.Notebook.title == title)
     return db.execute(stmt).scalar_one_or_none()
 
 
