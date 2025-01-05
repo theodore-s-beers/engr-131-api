@@ -89,3 +89,24 @@ class AssignmentSubmission(BaseModel):
     late_assignment_percentage: float
     submitted_score: float
     current_max_score: float
+
+class Notebook(BaseModel):
+    title: str
+    week_number: Optional[int]
+    assignment_type: Optional[str]
+    due_date: datetime
+    max_score: float
+
+
+class NotebookSubmission(BaseModel):
+    student_email: str
+    notebook: str
+    week_number: Optional[int]
+    assignment_type: Optional[str]
+    timestamp: datetime
+    student_seed: int
+    due_date: datetime
+    raw_score: float
+    late_assignment_percentage: float
+    submitted_score: float
+    current_max_score: float

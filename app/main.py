@@ -239,6 +239,7 @@ async def score_assignment(
     # Get the public/private keypair for decryption
     key_box = get_keybox()
 
+    # reads and decrypts the log file
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
         temp_file.write(await log_file.read())
         temp_file.flush()
@@ -246,11 +247,13 @@ async def score_assignment(
         # decrypt the log file
         out, b = read_logfile(temp_file.name, key_box)
 
+    # Parse the log file
     parser = LogParser(log_lines=out, week_tag=assignment_title)
     parser.parse_logs()
     parser.calculate_total_scores()
     results = parser.get_results()
 
+    # extract the week number, assignment type, and submission time from the log file
     week_number: Optional[int] = results["week_num"]  # type: ignore
     assignment_type: Optional[str] = results["assignment_type"]  # type: ignore
     submission_time: str = results["student_information"]["timestamp"]
@@ -300,6 +303,7 @@ async def score_assignment(
     if current_best is None or modified_grade > current_best:
         current_best = modified_grade
 
+    # adds the score for the assignment to the database
     crud_student.add_submitted_assignment_score(
         db=db,
         submission=schemas.AssignmentSubmission(
@@ -316,6 +320,7 @@ async def score_assignment(
             current_max_score=current_best,
         ),
     )
+    
 
     build_message = f"Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
     build_message += (
@@ -468,6 +473,26 @@ async def get_all_assignments(cred: Credentials, db: Session = Depends(get_db)):
 
     return crud_admin.get_assignments(db=db)
 
+@app.post("/noteook", response_model=schemas.Notebook)
+async def add_notebook(
+    cred: Credentials, notebook: schemas.Notebook, db: Session = Depends(get_db)
+):
+    verify_admin(cred)
+    
+    existing_notebook = crud_admin.get_notebook_by_title(
+        db=db, title=notebook.title
+    )
+    
+    if existing_notebook:
+        # Update existing notebook
+        updated_notebook = crud_admin.update_notebook(
+            db=db, title=notebook.title, notebook=notebook
+        )
+        if updated_notebook:
+            return updated_notebook
+        
+    # Create a new notebook
+    return crud_admin.add_notebook(db=db, notebook=notebook)
 
 @app.post("/assignments", response_model=schemas.Assignment)
 async def add_assignment(

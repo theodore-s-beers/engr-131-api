@@ -173,6 +173,45 @@ def delete_student_by_email(db: Session, email: str) -> Optional[models.Student]
 # Assignments table
 #
 
+def add_notebook(db: Session, notebook: schemas.Notebook) -> models.Notebook:
+    """
+    Add a new notebook to the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        notebook (schemas.Notebook): The notebook data to be added.
+
+    Returns:
+        models.Notebook: The newly created notebook object.
+    """
+    db_notebook = models.Notebook(
+        title=notebook.title,
+        week_number=notebook.week_number,
+        assignment_type=notebook.assignment_type,
+        max_score=notebook.max_score,
+        due_date=notebook.due_date,
+    )
+
+    db.add(db_notebook)
+    db.commit()
+    db.refresh(db_notebook)
+
+    return db_notebook
+
+def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
+    """
+    Retrieve a notebook from the database by its title.
+
+    Args:
+        db (Session): The database session to use for the query.
+        title (str): The title of the notebook to retrieve.
+
+    Returns:
+        Optional[models.Notebook]: The notebook object if found, otherwise None.
+    """
+    stmt = select(models.Notebook).where(models.Notebook.title == title)
+    return db.execute(stmt).scalar_one_or_none()
+
 
 def add_assignment(db: Session, assignment: schemas.Assignment) -> models.Assignment:
     """

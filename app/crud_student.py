@@ -156,6 +156,45 @@ def get_best_score(
     result = db.execute(stmt).scalars().first()
     return result
 
+def add_notebook_submission(
+    db: Session, submission: schemas.NotebooksSubmission
+):
+    db_submission = models.NotebooksSubmission(
+        student_email=submission.student_email,
+        notebook=submission.notebook,
+        week_number=submission.week_number,
+        assignment_type=submission.assignment_type,
+        timestamp=submission.timestamp,
+        student_seed=submission.student_seed,
+        due_date=submission.due_date,
+        raw_score=submission.raw_score,
+        late_assignment_percentage=submission.late_assignment_percentage,
+        submitted_score=submission.submitted_score,
+        current_max_score=submission.current_max_score,
+    )
+
+    db.add(db_submission)
+
+    db.commit()
+
+    db.refresh(db_submission)
+
+    return db_submission
+
+def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebooks]:
+    """
+    Retrieve a notebook from the database by its title.
+
+    Args:
+        db (Session): The database session to use for the query.
+        title (str): The title of the notebook to retrieve.
+
+    Returns:
+        Optional[models.Notebooks]: The notebook object if found, otherwise None.
+    """
+    stmt = select(models.Notebooks).where(models.Notebooks.title == title)
+    return db.execute(stmt).scalar_one_or_none()
+
 
 def add_submitted_assignment_score(
     db: Session, submission: schemas.AssignmentSubmission

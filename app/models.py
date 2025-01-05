@@ -59,6 +59,35 @@ class AssignmentSubmission(Base):
     late_assignment_percentage: Mapped[float]
     submitted_score: Mapped[float]
     current_max_score: Mapped[float]
+    
+class Notebook(Base):
+    __tablename__ = "notebooks"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    week_number: Mapped[Optional[int]]
+    assignment_type: Mapped[Optional[str]]
+    due_date: Mapped[datetime]
+    max_score: Mapped[float]
+    
+class NotebookSubmission(Base):
+    __tablename__ = "notebooks_submissions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    student_email: Mapped[str]
+    notebook: Mapped[str]
+    week_number: Mapped[Optional[int]]
+    assignment_type: Mapped[Optional[str]]
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+    )
+    student_seed: Mapped[int]
+    due_date: Mapped[datetime]
+    raw_score: Mapped[float]
+    late_assignment_percentage: Mapped[float]
+    submitted_score: Mapped[float]
+    current_max_score: Mapped[float]
 
 
 class QuestionSubmission(Base):
