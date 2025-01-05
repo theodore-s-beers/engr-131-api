@@ -4,6 +4,7 @@ import os
 import tempfile
 from typing import Annotated, Optional, TypeAlias
 import random
+import textwrap
 
 from fastapi import (
     Depends,
@@ -240,6 +241,7 @@ async def score_assignment(
     week_number: Optional[int] = results["week_num"]  # type: ignore
     assignment_type: Optional[str] = results["assignment_type"]  # type: ignore
     submission_time: str = results["student_information"]["timestamp"]
+    notebook_score: float = results["assignment_information"][notebook_title]["total_score"]
 
     if not week_number or not assignment_type:
         raise HTTPException(
@@ -308,58 +310,112 @@ async def score_assignment(
             current_max_score=current_best,
         ),
     )
+    
 
-    build_message = f"Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
-    build_message += f"Your raw score on this submission is {total_score} - out of {max_score_notebook}.\n"
+    # Function to format sections for printing
+    def format_section(title, content, width=70):
+        wrapped_content = textwrap.fill(content, width)
+        return f"{title}\n{'=' * len(title)}\n{wrapped_content}\n"
+
+    # Start building the message
+    build_message = ""
+
+    # Add the congratulatory header
+    build_message += format_section(
+        "🎉 Congratulations! 🎉",
+        f"{student_email}, you've successfully submitted your assignment for Week {week_number} - {assignment_type}! 🚀"
+    )
+
+    # Add raw score and status
+    build_message += format_section(
+        "📊 Raw Score",
+        f"Your raw score is {notebook_score}/{max_score_notebook}."
+    )
+
     if time_delta < 0:
-        build_message += (
-            "This submission is on time. You have received full credit -- Great Job.\n"
+        build_message += format_section(
+            "✅ Submission Status",
+            "On time! You've received full credit—Great Job! 🥳👏"
         )
     else:
-        build_message += f"This submission is {time_delta} seconds late.\n"
-        build_message += f"Your grade for this submission has been modified by {grade_modifier}%, of the points earned.\n"
+        build_message += format_section(
+            "⚠️ Submission Status",
+            f"Late by {time_delta} seconds. Your grade has been adjusted by {grade_modifier}% of the points earned."
+        )
 
-    percentage_score = 100 * total_score / max_score_notebook
-
-    build_message += f"Your current best percentage score for this notebook is {percentage_score}%.\n"
+    # Calculate percentage score
+    percentage_score = 100 * notebook_score / max_score_notebook
+    build_message += format_section(
+        "🎯 Percentage Score",
+        f"Your percentage score is {percentage_score:.2f}%."
+    )
 
     # Define a list of perfect messages
     perfect_messages = [
-        "Fantastic work! You're mastering this material like a pro! 🌟",
-        "Incredible! Your performance is shining like a star! 🌠",
-        "Amazing effort! You're at the top of your game! 🏆",
-        "Outstanding! You're demonstrating excellent mastery! 👏",
-        "Exceptional work! You're setting a gold standard! 🥇",
-        "You're crushing it! Keep up the incredible momentum! 🚀",
-        "Phenomenal! Your hard work is clearly paying off! 🌟",
-        "Bravo! You're making this look easy! 🎉",
-        "Superb performance! You should be very proud of yourself! 🌈",
-        "You're a rockstar! Keep dazzling us with your brilliance! 🎸",
+        "🌟 Fantastic work! You're mastering this material like a pro!",
+        "🌠 Incredible! Your performance is shining like a star!",
+        "🏆 Amazing effort! You're at the top of your game!",
+        "👏 Outstanding! You're demonstrating excellent mastery!",
+        "🥇 Exceptional work! You're setting a gold standard!",
+        "🚀 You're crushing it! Keep up the incredible momentum!",
+        "🌟 Phenomenal! Your hard work is clearly paying off!",
+        "🎉 Bravo! You're making this look easy!",
+        "🌈 Superb performance! You should be very proud of yourself!",
+        "🎸 You're a rockstar! Keep dazzling us with your brilliance!",
     ]
 
-    # Randomly select a perfect message
+    # Add motivational messages based on the score
     selected_message = random.choice(perfect_messages)
-
-    # Add endearing messages based on the score
     if percentage_score >= 100:
-        build_message += f"{selected_message}\n"
-    if percentage_score >= 90:
-        build_message += (
-            "Fantastic work! You're mastering this material like a pro! 🌟\n"
+        build_message += format_section("🎉 Special Note", selected_message)
+    elif percentage_score >= 90:
+        build_message += format_section(
+            "🌟 Motivation",
+            "Fantastic work! You're mastering this material like a pro! Keep it up! 💯"
         )
     elif 80 <= percentage_score < 90:
-        build_message += "Great effort! You're doing really well—keep pushing for that next level! 💪\n"
+        build_message += format_section(
+            "💪 Motivation",
+            "Great effort! You're doing really well—keep pushing for that next level! You’ve got this! 🚀"
+        )
     elif 70 <= percentage_score < 80:
-        build_message += "Good job! You're building a strong foundation—keep up the steady progress! 👍\n"
+        build_message += format_section(
+            "👍 Motivation",
+            "Good job! You're building a strong foundation—steady progress leads to mastery! 🌱"
+        )
     elif 60 <= percentage_score < 70:
-        build_message += "Keep going! You're on the right track—stay focused and you'll improve even more! 🌱\n"
+        build_message += format_section(
+            "🌱 Motivation",
+            "Keep going! You're on the right track—stay focused, and you'll keep improving! 💡"
+        )
     else:
-        build_message += "Don't get discouraged! Every submission is a step toward improvement. You've got this! 🚀\n"
+        build_message += format_section(
+            "🚀 Motivation",
+            "Don't be discouraged! Every step counts, and you're on the path to improvement. You’ve got this! 🌟"
+        )
 
-    build_message += f"Your current score for this submission {week_number} - {assignment_type} is {modified_grade}%.\n"
-    build_message += f"Your current best score for this notebook is {current_best}%.\n"
+    # Include detailed grade information
+    build_message += format_section(
+        "📝 Submission Grade",
+        f"Your grade for this submission is {modified_grade}%."
+    )
+    build_message += format_section(
+        "⭐ Best Score",
+        f"Your current best score for this assignment is {current_best}%."
+    )
+
+    # Add note about late deductions if applicable
     if time_delta > 0:
-        build_message += "This score includes all deductions for late grade submission if applicable.\n"
+        build_message += format_section(
+            "⏳ Late Submission Note",
+            "This score includes deductions for late submission. Aim for on-time submissions to maximize your grade! 🕒"
+        )
+
+    # Final motivational send-off
+    build_message += format_section(
+        "✨ Final Note",
+        "Keep up the amazing work, and don’t forget—every submission is a step toward your goals! 🎯✨"
+    )
 
     return {"message": f"{build_message}"}
 
