@@ -396,7 +396,7 @@ async def score_assignment(
 
     # Include detailed grade information
     build_message += format_section(
-        "\n\n\n📝 Submission Grade",
+        "\n📝 Submission Grade",
         f"Your grade for this submission is {modified_grade}%.\n\n"
     )
     build_message += format_section(
@@ -509,7 +509,7 @@ async def score_assignment(
     final_note = random.choice(motivational_notes)
 
     # Add it to the final motivational send-off
-    build_message += format_section("✨ Final Note", final_note)
+    build_message += format_section("\n✨ Final Note", final_note)
 
     return {"message": f"{build_message}"}
 
