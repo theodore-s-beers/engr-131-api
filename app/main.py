@@ -214,11 +214,11 @@ async def submit_question(
     return "Question responses and score saved to database"
 
 
-# TODO: Not working yet
 @app.post("/score-assignment")
 async def score_assignment(
     cred: Credentials,
     assignment_title: str,
+    notebook_title: str,
     db: Session = Depends(get_db),
     log_file: UploadFile = File(...),
 ):
@@ -268,6 +268,11 @@ async def score_assignment(
         crud_student.get_max_score_and_due_date_by_week_and_type(
             db=db, week_number=week_number, assignment_type=assignment_type
         )
+    )
+
+    max_score_notebook = crud_student.get_notebook_max_score_by_notebook(
+        db=db,
+        notebook_title=notebook_title,
     )
 
     if not due_date_db:
@@ -323,7 +328,7 @@ async def score_assignment(
 
     build_message = f"Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
     build_message += (
-        f"Your raw score on this submission is {total_score} - out of {max_score_db}.\n"
+        f"Your raw score on this submission is {total_score} - out of {max_score_notebook}.\n"
     )
     if time_delta < 0:
         build_message += (
@@ -333,9 +338,9 @@ async def score_assignment(
         build_message += f"This submission is {time_delta} seconds late.\n"
         build_message += f"Your grade for this submission has been modified by {grade_modifier}%, of the points earned.\n"
 
-    percentage_score = 100 * current_best / max_score_db
+    percentage_score = 100 * total_score / max_score_notebook
 
-    build_message += f"Your current best percentage score for this assignment is {percentage_score}%.\n"
+    build_message += f"Your current best percentage score for this notebook is {percentage_score}%.\n"
 
     # Define a list of perfect messages
     perfect_messages = [
@@ -369,6 +374,13 @@ async def score_assignment(
         build_message += "Keep going! You're on the right track—stay focused and you'll improve even more! 🌱\n"
     else:
         build_message += "Don't get discouraged! Every submission is a step toward improvement. You've got this! 🚀\n"
+
+    
+    build_message += f"Your current score for this submission {week_number} - {assignment_type} is {modified_grade}%.\n"
+    build_message += f"Your current best score for this notebook is {current_best}%.\n"
+    if time_delta > 0:
+        build_message += "This score includes all deductions for late grade submission if applicable.\n"
+    
 
     return {"message": f"{build_message}"}
 

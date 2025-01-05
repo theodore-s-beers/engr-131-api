@@ -243,6 +243,24 @@ def get_assignments_by_week_and_type(
     return db.execute(stmt).scalars().one_or_none()
 
 
+def get_notebook_max_score_by_notebook(
+    db: Session, notebook_title: str
+) -> Optional[float]:
+    """
+    Retrieve the maximum score for a notebook based on the notebook title.
+
+    Args:
+        db (Session): The database session to use for the query.
+        notebook (str): The title of the notebook to retrieve the maximum score for.
+
+    Returns:
+        Optional[float]: The maximum score for the notebook if found, otherwise None.
+    """
+    stmt = select(models.Notebook.max_score).where(
+        models.Notebook.title == notebook_title,
+    )
+    return db.execute(stmt).scalar_one_or_none()
+
 def get_max_score_and_due_date_by_week_and_type(
     db: Session, week_number: int, assignment_type: str
 ) -> tuple[Optional[float], Optional[datetime.datetime]]:
