@@ -59,7 +59,8 @@ class AssignmentSubmission(Base):
     late_assignment_percentage: Mapped[float]
     submitted_score: Mapped[float]
     current_max_score: Mapped[float]
-    
+
+
 class Notebook(Base):
     __tablename__ = "notebook"
 
@@ -69,7 +70,8 @@ class Notebook(Base):
     assignment_type: Mapped[Optional[str]]
     due_date: Mapped[datetime]
     max_score: Mapped[float]
-    
+
+
 class NotebookSubmission(Base):
     __tablename__ = "notebook_submissions"
 

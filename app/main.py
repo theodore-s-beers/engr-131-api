@@ -320,7 +320,6 @@ async def score_assignment(
             current_max_score=current_best,
         ),
     )
-    
 
     build_message = f"Congratulations! {student_email} You have submitted your assignment for week {week_number} - {assignment_type}.\n"
     build_message += (
@@ -473,16 +472,15 @@ async def get_all_assignments(cred: Credentials, db: Session = Depends(get_db)):
 
     return crud_admin.get_assignments(db=db)
 
+
 @app.post("/noteook", response_model=schemas.Notebook)
 async def add_notebook(
     cred: Credentials, notebook: schemas.Notebook, db: Session = Depends(get_db)
 ):
     verify_admin(cred)
-    
-    existing_notebook = crud_admin.get_notebook_by_title(
-        db=db, title=notebook.title
-    )
-    
+
+    existing_notebook = crud_admin.get_notebook_by_title(db=db, title=notebook.title)
+
     if existing_notebook:
         # Update existing notebook
         updated_notebook = crud_admin.update_notebook(
@@ -490,9 +488,10 @@ async def add_notebook(
         )
         if updated_notebook:
             return updated_notebook
-        
+
     # Create a new notebook
     return crud_admin.add_notebook(db=db, notebook=notebook)
+
 
 @app.post("/assignments", response_model=schemas.Assignment)
 async def add_assignment(

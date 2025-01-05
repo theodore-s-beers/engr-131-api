@@ -156,9 +156,8 @@ def get_best_score(
     result = db.execute(stmt).scalars().first()
     return result
 
-def add_notebook_submission(
-    db: Session, submission: schemas.NotebookSubmission
-):
+
+def add_notebook_submission(db: Session, submission: schemas.NotebookSubmission):
     db_submission = models.NotebookSubmission(
         student_email=submission.student_email,
         notebook=submission.notebook,
@@ -180,6 +179,7 @@ def add_notebook_submission(
     db.refresh(db_submission)
 
     return db_submission
+
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
     """
