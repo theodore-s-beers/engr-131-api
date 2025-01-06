@@ -340,7 +340,7 @@ async def score_assignment(
     else:
         build_message += format_section(
             "\n⚠️ Submission Status",
-            f"Late by {time_delta} seconds. Your grade has been adjusted by {grade_modifier}% of the points earned.\n\n",
+            f"Late by {time_delta} seconds. Your grade has been adjusted by {grade_modifier:.2f}% of the points earned.\n\n",
         )
 
     # Calculate percentage score
@@ -397,11 +397,11 @@ async def score_assignment(
     # Include detailed grade information
     build_message += format_section(
         "\n📝 Submission Grade",
-        f"Your grade for this submission is {modified_grade}%.\n\n",
+        f"Your grade for this submission is {modified_grade:.2f}%.\n\n",
     )
     build_message += format_section(
         "\n⭐ Best Score",
-        f"Your current best score for this assignment is {current_best}%.\n\n",
+        f"Your current best score for this assignment is {current_best:.2f}%.\n\n",
     )
 
     # Add note about late deductions if applicable
