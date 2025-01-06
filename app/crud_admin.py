@@ -369,6 +369,46 @@ def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
     return db_token
 
 
+from sqlalchemy.orm import Session
+from sqlalchemy import select, func
+from typing import List, Dict
+from datetime import datetime
+from models import AssignmentSubmission
+
+def get_best_scores_for_week_and_assignment(
+    db: Session,
+    week_number: int,
+    assignment: str
+) -> List[Dict[str, float]]:
+    """
+    Retrieve the best max score for each unique student for a given week number and assignment.
+
+    Args:
+        db (Session): The database session to use for the query.
+        week_number (int): The week number to filter submissions.
+        assignment (str): The assignment name to filter submissions.
+
+    Returns:
+        List[Dict[str, float]]: A list of dictionaries containing student email and their best score.
+    """
+    stmt = (
+        select(
+            AssignmentSubmission.student_email,
+            func.max(AssignmentSubmission.current_max_score).label("best_score")
+        )
+        .where(
+            AssignmentSubmission.week_number == week_number,
+            AssignmentSubmission.assignment == assignment
+        )
+        .group_by(AssignmentSubmission.student_email)
+    )
+    
+    result = db.execute(stmt).all()
+    
+    # Convert the result into a list of dictionaries
+    return [{"student_email": row.student_email, "best_score": row.best_score} for row in result]
+
+
 def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
     """
     Retrieve a token from the database by its value.
@@ -382,7 +422,6 @@ def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
     """
     stmt = select(models.Token).where(models.Token.value == value)
     return db.execute(stmt).scalar_one_or_none()
-
 
 def update_assignment(
     db: Session, title: str, assignment: schemas.Assignment

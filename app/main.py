@@ -725,6 +725,14 @@ async def get_all_students(
 
     return crud_admin.get_all_students(db=db, skip=skip, limit=limit)
 
+@app.get("/assignment-grades", response_model=list[schemas.AssignmentSubmission])
+async def get_assignment_grades(
+    cred: Credentials, db: Session = Depends(get_db)
+):
+    verify_admin(cred)
+    
+    return crud_admin.get_assignment_grades(db=db)
+
 
 @app.get("/students/{email}", response_model=schemas.Student)
 async def get_student_by_email(
