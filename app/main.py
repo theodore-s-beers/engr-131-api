@@ -706,15 +706,6 @@ async def create_token(
 
     return crud_admin.create_token(db=db, token_req=token)
 
-    # Josh - there is no problem with reusing a token value, as long as the token is not expired.
-    # if existing_token:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail="Token value already used",
-    #     )
-
-    return crud_admin.create_token(db=db, token_req=token_req)
-
 
 # TODO add an update token endpoint
 
