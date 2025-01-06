@@ -4,8 +4,9 @@ import os
 import random
 import tempfile
 import textwrap
-from typing import Annotated, List, Optional, TypeAlias
+from typing import Annotated, Any, List, Optional, TypeAlias
 
+from dateutil import parser as date_parser
 from fastapi import (
     Depends,
     FastAPI,
@@ -220,7 +221,7 @@ async def score_assignment(
     verify_student(cred)  # Verify the student's credentials
 
     # Get the public/private keypair for decryption
-    key_box = get_keybox()
+    key_box = get_key_box()
 
     # reads and decrypts the log file
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
@@ -256,15 +257,27 @@ async def score_assignment(
         )
     )
 
-    max_score_notebook = crud_student.get_notebook_max_score_by_notebook(
-        db=db,
-        notebook_title=notebook_title,
-    )
+    if not max_score_db:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Max score not found",
+        )
 
     if not due_date_db:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Due date not found",
+        )
+
+    max_score_notebook = crud_student.get_notebook_max_score_by_notebook(
+        db=db,
+        notebook_title=notebook_title,
+    )
+
+    if not max_score_notebook:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Max score for notebook not found",
         )
 
     time_delta = crud_student.calculate_time_delta_in_seconds(
@@ -274,22 +287,25 @@ async def score_assignment(
 
     grade_modifier = crud_student.get_modified_grade_percentage(time_delta)
 
-    assignments_graded = results["assignment_information"].keys()
-    total_score = 0
-    for assignment in assignments_graded:
-        total_score += results["assignment_information"][assignment]["total_score"]
+    assignment_info: dict[str, dict[str, Any]] = results["assignment_information"]
+    total_score = 0.0
+    for info in assignment_info.values():
+        next_score: float = info["total_score"]
+        total_score += next_score
 
     student_email = results["student_information"]["username"]
 
     modified_grade = total_score / max_score_db * grade_modifier / 100
 
     # checks the student database for their best score, and returns their current best score.
-    current_best = crud_student.get_best_score(
+    current_best_db = crud_student.get_best_score(
         db=db, student_email=student_email, assignment=assignment_title
     )
 
-    if current_best is not None:
-        current_best = float(current_best.current_max_score)
+    current_best = None
+
+    if current_best_db is not None:
+        current_best = float(current_best_db.current_max_score)
 
     if current_best is None or modified_grade > current_best:
         current_best = modified_grade
@@ -302,7 +318,7 @@ async def score_assignment(
             assignment=assignment_title,
             week_number=week_number,
             assignment_type=assignment_type,
-            timestamp=submission_time,
+            timestamp=date_parser.parse(submission_time),
             student_seed=results["student_information"]["student_id"],
             due_date=due_date_db,
             raw_score=total_score,
@@ -514,7 +530,7 @@ async def score_assignment(
     return {"message": f"{build_message}"}
 
 
-def get_keybox():
+def get_key_box():
     """
     Generate a public/private keypair for use with NaCl.
 
@@ -549,7 +565,7 @@ async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
     """
     verify_student(cred)
 
-    box = get_keybox()
+    box = get_key_box()
 
     try:
         encrypted_data = await log_file.read()
