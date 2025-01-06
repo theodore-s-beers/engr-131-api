@@ -17,7 +17,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Update submodule to latest
+      - name: Fetch submodule(s)
         run: |
           git submodule update --init --recursive
           git status
