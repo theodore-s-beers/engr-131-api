@@ -374,7 +374,7 @@ def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
 def get_assignment_grades(
     db: Session,
     week_number: int,
-    assignment: str
+    assignment_type: str,
 ) -> List[Dict[str, float]]:
     """
     Retrieve the best max score for each unique student for a given week number and assignment.
@@ -394,7 +394,7 @@ def get_assignment_grades(
         )
         .where(
             AssignmentSubmission.week_number == week_number,
-            AssignmentSubmission.assignment == assignment
+            AssignmentSubmission.assignment == assignment_type
         )
         .group_by(AssignmentSubmission.student_email)
     )

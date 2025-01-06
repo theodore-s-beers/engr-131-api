@@ -22,6 +22,9 @@ from pykubegrader.validate import read_logfile  # type: ignore
 from pykubegrader.log_parser.parse import LogParser  # type: ignore
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, Query
+from typing import List
+
 
 from . import crud_admin, crud_student, schemas
 from .auth import verify_admin, verify_student
@@ -725,13 +728,30 @@ async def get_all_students(
 
     return crud_admin.get_all_students(db=db, skip=skip, limit=limit)
 
-@app.get("/assignment-grades", response_model=list[schemas.AssignmentSubmission])
+@app.get("/assignment-grades", response_model=List[schemas.AssignmentSubmission])
 async def get_assignment_grades(
-    cred: Credentials, db: Session = Depends(get_db)
+    cred: dict = Depends(verify_admin),  # Verify admin credentials
+    db: Session = Depends(get_db),  # Database session dependency
+    assignment_type: str = Query(..., description="Type of assignment"),  # Query param
+    week_number: int = Query(..., description="Week number for the assignment")  # Query param
 ):
-    verify_admin(cred)
-    
-    return crud_admin.get_assignment_grades(db=db)
+    """
+    Retrieve assignment grades filtered by assignment type and week number.
+
+    Args:
+        cred (dict): Verified admin credentials.
+        db (Session): Database session.
+        assignment_type (str): Type of the assignment.
+        week_number (int): Week number for filtering grades.
+
+    Returns:
+        List[AssignmentSubmission]: List of assignment grades.
+    """
+    # Call the CRUD function to get grades
+    return crud_admin.get_assignment_grades(
+        db=db, assignment_type=assignment_type, week_number=week_number
+    )
+
 
 
 @app.get("/students/{email}", response_model=schemas.Student)
