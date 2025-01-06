@@ -38,7 +38,9 @@ jobs:
         run: |
           git add .
           if ! git diff-index --quiet HEAD; then
-            git pull --rebase   # Ensure the branch is up-to-date
+            git stash push -m "Stashing changes before pulling"  # Stash uncommitted changes
+            git pull --rebase                                  # Pull latest changes and rebase
+            git stash pop                                      # Reapply stashed changes
             git commit -m "Update submodule and move solution files"
             git push
           else
