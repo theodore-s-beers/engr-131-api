@@ -21,9 +21,11 @@ from datetime import datetime, timedelta
 from typing import Optional, Sequence
 
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
-
+from typing import List, Dict
+from datetime import datetime
+from models import AssignmentSubmission
 from . import models, schemas
 
 #
@@ -368,12 +370,6 @@ def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
 
     return db_token
 
-
-from sqlalchemy.orm import Session
-from sqlalchemy import select, func
-from typing import List, Dict
-from datetime import datetime
-from models import AssignmentSubmission
 
 def get_assignment_grades(
     db: Session,
