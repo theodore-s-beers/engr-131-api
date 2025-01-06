@@ -221,7 +221,7 @@ name = "click"
 version = "8.1.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/96/d3/f04c7bfcf5c1862a2a5b845c6b2b360488cf47af55dfa79c98f6a6bf98b5/click-8.1.7.tar.gz", hash = "sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de", size = 336121 }
 wheels = [
@@ -341,7 +341,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.0" },
     { name = "mypy", specifier = ">=1.13.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.9" },
-    { name = "pykubegrader", specifier = ">=0.2.5" },
+    { name = "pykubegrader", specifier = ">=0.2.20" },
     { name = "pynacl", specifier = ">=1.5.0" },
     { name = "pytz" },
     { name = "ruff", specifier = ">=0.6.7" },
@@ -749,6 +749,15 @@ wheels = [
 ]
 
 [[package]]
+name = "nest-asyncio"
+version = "1.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/83/f8/51569ac65d696c8ecbee95938f89d4abf00f47d58d48f6fbabfe8f0baefe/nest_asyncio-1.6.0.tar.gz", hash = "sha256:6f172d5449aca15afd6c646851f4e31e02c598d553a667e38cafa997cfec55fe", size = 7418 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a0/c4/c2971a3ba4c6103a3d10c4b0f24f461ddc027f0f09763220cf35ca1401b3/nest_asyncio-1.6.0-py3-none-any.whl", hash = "sha256:87af6efd6b5e897c81050477ef65c62e2b2f35d51703cae01aff2905b1852e1c", size = 5195 },
+]
+
+[[package]]
 name = "numpy"
 version = "2.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1058,12 +1067,14 @@ wheels = [
 
 [[package]]
 name = "pykubegrader"
-version = "0.2.5"
+version = "0.2.20"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "httpx" },
     { name = "ipython" },
     { name = "mypy" },
     { name = "nbformat" },
+    { name = "nest-asyncio" },
     { name = "numpy" },
     { name = "panel" },
     { name = "pynacl" },
@@ -1077,9 +1088,9 @@ dependencies = [
     { name = "types-requests" },
     { name = "types-setuptools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cf/f5/410273a546e3f085808bc8606ddf804ca5fccfadd1fec47e4095e631c1c4/pykubegrader-0.2.5.tar.gz", hash = "sha256:4360584c2e54a3e515c08f3a93b26a1adbf8d3b7aec6f09c001559b021c8c081", size = 503485 }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/f4/c74097f00ea52d46e71d80d16c2d03307541dd4f0db131559b87c08795bd/pykubegrader-0.2.20.tar.gz", hash = "sha256:f1e6bcfed4af128316a19917f75445db7929f01c2074fdc437affc5fe190a7a8", size = 507295 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cc/7a/5822d0afc5a2b1426440ae13eb195b48d3160ac2f71b9f307063300e59a0/PyKubeGrader-0.2.5-py3-none-any.whl", hash = "sha256:b0ab61bffc47ced2d1efd2cefb6b921b9bb988762dce83b987e2a32602d2b285", size = 48306 },
+    { url = "https://files.pythonhosted.org/packages/ec/fe/012651b40bd94190fa3f2eb55cec78957f0149c4cfad92c8484ec0c6aa81/PyKubeGrader-0.2.20-py3-none-any.whl", hash = "sha256:c965b4b8c206ba578de6428540e4d816d6946c1ce4676752082545591549c1a8", size = 53663 },
 ]
 
 [[package]]
@@ -1516,7 +1527,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [
