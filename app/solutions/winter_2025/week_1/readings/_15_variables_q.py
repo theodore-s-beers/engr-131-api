@@ -1,6 +1,6 @@
 from typing import Any
 
-total_points: float = [1.0, 1.0, 1.0, 2.0, 2.0]
+total_points: list[float] = [1.0, 1.0, 1.0, 2.0, 2.0]
 
 solutions: dict[str, Any] = {
     "q1-1-Descriptive-Variable-Names": "To make the code easier to understand and maintain",
