@@ -347,7 +347,7 @@ async def score_assignment(
     percentage_score = 100 * notebook_score / max_score_notebook
     build_message += format_section(
         "\n🎯 Percentage Score",
-        f"Your percentage score is {percentage_score:.2f}%.\n\n",
+        f"Your percentage score for this notebook is {percentage_score:.2f}%.\n\n",
     )
 
     # Define a list of perfect messages
