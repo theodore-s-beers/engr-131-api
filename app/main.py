@@ -329,7 +329,7 @@ async def score_assignment(
     # Add raw score and status
     build_message += format_section(
         "\n📊 Raw Score",
-        f"Your raw score is {notebook_score}/{max_score_notebook}.\n\n",
+        f"Your raw score is {notebook_score}/{max_score_notebook}. -- the total assignment is out of {max_score_db} points\n\n",
     )
 
     if time_delta < 0:
