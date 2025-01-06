@@ -707,9 +707,6 @@ async def create_token(
     return crud_admin.create_token(db=db, token_req=token)
 
 
-# TODO add an update token endpoint
-
-
 @app.get("/scoring/{email}", response_model=list[schemas.ScoredSubmission])
 async def get_scoring_subs_by_email(
     cred: Credentials, email: str, db: Session = Depends(get_db)
