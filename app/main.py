@@ -694,8 +694,9 @@ async def add_student(
 async def create_token(
     cred: Credentials, token: schemas.TokenRequest, db: Session = Depends(get_db)
 ):
-    verify_admin(cred)
-
+    # try:
+    #     verify_admin(cred)
+    # except: 
     crud_admin.verify_user_access(user=token.requester)
 
     existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
