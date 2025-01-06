@@ -375,7 +375,7 @@ from typing import List, Dict
 from datetime import datetime
 from models import AssignmentSubmission
 
-def get_best_scores_for_week_and_assignment(
+def get_assignment_grades(
     db: Session,
     week_number: int,
     assignment: str
