@@ -281,7 +281,7 @@ async def score_assignment(
 
     student_email = results["student_information"]["username"]
 
-    modified_grade = total_score * grade_modifier / 100
+    modified_grade = total_score / max_score_db * grade_modifier / 100
 
     # checks the student database for their best score, and returns their current best score.
     current_best = crud_student.get_best_score(
