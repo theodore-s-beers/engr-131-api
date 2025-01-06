@@ -25,7 +25,6 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from typing import List, Dict
 from datetime import datetime
-from models import AssignmentSubmission
 from . import models, schemas
 
 #
@@ -389,14 +388,14 @@ def get_assignment_grades(
     """
     stmt = (
         select(
-            AssignmentSubmission.student_email,
-            func.max(AssignmentSubmission.current_max_score).label("best_score")
+            models.AssignmentSubmission.student_email,
+            func.max(models.AssignmentSubmission.current_max_score).label("best_score")
         )
         .where(
-            AssignmentSubmission.week_number == week_number,
-            AssignmentSubmission.assignment == assignment_type
+            models.AssignmentSubmission.week_number == week_number,
+            models.AssignmentSubmission.assignment == assignment_type
         )
-        .group_by(AssignmentSubmission.student_email)
+        .group_by(models.AssignmentSubmission.student_email)
     )
     
     result = db.execute(stmt).all()
