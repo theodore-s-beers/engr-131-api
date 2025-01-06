@@ -369,19 +369,19 @@ def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
     return db_token
 
 
-def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
-    """
-    Retrieve a token from the database by its value.
+# def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
+#     """
+#     Retrieve a token from the database by its value.
 
-    Args:
-        db (Session): The database session to use for the query.
-        value (str): The value of the token to retrieve.
+#     Args:
+#         db (Session): The database session to use for the query.
+#         value (str): The value of the token to retrieve.
 
-    Returns:
-        Optional[models.Token]: The token object if found, otherwise None.
-    """
-    stmt = select(models.Token).where(models.Token.value == value)
-    return db.execute(stmt).scalar_one_or_none()
+#     Returns:
+#         Optional[models.Token]: The token object if found, otherwise None.
+#     """
+#     stmt = select(models.Token).where(models.Token.value == value)
+#     return db.execute(stmt).scalar_one_or_none()
 
 
 def update_assignment(

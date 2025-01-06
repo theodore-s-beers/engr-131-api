@@ -698,11 +698,11 @@ async def create_token(
 
     crud_admin.verify_user_access(user=token.requester)
 
-    existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
-    if existing_token:
-        updated_token = crud_admin.update_token(db=db, token=token)
-        if updated_token:
-            return updated_token
+    # existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
+    # if existing_token:
+    #     updated_token = crud_admin.update_token(db=db, token=token)
+    #     if updated_token:
+    #         return updated_token
 
     return crud_admin.create_token(db=db, token_req=token)
 
