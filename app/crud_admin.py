@@ -30,16 +30,19 @@ from . import models, schemas
 # Students table
 #
 
+
 def TAs():
-    return ["cnp68",
-            "jca92",
-            "tb3367",
-            "xz498",
-            "dak329",
-            "rg897",
-            "jce63",
-            "ag4328",
+    return [
+        "cnp68",
+        "jca92",
+        "tb3367",
+        "xz498",
+        "dak329",
+        "rg897",
+        "jce63",
+        "ag4328",
     ]
+
 
 def verify_user_access(user: str):
     if user in TAs():
@@ -49,6 +52,7 @@ def verify_user_access(user: str):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User does not have access to this operation",
         )
+
 
 def add_student(db: Session, student: schemas.Student) -> models.Student:
     """
@@ -218,6 +222,7 @@ def add_notebook(db: Session, notebook: schemas.Notebook) -> models.Notebook:
 
     return db_notebook
 
+
 def get_notebooks(db: Session) -> Sequence[models.Notebook]:
     """
     Retrieve all notebooks from the database.
@@ -230,6 +235,7 @@ def get_notebooks(db: Session) -> Sequence[models.Notebook]:
     """
     stmt = select(models.Notebook)
     return db.execute(stmt).scalars().all()
+
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
     """
@@ -353,7 +359,7 @@ def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
         value=token_req.value,
         created=created,
         expires=expires,
-        requester=token_req.requester
+        requester=token_req.requester,
     )
 
     db.add(db_token)
@@ -413,11 +419,9 @@ def update_assignment(
 
     return db_assignment
 
+
 # TODO: Add a way to track history of all tokens
-def update_token(
-    db:Session, token: schemas.TokenRequest
-):
-    
+def update_token(db: Session, token: schemas.TokenRequest):
     stmt = select(models.Token).where(models.Token.value == token.value)
     db_token = db.execute(stmt).scalar_one_or_none()
 
@@ -436,6 +440,7 @@ def update_token(
     db.refresh(db_token)
 
     return db_token
+
 
 def update_notebook(
     db: Session, title: str, notebook: schemas.Notebook
