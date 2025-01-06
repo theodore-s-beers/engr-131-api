@@ -16,7 +16,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-          submodules: recursive
+
+      - name: Update submodule to latest
+        run: |
+          git submodule update --init --recursive
+          git submodule update --remote --recursive
+          git status
 
       - name: Set up venv; fetch version; update
         run: |
