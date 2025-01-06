@@ -10,7 +10,7 @@ dependencies = [
   "fastapi[standard]>=0.115.0",
   "mypy>=1.13.0",
   "psycopg2-binary>=2.9.9",
-  "pykubegrader>=0.2.21",
+  "pykubegrader>=0.2.23",
   "pynacl>=1.5.0",
   "ruff>=0.6.7",
   "pytz",
