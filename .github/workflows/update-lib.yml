@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          submodules: recursive
 
       - name: Set up venv; fetch version; update
         run: |
@@ -27,6 +28,7 @@ jobs:
             echo "Fetched PyKubeGrader version: $PK_VER"
             uv add "pykubegrader>=$PK_VER"
             uv sync
+            echo "PK_VER=$PK_VER" >> $GITHUB_ENV
           else
             echo "Failed to fetch version from PyPI"
             exit 1
@@ -39,5 +41,6 @@ jobs:
             git commit -m "Update PyKubeGrader to ver. >=$PK_VER"
             git push
           else
+            echo "PyKubeGrader already at version >=$PK_VER"
             echo "No changes to commit"
           fi
