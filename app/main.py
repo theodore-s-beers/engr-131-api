@@ -1,10 +1,10 @@
 import base64
 import datetime
 import os
-import tempfile
-from typing import Annotated, Optional, TypeAlias
 import random
+import tempfile
 import textwrap
+from typing import Annotated, List, Optional, TypeAlias
 
 from fastapi import (
     Depends,
@@ -18,13 +18,10 @@ from fastapi import (
 )
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from nacl.public import Box, PrivateKey, PublicKey
-from pykubegrader.validate import read_logfile  # type: ignore
 from pykubegrader.log_parser.parse import LogParser  # type: ignore
+from pykubegrader.validate import read_logfile  # type: ignore
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, Query
-from typing import List
-
 
 from . import crud_admin, crud_student, schemas
 from .auth import verify_admin, verify_student
@@ -699,7 +696,7 @@ async def create_token(
 ):
     # try:
     #     verify_admin(cred)
-    # except: 
+    # except:
     crud_admin.verify_user_access(user=token.requester)
 
     existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
@@ -728,12 +725,15 @@ async def get_all_students(
 
     return crud_admin.get_all_students(db=db, skip=skip, limit=limit)
 
+
 @app.get("/assignment-grades", response_model=List[schemas.AssignmentSubmission])
 async def get_assignment_grades(
     cred: dict = Depends(verify_admin),  # Verify admin credentials
     db: Session = Depends(get_db),  # Database session dependency
     assignment_type: str = Query(..., description="Type of assignment"),  # Query param
-    week_number: int = Query(..., description="Week number for the assignment")  # Query param
+    week_number: int = Query(
+        ..., description="Week number for the assignment"
+    ),  # Query param
 ):
     """
     Retrieve assignment grades filtered by assignment type and week number.
@@ -751,7 +751,6 @@ async def get_assignment_grades(
     return crud_admin.get_assignment_grades(
         db=db, assignment_type=assignment_type, week_number=week_number
     )
-
 
 
 @app.get("/students/{email}", response_model=schemas.Student)

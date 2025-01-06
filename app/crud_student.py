@@ -26,6 +26,7 @@ Dependencies:
 """
 
 import datetime
+from datetime import timezone
 from typing import Optional
 
 import numpy as np
@@ -33,7 +34,6 @@ from dateutil import parser as date_parser
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from datetime import timezone
 
 from . import models, schemas
 from .live_scorer import Score

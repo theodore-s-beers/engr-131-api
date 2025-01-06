@@ -18,13 +18,12 @@ Functions:
 """
 
 from datetime import datetime, timedelta
-from typing import Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 
 from fastapi import HTTPException, status
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from typing import List, Dict
-from datetime import datetime
+
 from . import models, schemas
 
 #
@@ -389,19 +388,22 @@ def get_assignment_grades(
     stmt = (
         select(
             models.AssignmentSubmission.student_email,
-            func.max(models.AssignmentSubmission.current_max_score).label("best_score")
+            func.max(models.AssignmentSubmission.current_max_score).label("best_score"),
         )
         .where(
             models.AssignmentSubmission.week_number == week_number,
-            models.AssignmentSubmission.assignment == assignment_type
+            models.AssignmentSubmission.assignment == assignment_type,
         )
         .group_by(models.AssignmentSubmission.student_email)
     )
-    
+
     result = db.execute(stmt).all()
-    
+
     # Convert the result into a list of dictionaries
-    return [{"student_email": row.student_email, "best_score": row.best_score} for row in result]
+    return [
+        {"student_email": row.student_email, "best_score": row.best_score}
+        for row in result
+    ]
 
 
 def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
@@ -417,6 +419,7 @@ def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
     """
     stmt = select(models.Token).where(models.Token.value == value)
     return db.execute(stmt).scalar_one_or_none()
+
 
 def update_assignment(
     db: Session, title: str, assignment: schemas.Assignment
