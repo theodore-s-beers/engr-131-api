@@ -26,10 +26,8 @@ Dependencies:
 """
 
 import datetime
-from datetime import timezone
 from typing import Optional
 
-from dateutil import parser as date_parser
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -284,42 +282,3 @@ def get_max_score_and_due_date_by_week_and_type(
     )
     result = db.execute(stmt).one_or_none()
     return (result[0], result[1]) if result else (None, None)
-
-
-def calculate_time_delta_in_seconds(
-    submission_time: str | datetime.datetime, due_date: str | datetime.datetime
-) -> int:
-    """
-    Calculate the time delta between two timestamps in seconds.
-
-    Args:
-        submission_time (str): The first timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
-        due_date (str): The second timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
-
-    Returns:
-        int: The time delta between the two timestamps in seconds.
-    """
-
-    # Parse the timestamps into datetime objects with the timezone
-    # submission_time = datetime.strptime(submission_time, "%Y-%m-%d %H:%M:%S%z")
-    submission_datetime = (
-        date_parser.parse(submission_time)
-        if isinstance(submission_time, str)
-        else submission_time
-    )
-    # due_date = datetime.strptime(due_date, "%Y-%m-%d %H:%M:%S%z")
-    due_datetime = (
-        date_parser.parse(due_date) if isinstance(due_date, str) else due_date
-    )
-
-    # Ensure both timestamps are timezone-aware (default to UTC if timezone is missing)
-    if submission_datetime.tzinfo is None:
-        submission_datetime = submission_datetime.replace(tzinfo=timezone.utc)
-    if due_datetime.tzinfo is None:
-        due_datetime = due_datetime.replace(tzinfo=timezone.utc)
-
-    # Calculate the time delta
-    time_delta = submission_datetime - due_datetime
-
-    # Return the time delta in seconds
-    return int(time_delta.total_seconds())

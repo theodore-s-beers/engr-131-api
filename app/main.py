@@ -27,7 +27,12 @@ from .db import SessionLocal
 from .live_scorer import Score, calculate_score
 from .models import Token
 from .question import valid_submission
-from .utils import MOTIVATIONAL_NOTES, get_key_box, get_modified_grade_percentage
+from .utils import (
+    MOTIVATIONAL_NOTES,
+    calculate_delta_seconds,
+    get_grade_modifier,
+    get_key_box,
+)
 
 app = FastAPI()
 
@@ -231,12 +236,9 @@ async def score_assignment(
             detail="Max score for notebook not found",
         )
 
-    time_delta = crud_student.calculate_time_delta_in_seconds(
-        submission_time,
-        due_date_db,
-    )
+    time_delta = calculate_delta_seconds(submission_time, due_date_db)
 
-    grade_modifier = get_modified_grade_percentage(time_delta)
+    grade_modifier = get_grade_modifier(time_delta)
 
     assignment_info: dict[str, dict[str, Any]] = results["assignment_information"]
     total_score = 0.0
