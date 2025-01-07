@@ -327,7 +327,7 @@ async def score_assignment(
             current_max_score=current_best,
         ),
     )
-    
+
     crud_student.add_notebook_submission(
         db=db,
         submission=schemas.NotebookSubmission(
@@ -340,7 +340,7 @@ async def score_assignment(
             due_date=due_date_db,
             raw_score=notebook_score,
             late_assignment_percentage=grade_modifier,
-            submitted_score=grade_modifier/100*notebook_score/max_score_notebook,
+            submitted_score=grade_modifier / 100 * notebook_score / max_score_notebook,
             current_max_score=max_score_notebook,
         ),
     )
