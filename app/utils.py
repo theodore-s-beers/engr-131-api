@@ -1,6 +1,9 @@
 import base64
+import datetime
 import os
 
+import numpy as np
+from dateutil import parser as date_parser
 from fastapi import HTTPException, status
 from nacl.public import Box, PrivateKey, PublicKey
 
@@ -99,6 +102,42 @@ MOTIVATIONAL_NOTES: list[str] = [
 ]
 
 
+def calculate_delta_seconds(
+    submission_time: str | datetime.datetime, due_date: str | datetime.datetime
+) -> int:
+    """
+    Calculate the time delta between two timestamps in seconds.
+
+    Args:
+        submission_time (str): The first timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
+        due_date (str): The second timestamp in the format "YYYY-MM-DD HH:MM:SS TZ".
+
+    Returns:
+        int: The time delta between the two timestamps in seconds.
+    """
+
+    # Parse timestamps into datetime objects if necessary
+    submission_datetime = (
+        date_parser.parse(submission_time)
+        if isinstance(submission_time, str)
+        else submission_time
+    )
+    due_datetime = (
+        date_parser.parse(due_date) if isinstance(due_date, str) else due_date
+    )
+
+    # Add timezone (default UTC) if not present
+    if submission_datetime.tzinfo is None:
+        submission_datetime = submission_datetime.replace(tzinfo=datetime.UTC)
+    if due_datetime.tzinfo is None:
+        due_datetime = due_datetime.replace(tzinfo=datetime.UTC)
+
+    time_delta = submission_datetime - due_datetime
+
+    # Return time delta in seconds, as int
+    return int(time_delta.total_seconds())
+
+
 def get_key_box() -> Box:
     """
     Generate a public/private keypair for use with NaCl.
@@ -121,3 +160,27 @@ def get_key_box() -> Box:
     box = Box(server_private_key, client_public_key)
 
     return box
+
+
+def get_grade_modifier(time_delta: int) -> float:
+    """
+    Calculate the grade modifier based on the time delta between two timestamps.
+
+    Args:
+        time_delta (int): The time delta between two timestamps in seconds.
+
+    Returns:
+        float: The grade modifier percentage based on the time delta.
+    """
+
+    # Parameters
+    Q0 = 100  # Initial quantity
+    Q_min = 40  # Minimum grade/quantity
+    k = 6.88e-5  # Decay constant per minute
+
+    # Exponential decay function with piecewise definition
+    Q: float = Q0 * np.exp(-k * time_delta / 60)  # Convert seconds to minutes
+    Q = np.maximum(Q, Q_min)  # Apply floor condition
+    Q = np.minimum(Q, 100)  # Apply ceiling condition
+
+    return Q

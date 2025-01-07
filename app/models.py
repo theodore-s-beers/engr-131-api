@@ -24,11 +24,10 @@ class Student(Base):
 
 
 #
-# Assignments
+# Assignments/notebooks
 #
 
 
-# TODO: Grading mechanism
 class Assignment(Base):
     __tablename__ = "assignments"
 
@@ -62,7 +61,7 @@ class AssignmentSubmission(Base):
 
 
 class Notebook(Base):
-    __tablename__ = "notebook"
+    __tablename__ = "notebooks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str]
