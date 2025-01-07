@@ -26,26 +26,25 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas
 
+TA_USERS: list[str] = [
+    "ag4328",
+    "cnp68",
+    "dak329",
+    "jca92",
+    "jce63",
+    "rg897",
+    "tb3367",
+    "xz498",
+]
+
+
 #
 # Students table
 #
 
 
-def TAs():
-    return [
-        "cnp68",
-        "jca92",
-        "tb3367",
-        "xz498",
-        "dak329",
-        "rg897",
-        "jce63",
-        "ag4328",
-    ]
-
-
 def verify_user_access(user: str):
-    if user in TAs():
+    if user in TA_USERS:
         return True
     else:
         raise HTTPException(
