@@ -1,6 +1,7 @@
 import base64
 import os
 
+import numpy as np
 from fastapi import HTTPException, status
 from nacl.public import Box, PrivateKey, PublicKey
 
@@ -121,3 +122,27 @@ def get_key_box() -> Box:
     box = Box(server_private_key, client_public_key)
 
     return box
+
+
+def get_modified_grade_percentage(time_delta: int) -> float:
+    """
+    Calculate the grade modifier based on the time delta between two timestamps.
+
+    Args:
+        time_delta (int): The time delta between two timestamps in seconds.
+
+    Returns:
+        float: The grade modifier percentage based on the time delta.
+    """
+
+    # Parameters
+    Q0 = 100  # Initial quantity
+    Q_min = 40  # Minimum grade/quantity
+    k = 6.88e-5  # Decay constant per minute
+
+    # Exponential decay function with piecewise definition
+    Q = Q0 * np.exp(-k * time_delta / 60)  # Convert seconds to minutes
+    Q = np.maximum(Q, Q_min)  # Apply floor condition
+    Q = np.minimum(Q, 100)  # Apply ceiling condition
+
+    return Q

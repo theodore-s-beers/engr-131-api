@@ -27,7 +27,7 @@ from .db import SessionLocal
 from .live_scorer import Score, calculate_score
 from .models import Token
 from .question import valid_submission
-from .utils import MOTIVATIONAL_NOTES, get_key_box
+from .utils import MOTIVATIONAL_NOTES, get_key_box, get_modified_grade_percentage
 
 app = FastAPI()
 
@@ -236,7 +236,7 @@ async def score_assignment(
         due_date_db,
     )
 
-    grade_modifier = crud_student.get_modified_grade_percentage(time_delta)
+    grade_modifier = get_modified_grade_percentage(time_delta)
 
     assignment_info: dict[str, dict[str, Any]] = results["assignment_information"]
     total_score = 0.0

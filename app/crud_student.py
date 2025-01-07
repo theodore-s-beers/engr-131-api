@@ -29,7 +29,6 @@ import datetime
 from datetime import timezone
 from typing import Optional
 
-import numpy as np
 from dateutil import parser as date_parser
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -324,27 +323,3 @@ def calculate_time_delta_in_seconds(
 
     # Return the time delta in seconds
     return int(time_delta.total_seconds())
-
-
-def get_modified_grade_percentage(time_delta: int) -> float:
-    """
-    Calculate the grade modifier based on the time delta between two timestamps.
-
-    Args:
-        time_delta (int): The time delta between two timestamps in seconds.
-
-    Returns:
-        float: The grade modifier percentage based on the time delta.
-    """
-
-    # Parameters
-    Q0 = 100  # Initial quantity
-    Q_min = 40  # Minimum grade/quantity
-    k = 6.88e-5  # Decay constant per minute
-
-    # Exponential decay function with piecewise definition
-    Q = Q0 * np.exp(-k * time_delta / 60)  # Convert seconds to minutes
-    Q = np.maximum(Q, Q_min)  # Apply floor condition
-    Q = np.minimum(Q, 100)  # Apply ceiling condition
-
-    return Q
