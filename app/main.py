@@ -151,53 +151,6 @@ async def login(cred: Credentials):
     return "Student credentials verified"
 
 
-@app.post("/submit-question")
-async def submit_question(
-    cred: Credentials, req: schemas.QuestionSubmission, db: Session = Depends(get_db)
-):
-    """
-    Endpoint for submitting question responses and scores.
-
-    Args:
-        cred (Credentials): Basic authentication credentials for the student.
-        req (schemas.QuestionSubmission): The question submission details.
-        db (Session): Database session dependency.
-
-    Returns:
-        str: A message indicating successful submission to the database.
-    """
-    verify_student(cred)
-
-    existing_student = crud_admin.get_student_by_email(db=db, email=req.student_email)
-    if not existing_student:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Student registration not found",
-        )
-
-    validity = valid_submission(
-        term=req.term,
-        assignment=req.assignment,
-        question=req.question,
-        responses=req.responses,
-        score=req.score,
-    )
-
-    if isinstance(validity, str):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=validity,
-        )
-
-    # Raises HTTPException (500) if assignment not in database
-    _db_submission = crud_student.add_question_submission(
-        db=db,
-        submission=req,
-    )
-
-    return "Question responses and score saved to database"
-
-
 @app.post("/score-assignment")
 async def score_assignment(
     cred: Credentials,
@@ -528,6 +481,53 @@ async def score_assignment(
     build_message += format_section("\n✨ Final Note", final_note)
 
     return {"message": f"{build_message}"}
+
+
+@app.post("/submit-question")
+async def submit_question(
+    cred: Credentials, req: schemas.QuestionSubmission, db: Session = Depends(get_db)
+):
+    """
+    Endpoint for submitting question responses and scores.
+
+    Args:
+        cred (Credentials): Basic authentication credentials for the student.
+        req (schemas.QuestionSubmission): The question submission details.
+        db (Session): Database session dependency.
+
+    Returns:
+        str: A message indicating successful submission to the database.
+    """
+    verify_student(cred)
+
+    existing_student = crud_admin.get_student_by_email(db=db, email=req.student_email)
+    if not existing_student:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Student registration not found",
+        )
+
+    validity = valid_submission(
+        term=req.term,
+        assignment=req.assignment,
+        question=req.question,
+        responses=req.responses,
+        score=req.score,
+    )
+
+    if isinstance(validity, str):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=validity,
+        )
+
+    # Raises HTTPException (500) if assignment not in database
+    _db_submission = crud_student.add_question_submission(
+        db=db,
+        submission=req,
+    )
+
+    return "Question responses and score saved to database"
 
 
 def get_key_box():
