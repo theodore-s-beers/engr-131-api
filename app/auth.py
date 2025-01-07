@@ -15,10 +15,15 @@ Dependencies:
 """
 
 import os
+from typing import NoReturn
 
 import bcrypt
 from fastapi import HTTPException, status
 from fastapi.security import HTTPBasicCredentials
+
+#
+# Environment variables
+#
 
 adm_pw_env = os.getenv("ADMIN_PASSWORD") or ""
 adm_pw = bcrypt.hashpw(adm_pw_env.encode(), bcrypt.gensalt())
@@ -26,8 +31,27 @@ adm_pw = bcrypt.hashpw(adm_pw_env.encode(), bcrypt.gensalt())
 stud_pw_env = os.getenv("STUDENT_PASSWORD") or ""
 stud_pw = bcrypt.hashpw(stud_pw_env.encode(), bcrypt.gensalt())
 
+#
+# Constants
+#
 
-def auth_exception():
+TA_USERS: list[str] = [
+    "ag4328",
+    "cnp68",
+    "dak329",
+    "jca92",
+    "jce63",
+    "rg897",
+    "tb3367",
+    "xz498",
+]
+
+#
+# Functions
+#
+
+
+def auth_exception() -> NoReturn:
     """
     Raises an HTTP 401 Unauthorized exception with a specific error message and headers.
 
@@ -41,7 +65,7 @@ def auth_exception():
     )
 
 
-def verify_admin(cred: HTTPBasicCredentials):
+def verify_admin(cred: HTTPBasicCredentials) -> None:
     """
     Verifies if the provided credentials belong to an admin user.
 
@@ -55,7 +79,7 @@ def verify_admin(cred: HTTPBasicCredentials):
         raise auth_exception()
 
 
-def verify_student(cred: HTTPBasicCredentials):
+def verify_student(cred: HTTPBasicCredentials) -> None:
     """
     Verifies if the provided credentials match the expected student credentials.
 
@@ -69,3 +93,11 @@ def verify_student(cred: HTTPBasicCredentials):
         cred.password.encode(), stud_pw
     ):
         raise auth_exception()
+
+
+def verify_ta_user(username: str) -> None:
+    if username not in TA_USERS:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have access to this operation",
+        )

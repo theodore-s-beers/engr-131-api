@@ -22,7 +22,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import crud_admin, crud_student, schemas
-from .auth import verify_admin, verify_student
+from .auth import verify_admin, verify_student, verify_ta_user
 from .db import SessionLocal
 from .live_scorer import Score, calculate_score
 from .models import Token
@@ -573,13 +573,9 @@ async def add_student(
 
 
 @app.post("/tokens", response_model=schemas.Token)
-async def create_token(
-    cred: Credentials, token: schemas.TokenRequest, db: Session = Depends(get_db)
-):
-    # try:
-    #     verify_admin(cred)
-    # except:
-    crud_admin.verify_user_access(user=token.requester)
+async def create_token(token: schemas.TokenRequest, db: Session = Depends(get_db)):
+    # This endpoint is accessible to instructors and TAs
+    verify_ta_user(username=token.requester)
 
     existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
     if existing_token:
@@ -592,12 +588,10 @@ async def create_token(
 
 @app.get("/assignment-grades", response_model=List[schemas.AssignmentSubmission])
 async def get_assignment_grades(
-    cred: dict = Depends(verify_admin),  # Verify admin credentials
-    db: Session = Depends(get_db),  # Database session dependency
-    assignment_type: str = Query(..., description="Type of assignment"),  # Query param
-    week_number: int = Query(
-        ..., description="Week number for the assignment"
-    ),  # Query param
+    cred: Credentials,
+    db: Session = Depends(get_db),
+    assignment_type: str = Query(..., description="Type of assignment"),
+    week_number: int = Query(..., description="Week number for the assignment"),
 ):
     """
     Retrieve assignment grades filtered by assignment type and week number.
@@ -611,7 +605,8 @@ async def get_assignment_grades(
     Returns:
         List[AssignmentSubmission]: List of assignment grades.
     """
-    # Call the CRUD function to get grades
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
     return crud_admin.get_assignment_grades(
         db=db, assignment_type=assignment_type, week_number=week_number
     )
