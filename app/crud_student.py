@@ -35,6 +35,32 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 from .live_scorer import Score
 
+#
+# Create
+#
+
+
+def add_notebook_submission(db: Session, submission: schemas.NotebookSubmission):
+    db_submission = models.NotebookSubmission(
+        student_email=submission.student_email,
+        notebook=submission.notebook,
+        week_number=submission.week_number,
+        assignment_type=submission.assignment_type,
+        timestamp=submission.timestamp,
+        student_seed=submission.student_seed,
+        due_date=submission.due_date,
+        raw_score=submission.raw_score,
+        late_assignment_percentage=submission.late_assignment_percentage,
+        submitted_score=submission.submitted_score,
+        current_max_score=submission.current_max_score,
+    )
+
+    db.add(db_submission)
+    db.commit()
+    db.refresh(db_submission)
+
+    return db_submission
+
 
 def add_question_submission(
     db: Session,
@@ -123,6 +149,56 @@ def add_scoring_submission(
     return db_submission
 
 
+def add_submitted_assignment_score(
+    db: Session, submission: schemas.AssignmentSubmission
+):
+    db_submission = models.AssignmentSubmission(
+        student_email=submission.student_email,
+        assignment=submission.assignment,
+        week_number=submission.week_number,
+        assignment_type=submission.assignment_type,
+        timestamp=submission.timestamp,
+        student_seed=submission.student_seed,
+        due_date=submission.due_date,
+        raw_score=submission.raw_score,
+        late_assignment_percentage=submission.late_assignment_percentage,
+        submitted_score=submission.submitted_score,
+        current_max_score=submission.current_max_score,
+    )
+
+    db.add(db_submission)
+    db.commit()
+    db.refresh(db_submission)
+
+    return db_submission
+
+
+#
+# Read
+#
+
+
+def get_assignments_by_week_and_type(
+    db: Session, week_number: int, assignment_type: str
+) -> Optional[models.Assignment]:
+    """
+    Retrieve assignments from the database based on week number and assignment type.
+
+    Args:
+        db (Session): The database session to use for the query.
+        week_number (int): The week number to filter assignments by.
+        assignment_type (str): The type of assignments to retrieve.
+
+    Returns:
+        list[models.Assignment]: A list of assignment objects matching the criteria.
+    """
+    stmt = select(models.Assignment).where(
+        models.Assignment.week_number == week_number,
+        models.Assignment.assignment_type == assignment_type,
+    )
+    return db.execute(stmt).scalars().one_or_none()
+
+
 def get_best_score(
     db: Session, student_email: str, assignment: str
 ) -> Optional[models.AssignmentSubmission]:
@@ -154,111 +230,6 @@ def get_best_score(
     return result
 
 
-def add_notebook_submission(db: Session, submission: schemas.NotebookSubmission):
-    db_submission = models.NotebookSubmission(
-        student_email=submission.student_email,
-        notebook=submission.notebook,
-        week_number=submission.week_number,
-        assignment_type=submission.assignment_type,
-        timestamp=submission.timestamp,
-        student_seed=submission.student_seed,
-        due_date=submission.due_date,
-        raw_score=submission.raw_score,
-        late_assignment_percentage=submission.late_assignment_percentage,
-        submitted_score=submission.submitted_score,
-        current_max_score=submission.current_max_score,
-    )
-
-    db.add(db_submission)
-
-    db.commit()
-
-    db.refresh(db_submission)
-
-    return db_submission
-
-
-def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
-    """
-    Retrieve a notebook from the database by its title.
-
-    Args:
-        db (Session): The database session to use for the query.
-        title (str): The title of the notebook to retrieve.
-
-    Returns:
-        Optional[models.Notebook]: The notebook object if found, otherwise None.
-    """
-    stmt = select(models.Notebook).where(models.Notebook.title == title)
-    return db.execute(stmt).scalar_one_or_none()
-
-
-def add_submitted_assignment_score(
-    db: Session, submission: schemas.AssignmentSubmission
-):
-    db_submission = models.AssignmentSubmission(
-        student_email=submission.student_email,
-        assignment=submission.assignment,
-        week_number=submission.week_number,
-        assignment_type=submission.assignment_type,
-        timestamp=submission.timestamp,
-        student_seed=submission.student_seed,
-        due_date=submission.due_date,
-        raw_score=submission.raw_score,
-        late_assignment_percentage=submission.late_assignment_percentage,
-        submitted_score=submission.submitted_score,
-        current_max_score=submission.current_max_score,
-    )
-
-    db.add(db_submission)
-
-    db.commit()
-
-    db.refresh(db_submission)
-
-    return db_submission
-
-
-def get_assignments_by_week_and_type(
-    db: Session, week_number: int, assignment_type: str
-) -> Optional[models.Assignment]:
-    """
-    Retrieve assignments from the database based on week number and assignment type.
-
-    Args:
-        db (Session): The database session to use for the query.
-        week_number (int): The week number to filter assignments by.
-        assignment_type (str): The type of assignments to retrieve.
-
-    Returns:
-        list[models.Assignment]: A list of assignment objects matching the criteria.
-    """
-    stmt = select(models.Assignment).where(
-        models.Assignment.week_number == week_number,
-        models.Assignment.assignment_type == assignment_type,
-    )
-    return db.execute(stmt).scalars().one_or_none()
-
-
-def get_notebook_max_score_by_notebook(
-    db: Session, notebook_title: str
-) -> Optional[float]:
-    """
-    Retrieve the maximum score for a notebook based on the notebook title.
-
-    Args:
-        db (Session): The database session to use for the query.
-        notebook (str): The title of the notebook to retrieve the maximum score for.
-
-    Returns:
-        Optional[float]: The maximum score for the notebook if found, otherwise None.
-    """
-    stmt = select(models.Notebook.max_score).where(
-        models.Notebook.title == notebook_title,
-    )
-    return db.execute(stmt).scalar_one_or_none()
-
-
 def get_max_score_and_due_date_by_week_and_type(
     db: Session, week_number: int, assignment_type: str
 ) -> tuple[Optional[float], Optional[datetime.datetime]]:
@@ -282,3 +253,37 @@ def get_max_score_and_due_date_by_week_and_type(
     )
     result = db.execute(stmt).one_or_none()
     return (result[0], result[1]) if result else (None, None)
+
+
+def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
+    """
+    Retrieve a notebook from the database by its title.
+
+    Args:
+        db (Session): The database session to use for the query.
+        title (str): The title of the notebook to retrieve.
+
+    Returns:
+        Optional[models.Notebook]: The notebook object if found, otherwise None.
+    """
+    stmt = select(models.Notebook).where(models.Notebook.title == title)
+    return db.execute(stmt).scalar_one_or_none()
+
+
+def get_notebook_max_score_by_notebook(
+    db: Session, notebook_title: str
+) -> Optional[float]:
+    """
+    Retrieve the maximum score for a notebook based on the notebook title.
+
+    Args:
+        db (Session): The database session to use for the query.
+        notebook (str): The title of the notebook to retrieve the maximum score for.
+
+    Returns:
+        Optional[float]: The maximum score for the notebook if found, otherwise None.
+    """
+    stmt = select(models.Notebook.max_score).where(
+        models.Notebook.title == notebook_title,
+    )
+    return db.execute(stmt).scalar_one_or_none()
