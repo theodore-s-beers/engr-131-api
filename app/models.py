@@ -24,11 +24,10 @@ class Student(Base):
 
 
 #
-# Assignments
+# Assignments/notebooks
 #
 
 
-# TODO: Grading mechanism
 class Assignment(Base):
     __tablename__ = "assignments"
 
