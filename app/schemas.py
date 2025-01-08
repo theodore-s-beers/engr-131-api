@@ -17,7 +17,7 @@ class QuestionScoreFinal:
 class Assignment(BaseModel):
     title: str
     description: Optional[str] = None
-    max_score: int
+    max_score: float
     due_date: datetime
     week_number: int
     assignment_type: str
