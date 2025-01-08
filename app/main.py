@@ -578,15 +578,22 @@ async def add_student(
 
 
 @app.post("/tokens", response_model=schemas.Token)
-async def create_token(token: schemas.TokenRequest, db: Session = Depends(get_db)):
-    # This endpoint is accessible to instructors and TAs
-    verify_ta_user(username=token.requester)
+async def create_token(
+    cred: Credentials, token: schemas.TokenRequest, db: Session = Depends(get_db)
+):
+    try:
+        # This endpoint is accessible to instructors and TAs
+        # TODO: Make this more secure
+        verify_ta_user(username=token.requester)
+    except HTTPException:
+        # Admins can of course also create tokens
+        verify_admin(cred)  # Raises HTTPException (401) on failure
 
     existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
+
+    # TODO: Revisit this logic; does it make sense to update an old token?
     if existing_token:
-        updated_token = crud_admin.update_token(db=db, token=token)
-        if updated_token:
-            return updated_token
+        return crud_admin.update_token(db=db, token=token)
 
     return crud_admin.create_token(db=db, token_req=token)
 
