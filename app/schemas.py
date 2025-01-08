@@ -76,7 +76,7 @@ class Token(BaseModel):
 class TokenRequest(BaseModel):
     value: str
     duration: int = 120
-    requester: str
+    requester: str = "admin"
 
 
 class AssignmentSubmission(BaseModel):
