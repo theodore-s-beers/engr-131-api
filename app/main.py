@@ -582,12 +582,12 @@ async def create_token(
     cred: Credentials, token: schemas.TokenRequest, db: Session = Depends(get_db)
 ):
     try:
-        # This endpoint is accessible to instructors and TAs
-        # TODO: Make this more secure
-        verify_ta_user(username=token.requester)
-    except HTTPException:
-        # Admins can of course also create tokens
+        # Admins can of course create tokens
         verify_admin(cred)  # Raises HTTPException (401) on failure
+    except HTTPException:
+        # This endpoint will, however, be used primarily by TAs
+        # TODO: Make this non-spoofable if possible
+        verify_ta_user(username=token.requester)  # Raises HTTPException (403)
 
     existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
 
