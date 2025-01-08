@@ -39,10 +39,10 @@ def parse_args():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description="Copy solution files.")
     parser.add_argument(
-        "--branch", 
-        type=str, 
-        default=DEFAULT_BRANCH, 
-        help="Specify the submodule branch to use (default: 'main')."
+        "--branch",
+        type=str,
+        default=DEFAULT_BRANCH,
+        help="Specify the submodule branch to use (default: 'main').",
     )
     return parser.parse_args()
 
@@ -58,13 +58,20 @@ def ensure_submodule_branch(branch: str) -> None:
 
         # Check if the submodule exists
         if not submodule_dir.exists():
-            print("Submodule directory does not exist. Did you initialize the submodule?", file=sys.stderr)
+            print(
+                "Submodule directory does not exist. Did you initialize the submodule?",
+                file=sys.stderr,
+            )
             sys.exit(1)
 
         # Run Git commands to ensure the submodule is on the correct branch
         subprocess.run(["git", "-C", str(submodule_dir), "fetch"], check=True)
-        subprocess.run(["git", "-C", str(submodule_dir), "checkout", branch], check=True)
-        subprocess.run(["git", "-C", str(submodule_dir), "pull", "origin", branch], check=True)
+        subprocess.run(
+            ["git", "-C", str(submodule_dir), "checkout", branch], check=True
+        )
+        subprocess.run(
+            ["git", "-C", str(submodule_dir), "pull", "origin", branch], check=True
+        )
 
     except subprocess.CalledProcessError as e:
         print(f"Error checking out branch {branch} in submodule: {e}", file=sys.stderr)
