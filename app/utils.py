@@ -1,6 +1,8 @@
 import base64
 import datetime
 import os
+import random
+import textwrap
 
 import numpy as np
 from dateutil import parser as date_parser
@@ -101,6 +103,19 @@ MOTIVATIONAL_NOTES: list[str] = [
     "Your future self will thank you for the effort you're putting in today! 🕒",
 ]
 
+PERFECT_MESSAGES: list[str] = [
+    "🌟 Fantastic work! You're mastering this material like a pro!",
+    "🌠 Incredible! Your performance is shining like a star!",
+    "🏆 Amazing effort! You're at the top of your game!",
+    "👏 Outstanding! You're demonstrating excellent mastery!",
+    "🥇 Exceptional work! You're setting a gold standard!",
+    "🚀 You're crushing it! Keep up the incredible momentum!",
+    "🌟 Phenomenal! Your hard work is clearly paying off!",
+    "🎉 Bravo! You're making this look easy!",
+    "🌈 Superb performance! You should be very proud of yourself!",
+    "🎸 You're a rockstar! Keep dazzling us with your brilliance!",
+]
+
 
 def calculate_delta_seconds(
     submission_time: str | datetime.datetime, due_date: str | datetime.datetime
@@ -136,6 +151,11 @@ def calculate_delta_seconds(
 
     # Return time delta in seconds, as int
     return int(time_delta.total_seconds())
+
+
+def format_section(title: str, content: str, width: int = 70) -> str:
+    wrapped_content = textwrap.fill(content, width)
+    return f"{title}\n{'=' * len(title)}\n{wrapped_content}\n"
 
 
 def get_key_box() -> Box:
@@ -184,3 +204,33 @@ def get_grade_modifier(time_delta: int) -> float:
     Q = np.minimum(Q, 100)  # Apply ceiling condition
 
     return Q
+
+
+def score_based_message(percentage: float) -> str:
+    if percentage >= 100:
+        return format_section("\n🎉 Special Note", random.choice(PERFECT_MESSAGES))
+    elif percentage >= 90:
+        return format_section(
+            "🌟 Motivation",
+            "Fantastic work! You're mastering this material like a pro! Keep it up! 💯",
+        )
+    elif 80 <= percentage < 90:
+        return format_section(
+            "💪 Motivation",
+            "Great effort! You're doing really well—keep pushing for that next level! You’ve got this! 🚀",
+        )
+    elif 70 <= percentage < 80:
+        return format_section(
+            "👍 Motivation",
+            "Good job! You're building a strong foundation—steady progress leads to mastery! 🌱",
+        )
+    elif 60 <= percentage < 70:
+        return format_section(
+            "🌱 Motivation",
+            "Keep going! You're on the right track—stay focused, and you'll keep improving! 💡",
+        )
+    else:
+        return format_section(
+            "🚀 Motivation",
+            "Don't be discouraged! Every step counts, and you're on the path to improvement. You’ve got this! 🌟",
+        )

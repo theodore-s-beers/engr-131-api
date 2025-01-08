@@ -1,6 +1,5 @@
 import random
 import tempfile
-import textwrap
 from typing import Annotated, Any, List, Optional, TypeAlias
 
 from dateutil import parser as date_parser
@@ -19,17 +18,11 @@ from pykubegrader.log_parser.parse import LogParser  # type: ignore
 from pykubegrader.validate import read_logfile  # type: ignore
 from sqlalchemy.orm import Session
 
-from . import crud_admin, crud_student, schemas
+from . import crud_admin, crud_student, schemas, utils
 from .auth import verify_admin, verify_student, verify_ta_user
 from .db import SessionLocal
 from .live_scorer import Score, calculate_score
 from .question import valid_submission
-from .utils import (
-    MOTIVATIONAL_NOTES,
-    calculate_delta_seconds,
-    get_grade_modifier,
-    get_key_box,
-)
 
 app = FastAPI()
 
@@ -174,7 +167,7 @@ async def score_assignment(
     verify_student(cred)  # Verify the student's credentials
 
     # Get the public/private keypair for decryption
-    key_box = get_key_box()
+    key_box = utils.get_key_box()
 
     # reads and decrypts the log file
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
@@ -233,9 +226,9 @@ async def score_assignment(
             detail="Max score for notebook not found",
         )
 
-    time_delta = calculate_delta_seconds(submission_time, due_date_db)
+    time_delta = utils.calculate_delta_seconds(submission_time, due_date_db)
 
-    grade_modifier = get_grade_modifier(time_delta)
+    grade_modifier = utils.get_grade_modifier(time_delta)
 
     assignment_info: dict[str, dict[str, Any]] = results["assignment_information"]
     total_score = 0.0
@@ -295,110 +288,64 @@ async def score_assignment(
         ),
     )
 
-    # Function to format sections for printing
-    def format_section(title, content, width=70):
-        wrapped_content = textwrap.fill(content, width)
-        return f"{title}\n{'=' * len(title)}\n{wrapped_content}\n"
-
     # Start building the message
     build_message = ""
 
     # Add the congratulatory header
-    build_message += format_section(
+    build_message += utils.format_section(
         "🎉 Congratulations! 🎉",
         f"{student_email}, you've successfully submitted your assignment for Week {week_number} - {assignment_type}! 🚀\n\n",
     )
 
     # Add raw score and status
-    build_message += format_section(
+    build_message += utils.format_section(
         "\n📊 Raw Score",
         f"Your raw score is {notebook_score}/{max_score_notebook}. -- on this assignment you have earned {total_score}/{max_score_db} points\n\n",
     )
 
     if time_delta < 0:
-        build_message += format_section(
+        build_message += utils.format_section(
             "\n✅ Submission Status",
             "On time! You've received full credit—Great Job! 🥳👏\n\n",
         )
     else:
-        build_message += format_section(
+        build_message += utils.format_section(
             "\n⚠️ Submission Status",
             f"Late by {time_delta} seconds. Your grade has been adjusted by {grade_modifier:.2f}% of the points earned.\n\n",
         )
 
     # Calculate percentage score
     percentage_score = 100 * notebook_score / max_score_notebook
-    build_message += format_section(
+    build_message += utils.format_section(
         "\n🎯 Percentage Score",
         f"Your percentage score for this notebook is {percentage_score:.2f}%.\n\n",
     )
 
-    # Define a list of perfect messages
-    perfect_messages = [
-        "🌟 Fantastic work! You're mastering this material like a pro!",
-        "🌠 Incredible! Your performance is shining like a star!",
-        "🏆 Amazing effort! You're at the top of your game!",
-        "👏 Outstanding! You're demonstrating excellent mastery!",
-        "🥇 Exceptional work! You're setting a gold standard!",
-        "🚀 You're crushing it! Keep up the incredible momentum!",
-        "🌟 Phenomenal! Your hard work is clearly paying off!",
-        "🎉 Bravo! You're making this look easy!",
-        "🌈 Superb performance! You should be very proud of yourself!",
-        "🎸 You're a rockstar! Keep dazzling us with your brilliance!",
-    ]
-
     # Add motivational messages based on the score
-    selected_message = random.choice(perfect_messages)
-    if percentage_score >= 100:
-        build_message += format_section("\n🎉 Special Note", selected_message)
-    elif percentage_score >= 90:
-        build_message += format_section(
-            "🌟 Motivation",
-            "Fantastic work! You're mastering this material like a pro! Keep it up! 💯",
-        )
-    elif 80 <= percentage_score < 90:
-        build_message += format_section(
-            "💪 Motivation",
-            "Great effort! You're doing really well—keep pushing for that next level! You’ve got this! 🚀",
-        )
-    elif 70 <= percentage_score < 80:
-        build_message += format_section(
-            "👍 Motivation",
-            "Good job! You're building a strong foundation—steady progress leads to mastery! 🌱",
-        )
-    elif 60 <= percentage_score < 70:
-        build_message += format_section(
-            "🌱 Motivation",
-            "Keep going! You're on the right track—stay focused, and you'll keep improving! 💡",
-        )
-    else:
-        build_message += format_section(
-            "🚀 Motivation",
-            "Don't be discouraged! Every step counts, and you're on the path to improvement. You’ve got this! 🌟",
-        )
+    build_message += utils.score_based_message(percentage_score)
 
     # Include detailed grade information
-    build_message += format_section(
+    build_message += utils.format_section(
         "\n📝 Submission Grade",
         f"Your grade for this submission is {modified_grade*100:.2f}%.\n\n",
     )
-    build_message += format_section(
+    build_message += utils.format_section(
         "\n⭐ Best Score",
         f"Your current best score for this assignment is {100*current_best:.2f}%.\n\n",
     )
 
     # Add note about late deductions if applicable
     if time_delta > 0:
-        build_message += format_section(
+        build_message += utils.format_section(
             "\n⏳ Late Submission Note",
             "This score includes deductions for late submission. Aim for on-time submissions to maximize your grade! 🕒\n\n",
         )
 
     # Randomly select one motivational note
-    final_note = random.choice(MOTIVATIONAL_NOTES)
+    final_note = random.choice(utils.MOTIVATIONAL_NOTES)
 
     # Add it to the final motivational send-off
-    build_message += format_section("\n✨ Final Note", final_note)
+    build_message += utils.format_section("\n✨ Final Note", final_note)
 
     return {"message": f"{build_message}"}
 
@@ -461,7 +408,7 @@ async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
     """
     verify_student(cred)
 
-    box = get_key_box()
+    box = utils.get_key_box()
 
     try:
         encrypted_data = await log_file.read()
