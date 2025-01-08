@@ -1,4 +1,3 @@
-import datetime
 import random
 import tempfile
 import textwrap
@@ -18,14 +17,12 @@ from fastapi import (
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pykubegrader.log_parser.parse import LogParser  # type: ignore
 from pykubegrader.validate import read_logfile  # type: ignore
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import crud_admin, crud_student, schemas
 from .auth import verify_admin, verify_student, verify_ta_user
 from .db import SessionLocal
 from .live_scorer import Score, calculate_score
-from .models import Token
 from .question import valid_submission
 from .utils import (
     MOTIVATIONAL_NOTES,
@@ -484,7 +481,7 @@ async def validate_log_decryption(cred: Credentials, log_file: UploadFile):
 @app.get("/validate-token/{token_value}")
 async def validate_token(
     cred: Credentials, token_value: str, db: Session = Depends(get_db)
-):
+) -> dict[str, str]:
     """
     Validate if a token exists and is not expired.
 
@@ -500,21 +497,10 @@ async def validate_token(
     """
     verify_student(cred)
 
-    stmt = select(Token).where(Token.value == token_value)
-    token = db.execute(stmt).scalar_one_or_none()
+    # Raises 404 if token not found, 418 if already expired
+    expiry = crud_student.get_token_expiry(db=db, value=token_value)
 
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Token not found"
-        )
-
-    # TODO: Return 200 in this case, with a message indicating the token is expired
-    if token.expires < datetime.datetime.now(datetime.UTC):
-        raise HTTPException(
-            status_code=status.HTTP_418_IM_A_TEAPOT, detail="Token has expired"
-        )
-
-    return {"status": "valid", "expires_at": token.expires.isoformat()}
+    return {"status": "valid", "expires_at": expiry}
 
 
 # ----------------------
