@@ -287,3 +287,21 @@ def get_notebook_max_score_by_notebook(
         models.Notebook.title == notebook_title,
     )
     return db.execute(stmt).scalar_one_or_none()
+
+
+def get_token_expiry(db: Session, value: str) -> str:
+    stmt = select(models.Token).where(models.Token.value == value)
+    db_token = db.execute(stmt).scalar_one_or_none()
+
+    if not db_token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Token not found"
+        )
+
+    # TODO: Return 200 in this case, with a message indicating the token is expired
+    if db_token.expires < datetime.datetime.now(datetime.UTC):
+        raise HTTPException(
+            status_code=status.HTTP_418_IM_A_TEAPOT, detail="Token has expired"
+        )
+
+    return db_token.expires.isoformat()
