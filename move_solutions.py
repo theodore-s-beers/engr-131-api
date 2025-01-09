@@ -1,10 +1,10 @@
+import argparse
+import os
 import shutil
+import subprocess  # To handle Git commands for the submodule
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-import os
-import argparse
-import subprocess  # To handle Git commands for the submodule
 
 #
 # Types
