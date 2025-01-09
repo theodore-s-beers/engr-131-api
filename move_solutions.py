@@ -75,13 +75,10 @@ def ensure_submodule_branch(branch: str) -> None:
 
         # Run Git commands to ensure the submodule is on the correct branch
         subprocess.run(["git", "-C", str(SUBMODULE_BASE), "fetch"], check=True)
-        subprocess.run(
-            ["git", "-C", str(SUBMODULE_BASE), "checkout", branch], check=True
-        )
+        subprocess.run(["git", "-C", str(SUBMODULE_BASE), "switch", branch], check=True)
         subprocess.run(
             ["git", "-C", str(SUBMODULE_BASE), "pull", "origin", branch], check=True
         )
-
     except subprocess.CalledProcessError as e:
         print(f"Error checking out submodule branch {branch}: {e}", file=sys.stderr)
         sys.exit(1)
@@ -136,6 +133,19 @@ def copy_files(solutions: dict[Path, SolutionDetails]) -> None:
         shutil.copy(path, module_dir / path.name)
 
 
+def switch_to_main() -> None:
+    try:
+        print("Switching back to main branch...", file=sys.stderr)
+
+        subprocess.run(["git", "-C", str(SUBMODULE_BASE), "switch", "main"], check=True)
+        subprocess.run(
+            ["git", "-C", str(SUBMODULE_BASE), "pull", "origin", "main"], check=True
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"Error switching to main branch: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 #
 # Execute
 #
@@ -152,6 +162,9 @@ def main() -> None:
     paths = get_solution_paths()
     solutions = get_module_details(paths)
     copy_files(solutions)
+
+    # Switch back to main branch
+    switch_to_main()
 
 
 if __name__ == "__main__":
