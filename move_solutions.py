@@ -1,10 +1,10 @@
+import argparse
+import os
 import shutil
+import subprocess  # To handle Git commands for the submodule
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-import os
-import argparse
-import subprocess  # To handle Git commands for the submodule
 
 #
 # Types
@@ -28,79 +28,80 @@ TERM = "winter_2025"  # Constant for now
 DEFAULT_BRANCH = os.getenv("BRANCH", "main")  # Default branch is "main"
 
 BASE_PATH = Path("app") / "solutions" / TERM
-SUBMODULE_BASE_PATH = Path("vendor") / "course-content"
+SUBMODULE_BASE = Path("vendor") / "course-content"
 
 #
 # Functions
 #
 
 
-def parse_args():
-    """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(description="Copy solution files.")
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Copy solution files")
+
     parser.add_argument(
         "--branch",
         type=str,
         default=DEFAULT_BRANCH,
-        help="Specify the submodule branch to use (default: 'main').",
+        help="Specify the submodule branch to use (default 'main')",
     )
+
     return parser.parse_args()
 
 
 def ensure_submodule_branch(branch: str) -> None:
-    """Ensure the submodule is on the correct branch."""
     try:
-        # Change directory to the submodule
-        submodule_dir = SUBMODULE_BASE_PATH
-
-        # Debug: Print current branch
-        print(f"Switching submodule to branch: {branch}", file=sys.stderr)
-
-        # Check if the submodule exists
-        if not submodule_dir.exists():
+        if not SUBMODULE_BASE.exists():
             print(
                 "Submodule directory does not exist. Did you initialize the submodule?",
                 file=sys.stderr,
             )
             sys.exit(1)
 
-        # Run Git commands to ensure the submodule is on the correct branch
-        subprocess.run(["git", "-C", str(submodule_dir), "fetch"], check=True)
-        subprocess.run(
-            ["git", "-C", str(submodule_dir), "checkout", branch], check=True
-        )
-        subprocess.run(
-            ["git", "-C", str(submodule_dir), "pull", "origin", branch], check=True
-        )
+        print(f"Switching submodule to branch: {branch}", file=sys.stderr)
 
+        actual_branches = subprocess.run(
+            ["git", "-C", str(SUBMODULE_BASE), "branch", "-r"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+
+        if f"origin/{branch}" not in actual_branches:
+            print(
+                f"Branch {branch} does not exist in the remote repository",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+        # Run Git commands to ensure the submodule is on the correct branch
+        subprocess.run(["git", "-C", str(SUBMODULE_BASE), "fetch"], check=True)
+        subprocess.run(["git", "-C", str(SUBMODULE_BASE), "switch", branch], check=True)
+        subprocess.run(
+            ["git", "-C", str(SUBMODULE_BASE), "pull", "origin", branch], check=True
+        )
     except subprocess.CalledProcessError as e:
-        print(f"Error checking out branch {branch} in submodule: {e}", file=sys.stderr)
+        print(f"Error checking out submodule branch {branch}: {e}", file=sys.stderr)
         sys.exit(1)
 
 
-def get_solution_paths(branch: str) -> list[Path]:
-    """Get solution paths for a given branch."""
-    branch_path = SUBMODULE_BASE_PATH
-
-    # Debug: Print branch path
-    print(f"Looking for solution files in: {branch_path}", file=sys.stderr)
-
+def get_solution_paths() -> list[Path]:
     paths = [
         path
-        for path in branch_path.rglob("*_q.py")
+        for path in SUBMODULE_BASE.rglob("*_q.py")
         if "blah" not in path.parts
         and "_solutions" in path.parts
         and "autograder" in path.parts
     ]
 
     if not paths:
-        print(f"No solution files found in branch path: {branch_path}", file=sys.stderr)
+        print("No solution files found", file=sys.stderr)
+        sys.exit(1)
 
     return paths
 
 
 def get_module_details(paths: list[Path]) -> dict[Path, SolutionDetails]:
-    solutions = {}
+    solutions: dict[Path, SolutionDetails] = {}
 
     for path in paths:
         try:
@@ -132,22 +133,38 @@ def copy_files(solutions: dict[Path, SolutionDetails]) -> None:
         shutil.copy(path, module_dir / path.name)
 
 
+def switch_to_main() -> None:
+    try:
+        print("Switching back to main branch...", file=sys.stderr)
+
+        subprocess.run(["git", "-C", str(SUBMODULE_BASE), "switch", "main"], check=True)
+        subprocess.run(
+            ["git", "-C", str(SUBMODULE_BASE), "pull", "origin", "main"], check=True
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"Error switching to main branch: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 #
 # Execute
 #
 
 
 def main() -> None:
-    args = parse_args()  # Get command-line arguments
-    branch = args.branch  # Use branch from command-line args
+    args = parse_args()
+    branch = args.branch  # Use branch from command-line args (default "main")
 
-    # Ensure the submodule is checked out to the correct branch
+    # Ensure submodule is checked out to correct branch
     ensure_submodule_branch(branch)
 
-    # Get the solution paths and process
-    paths = get_solution_paths(branch)
+    # Get solution paths and process
+    paths = get_solution_paths()
     solutions = get_module_details(paths)
     copy_files(solutions)
+
+    # Switch back to main branch
+    switch_to_main()
 
 
 if __name__ == "__main__":
