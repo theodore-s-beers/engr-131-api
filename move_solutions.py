@@ -59,6 +59,20 @@ def ensure_submodule_branch(branch: str) -> None:
 
         print(f"Switching submodule to branch: {branch}", file=sys.stderr)
 
+        actual_branches = subprocess.run(
+            ["git", "-C", str(SUBMODULE_BASE), "branch", "-r"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+
+        if f"origin/{branch}" not in actual_branches:
+            print(
+                f"Branch {branch} does not exist in the remote repository",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
         # Run Git commands to ensure the submodule is on the correct branch
         subprocess.run(["git", "-C", str(SUBMODULE_BASE), "fetch"], check=True)
         subprocess.run(
@@ -69,7 +83,7 @@ def ensure_submodule_branch(branch: str) -> None:
         )
 
     except subprocess.CalledProcessError as e:
-        print(f"Error checking out branch {branch} in submodule: {e}", file=sys.stderr)
+        print(f"Error checking out submodule branch {branch}: {e}", file=sys.stderr)
         sys.exit(1)
 
 
