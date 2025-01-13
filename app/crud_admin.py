@@ -468,6 +468,11 @@ def get_all_assignment_subs(db: Session) -> Sequence[models.AssignmentSubmission
     return db.execute(stmt).scalars().all()
 
 
+def get_all_submission_emails(db: Session) -> List[str]:
+    stmt = select(models.AssignmentSubmission.student_email).distinct()
+    return [row.student_email for row in db.execute(stmt).all()]
+
+
 def get_assignment_grades(
     db: Session,
     week_number: int,

@@ -687,6 +687,13 @@ async def get_all_assignment_subs(cred: Credentials, db: Session = Depends(get_d
     return crud_admin.get_all_assignment_subs(db)
 
 
+@app.get("/testing/get-all-submission-emails")
+async def get_all_submission_emails(cred: Credentials, db: Session = Depends(get_db)):
+    verify_testing(cred)  # Raises HTTPException (401) on failure
+
+    return crud_admin.get_all_submission_emails(db)
+
+
 @app.get("/testing/get-all-grades")
 async def get_all_grades(cred: Credentials):
     verify_testing(cred)  # Raises HTTPException (401) on failure
