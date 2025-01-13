@@ -498,3 +498,38 @@ def get_assignment_grades(
         {"student_email": row.student_email, "best_score": row.best_score}
         for row in result
     ]
+
+
+def get_grades_testing(db: Session):
+    student_submission_map = {}
+
+    assignments = get_assignments(db)
+
+    for assignment in assignments:
+        all_relevant_submissions_stmt = select(models.AssignmentSubmission).where(
+            models.AssignmentSubmission.assignment == assignment.title,
+            models.AssignmentSubmission.week_number == assignment.week_number,
+        )
+        all_relevant_submissions = (
+            db.execute(all_relevant_submissions_stmt).scalars().all()
+        )
+
+        for submission in all_relevant_submissions:
+            if submission.student_email not in student_submission_map:
+                student_submission_map[submission.student_email] = submission
+                continue
+
+            for i, student_submission in enumerate(
+                student_submission_map[submission.student_email]
+            ):
+                if (
+                    student_submission.assignment == submission.assignment
+                    and student_submission.current_max_score
+                    < submission.current_max_score
+                ):
+                    student_submission_map[submission.student_email][i] = submission
+                    break
+            else:
+                student_submission_map[submission.student_email].append(submission)
+
+    return student_submission_map

@@ -31,6 +31,9 @@ adm_pw = bcrypt.hashpw(adm_pw_env.encode(), bcrypt.gensalt())
 stud_pw_env = os.getenv("STUDENT_PASSWORD") or ""
 stud_pw = bcrypt.hashpw(stud_pw_env.encode(), bcrypt.gensalt())
 
+testing_pw_env = os.getenv("TESTING_PASSWORD") or ""
+testing_pw = bcrypt.hashpw(testing_pw_env.encode(), bcrypt.gensalt())
+
 #
 # Constants
 #
@@ -101,3 +104,10 @@ def verify_ta_user(username: str) -> None:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="User does not have access to this operation",
         )
+
+
+def verify_testing(cred: HTTPBasicCredentials) -> None:
+    if cred.username != "testing" or not bcrypt.checkpw(
+        cred.password.encode(), testing_pw
+    ):
+        raise auth_exception()

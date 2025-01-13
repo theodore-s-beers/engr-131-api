@@ -19,7 +19,7 @@ from pykubegrader.validate import read_logfile  # type: ignore
 from sqlalchemy.orm import Session
 
 from . import crud_admin, crud_student, schemas, utils
-from .auth import verify_admin, verify_student, verify_ta_user
+from .auth import verify_admin, verify_student, verify_ta_user, verify_testing
 from .db import SessionLocal
 from .live_scorer import Score, calculate_score
 from .question import valid_submission
@@ -450,9 +450,9 @@ async def validate_token(
     return {"status": "valid", "expires_at": expiry}
 
 
-# ----------------------
+# --------------------
 # Admin-only endpoints
-# ----------------------
+# --------------------
 
 
 @app.post("/notebook", response_model=schemas.Notebook)
@@ -673,3 +673,15 @@ async def delete_student_by_email(
         )
 
     return db_student
+
+
+# -----------------
+# Testing endpoints
+# -----------------
+
+
+@app.get("/testing/get-all-grades")
+async def get_all_grades(cred: Credentials):
+    verify_testing(cred)  # Raises HTTPException (401) on failure
+
+    return "Success"
