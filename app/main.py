@@ -680,6 +680,13 @@ async def delete_student_by_email(
 # -----------------
 
 
+@app.get("/testing/get-all-assignment-subs")
+async def get_all_assignment_subs(cred: Credentials, db: Session = Depends(get_db)):
+    verify_testing(cred)  # Raises HTTPException (401) on failure
+
+    return crud_admin.get_all_assignment_subs(db)
+
+
 @app.get("/testing/get-all-grades")
 async def get_all_grades(cred: Credentials):
     verify_testing(cred)  # Raises HTTPException (401) on failure

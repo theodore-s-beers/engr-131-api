@@ -463,6 +463,11 @@ def update_token(db: Session, token: schemas.TokenRequest):
 #
 
 
+def get_all_assignment_subs(db: Session) -> Sequence[models.AssignmentSubmission]:
+    stmt = select(models.AssignmentSubmission)
+    return db.execute(stmt).scalars().all()
+
+
 def get_assignment_grades(
     db: Session,
     week_number: int,
