@@ -56,6 +56,7 @@ async def root(req: Request, jhub_user: str = Query(None)):
     response = {
         "message": "Server is running",
         "client_ip": req.headers.get("x-real-ip", client_host),
+        "req_headers_raw": dict(req.headers),  # For debugging
     }
 
     if jhub_user:
