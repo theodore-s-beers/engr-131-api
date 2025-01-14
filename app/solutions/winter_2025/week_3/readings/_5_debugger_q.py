@@ -12,7 +12,7 @@ solutions: dict[str, Any] = {
     "q2-1-Debugging-Tools": [
         "Print statements",
         "Built-in debuggers in IDEs",
-        "Carefully reading error message",
+        "Carefully reading error messages",
     ],
     "q2-2-Debugging-Scenarios": [
         "Code crashes due to a runtime error",
