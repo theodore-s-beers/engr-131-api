@@ -113,3 +113,13 @@ class NotebookSubmission(BaseModel):
     late_assignment_percentage: float
     submitted_score: float
     current_max_score: float
+
+
+class AssignmentGrade(BaseModel):
+    assignment_name: str
+    best_grade: float
+
+
+class StudentGrades(BaseModel):
+    student_email: str
+    grades: list[AssignmentGrade]
