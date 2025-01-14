@@ -17,8 +17,9 @@ Functions:
     create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token
 """
 
+from collections import defaultdict
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
@@ -543,3 +544,36 @@ def get_grades_testing(db: Session):
                 student_submission_map[submission.student_email].append(submission)
 
     return student_submission_map
+
+
+def get_student_grades(db: Session) -> list[dict]:
+    """
+    Retrieve student grades as a list of dictionaries.
+
+    :param db: SQLAlchemy session
+    :return: A list of dicts containing student emails and their best assignment scores.
+    """
+
+    # Query the database to get the best score per assignment for each student
+    stmt = select(
+        models.AssignmentSubmission.student_email,
+        models.AssignmentSubmission.assignment,
+        func.max(models.AssignmentSubmission.submitted_score).label("best_score"),
+    ).group_by(
+        models.AssignmentSubmission.student_email,
+        models.AssignmentSubmission.assignment,
+    )
+
+    # Execute the query
+    results = db.execute(stmt).all()
+
+    # Organize results into the desired structure
+    student_grades: dict[str, Any] = defaultdict(lambda: {"grades": {}})
+
+    for student_email, assignment, best_score in results:
+        if student_email not in student_grades:
+            student_grades[student_email]["student_email"] = student_email
+        student_grades[student_email]["grades"][assignment] = best_score
+
+    # Convert to a list of dicts
+    return list(student_grades.values())

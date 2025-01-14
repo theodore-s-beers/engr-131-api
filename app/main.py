@@ -694,8 +694,8 @@ async def get_all_submission_emails(cred: Credentials, db: Session = Depends(get
     return crud_admin.get_all_submission_emails(db)
 
 
-@app.get("/testing/get-all-grades")
-async def get_all_grades(cred: Credentials):
+@app.get("/testing/get-all-grades", response_model=list[schemas.StudentGrades])
+async def get_all_grades(cred: Credentials, db: Session = Depends(get_db)):
     verify_testing(cred)  # Raises HTTPException (401) on failure
 
-    return "Success"
+    return crud_admin.get_student_grades(db)
