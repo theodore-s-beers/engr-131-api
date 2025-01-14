@@ -115,11 +115,6 @@ class NotebookSubmission(BaseModel):
     current_max_score: float
 
 
-class AssignmentGrade(BaseModel):
-    assignment_name: str
-    best_grade: float
-
-
 class StudentGrades(BaseModel):
     student_email: str
-    grades: list[AssignmentGrade]
+    grades: dict[str, float]
