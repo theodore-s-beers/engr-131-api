@@ -445,7 +445,7 @@ async def validate_token(
     """
     verify_student(cred)
 
-    # Raises 404 if token not found, 418 if already expired
+    # Raises 404 if token not found, 400 if already expired
     expiry = crud_student.get_token_expiry(db=db, value=token_value)
 
     return {"status": "valid", "expires_at": expiry}

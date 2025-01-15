@@ -298,10 +298,9 @@ def get_token_expiry(db: Session, value: str) -> str:
             status_code=status.HTTP_404_NOT_FOUND, detail="Token not found"
         )
 
-    # TODO: Return 200 in this case, with a message indicating the token is expired
     if db_token.expires < datetime.datetime.now(datetime.UTC):
         raise HTTPException(
-            status_code=status.HTTP_418_IM_A_TEAPOT, detail="Token has expired"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Token has expired"
         )
 
     return db_token.expires.isoformat()
