@@ -331,11 +331,11 @@ async def score_assignment(
     # Include detailed grade information
     build_message += utils.format_section(
         "\n📝 Submission Grade",
-        f"Your grade for this submission is {modified_grade*100:.2f}%.\n\n",
+        f"Your grade for this submission is {modified_grade * 100:.2f}%.\n\n",
     )
     build_message += utils.format_section(
         "\n⭐ Best Score",
-        f"Your current best score for this assignment is {100*current_best:.2f}%.\n\n",
+        f"Your current best score for this assignment is {100 * current_best:.2f}%.\n\n",
     )
 
     # Add note about late deductions if applicable
