@@ -546,7 +546,7 @@ def get_grades_testing(db: Session):
     return student_submission_map
 
 
-def get_student_grades(db: Session) -> list[dict]:
+def get_student_grades(db: Session) -> list[schemas.StudentGrades]:
     """
     Retrieve student grades as a list of dictionaries.
 
