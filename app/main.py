@@ -1,5 +1,7 @@
+import csv
 import random
 import tempfile
+from io import StringIO
 from typing import Annotated, Any, List, Optional, TypeAlias
 
 from dateutil import parser as date_parser
@@ -13,6 +15,7 @@ from fastapi import (
     UploadFile,
     status,
 )
+from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pykubegrader.log_parser.parse import LogParser  # type: ignore
 from pykubegrader.validate import read_logfile  # type: ignore
@@ -699,4 +702,24 @@ async def get_all_submission_emails(cred: Credentials, db: Session = Depends(get
 async def get_all_grades(cred: Credentials, db: Session = Depends(get_db)):
     verify_testing(cred)  # Raises HTTPException (401) on failure
 
-    return crud_admin.get_student_grades(db)
+    student_grades = crud_admin.get_student_grades(db)
+
+    all_assignment_names: set[str] = set()
+    for student in student_grades:
+        all_assignment_names.update(student.grades.keys())
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Student Email"] + list(all_assignment_names))
+
+    for student in student_grades:
+        row: list[str | float] = [student.student_email]
+        for assignment_name in all_assignment_names:
+            row.append(student.grades.get(assignment_name, 0.0))
+        writer.writerow(row)
+
+    output.seek(0)
+    response = StreamingResponse(output, media_type="text/csv")
+    response.headers["Content-Disposition"] = "attachment; filename=student_grades.csv"
+
+    return response
