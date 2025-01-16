@@ -704,17 +704,20 @@ async def get_all_grades(cred: Credentials, db: Session = Depends(get_db)):
 
     student_grades = crud_admin.get_student_grades(db)
 
-    all_assignment_names: set[str] = set()
+    assignment_set: set[str] = set()
     for student in student_grades:
-        all_assignment_names.update(student.grades.keys())
+        assignment_set.update(student.grades.keys())
+
+    assignment_list = list(assignment_set)
+    assignment_list.sort()
 
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(["Username"] + list(all_assignment_names))
+    writer.writerow(["Username"] + assignment_list)
 
     for student in student_grades:
         row: list[str | float] = [student.student_email]
-        for assignment_name in all_assignment_names:
+        for assignment_name in assignment_list:
             row.append(student.grades.get(assignment_name, 0.0))
         writer.writerow(row)
 
