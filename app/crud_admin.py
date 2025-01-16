@@ -555,13 +555,17 @@ def get_student_grades(db: Session) -> list[schemas.StudentGrades]:
     """
 
     # Query the database to get the best score per assignment for each student
-    stmt = select(
-        models.AssignmentSubmission.student_email,
-        models.AssignmentSubmission.assignment,
-        func.max(models.AssignmentSubmission.submitted_score).label("best_score"),
-    ).group_by(
-        models.AssignmentSubmission.student_email,
-        models.AssignmentSubmission.assignment,
+    stmt = (
+        select(
+            models.AssignmentSubmission.student_email,
+            models.AssignmentSubmission.assignment,
+            func.max(models.AssignmentSubmission.submitted_score).label("best_score"),
+        )
+        .group_by(
+            models.AssignmentSubmission.student_email,
+            models.AssignmentSubmission.assignment,
+        )
+        .order_by(models.AssignmentSubmission.student_email)
     )
 
     # Execute the query
