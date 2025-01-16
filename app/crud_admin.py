@@ -576,4 +576,9 @@ def get_student_grades(db: Session) -> list[schemas.StudentGrades]:
         student_grades[student_email]["grades"][assignment] = best_score
 
     # Convert to a list of dicts
-    return list(student_grades.values())
+    return [
+        schemas.StudentGrades(
+            student_email=student["student_email"], grades=student["grades"]
+        )
+        for student in student_grades.values()
+    ]
