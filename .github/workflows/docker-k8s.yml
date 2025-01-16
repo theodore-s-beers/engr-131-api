@@ -18,20 +18,20 @@ jobs:
           docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Set up Buildx
-        run: docker buildx create --use && docker buildx inspect --bootstrap
+        run: docker buildx inspect --bootstrap || docker buildx create --use
 
       - name: Build and Push Multi-Platform Docker Image
         run: |
           TAG=$(date +%s)
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            --tag katomyomachia/engr-131-api:$TAG \
+            --tag "katomyomachia/engr-131-api:$TAG" \
             --tag katomyomachia/engr-131-api:latest \
             --push .
-          echo "tag=$TAG" >> $GITHUB_ENV
+          echo "tag=$TAG" >> "$GITHUB_ENV"
 
       - name: Update Kubernetes Deployment
         run: |
           kubectl set image -n fastapi \
           deployment/engr-131-api \
-          fastapi-container=katomyomachia/engr-131-api:${{ env.tag }}
+          fastapi-container="katomyomachia/engr-131-api:${{ env.tag }}"
