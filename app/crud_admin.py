@@ -565,10 +565,10 @@ def get_student_grades(db: Session) -> list[schemas.StudentGrades]:
     )
 
     # Execute the query
-    results = db.execute(stmt).all()
+    results = db.execute(stmt).tuples().all()
 
     # Organize results into the desired structure
-    student_grades: dict[str, Any] = defaultdict(lambda: {"grades": {}})
+    student_grades: dict[str, dict[str, Any]] = defaultdict(lambda: {"grades": {}})
 
     for student_email, assignment, best_score in results:
         if student_email not in student_grades:
