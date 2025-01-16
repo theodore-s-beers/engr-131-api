@@ -25,7 +25,7 @@ jobs:
           TAG=$(date +%s)
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            --ulimit nofile=2048:2048 \
+            --ulimit nofile=4096:4096 \
             --tag katomyomachia/engr-131-api:$TAG \
             --tag katomyomachia/engr-131-api:latest \
             --push .
