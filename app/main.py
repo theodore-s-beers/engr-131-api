@@ -710,7 +710,7 @@ async def get_all_grades(cred: Credentials, db: Session = Depends(get_db)):
 
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(["Student Email"] + list(all_assignment_names))
+    writer.writerow(["Username"] + list(all_assignment_names))
 
     for student in student_grades:
         row: list[str | float] = [student.student_email]
