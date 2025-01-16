@@ -573,7 +573,10 @@ def get_student_grades(db: Session) -> list[schemas.StudentGrades]:
     for student_email, assignment, best_score in results:
         if student_email not in student_grades:
             student_grades[student_email]["student_email"] = student_email
-        student_grades[student_email]["grades"][assignment] = best_score
+        percentage_score = (
+            round(best_score * 100, 2) if best_score is not None else 0.00
+        )
+        student_grades[student_email]["grades"][assignment] = percentage_score
 
     # Convert to a list of dicts
     return [
