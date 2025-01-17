@@ -58,6 +58,7 @@ class AssignmentSubmission(Base):
     late_assignment_percentage: Mapped[float]
     submitted_score: Mapped[float]
     current_max_score: Mapped[float]
+    updated_score: Mapped[Optional[float]]
 
 
 class Notebook(Base):
