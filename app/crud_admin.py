@@ -589,3 +589,37 @@ def get_student_grades(db: Session) -> list[schemas.StudentGrades]:
         )
         for student in student_grades.values()
     ]
+
+
+def update_assignment_score(
+    db: Session,
+    submission_id: int,
+    student_email: str,
+    assignment: str,
+    new_score: float,
+) -> models.AssignmentSubmission:
+    # Find the relevant submission by ID (sic)
+    stmt = select(models.AssignmentSubmission).where(
+        models.AssignmentSubmission.id == submission_id
+    )
+    db_submission = db.execute(stmt).scalar_one_or_none()
+    if not db_submission:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Submission not found in DB",
+        )
+
+    if (
+        db_submission.student_email != student_email
+        or db_submission.assignment != assignment
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Submission in DB does not match student email and assignment name",
+        )
+
+    db_submission.updated_score = new_score
+    db.commit()
+    db.refresh(db_submission)
+
+    return db_submission
