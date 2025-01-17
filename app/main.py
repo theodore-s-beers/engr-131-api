@@ -518,7 +518,10 @@ async def add_notebook(
 
 @app.post("/assignments", response_model=schemas.Assignment)
 async def add_assignment(
-    cred: Credentials, assignment: schemas.Assignment, db: Session = Depends(get_db)
+    cred: Credentials,
+    assignment: schemas.Assignment,
+    update: Optional[bool] = True,
+    db: Session = Depends(get_db),
 ):
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
@@ -527,12 +530,16 @@ async def add_assignment(
     )
 
     if existing_assignment:
-        # Update existing assignment
-        updated_assignment = crud_admin.update_assignment(
+        if not update:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Assignment already exists",
+            )
+
+        # Otherwise, update existing assignment
+        return crud_admin.update_assignment(
             db=db, title=assignment.title, assignment=assignment
         )
-        if updated_assignment:
-            return updated_assignment
 
     # Create a new assignment
     return crud_admin.add_assignment(db=db, assignment=assignment)
