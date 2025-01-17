@@ -626,18 +626,22 @@ def update_assignment_score(
         models.AssignmentSubmission.id == submission_id
     )
     db_submission = db.execute(stmt).scalar_one_or_none()
+
+    # Raise 500 because the ID will have come from another CRUD function
+    # i.e., the request itself has already been validated
     if not db_submission:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Submission not found in DB",
         )
 
+    # Again raise 500; ID was found via student email and assignment name
     if (
         db_submission.student_email != student_email
         or db_submission.assignment != assignment
     ):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Submission in DB does not match student email and assignment name",
         )
 

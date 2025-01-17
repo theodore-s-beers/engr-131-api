@@ -683,6 +683,31 @@ async def update_assignment(
     return db_assignment
 
 
+@app.put("/assignment-grades", response_model=schemas.AssignmentSubmission)
+async def update_assignment_grade(
+    cred: Credentials,
+    grade_update: schemas.GradeUpdateRequest,
+    db: Session = Depends(get_db),
+):
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
+    # Raises 404 if no submission found for this student and assignment
+    best_submission_id = crud_admin.find_best_submission_id(
+        db=db,
+        student_email=grade_update.student_email,
+        assignment=grade_update.assignment,
+    )
+
+    # Raises 500 if anything doesn't match on the DB side
+    return crud_admin.update_assignment_score(
+        db=db,
+        submission_id=best_submission_id,
+        student_email=grade_update.student_email,
+        assignment=grade_update.assignment,
+        new_score=grade_update.updated_score,
+    )
+
+
 @app.put("/students/{email}", response_model=schemas.Student)
 async def update_student(
     cred: Credentials,

@@ -91,7 +91,7 @@ class AssignmentSubmission(BaseModel):
     late_assignment_percentage: float
     submitted_score: float
     current_max_score: float
-    updated_score: Optional[float]
+    updated_score: Optional[float] = None
 
 
 class Notebook(BaseModel):
@@ -119,3 +119,9 @@ class NotebookSubmission(BaseModel):
 class StudentGrades(BaseModel):
     student_email: str
     grades: dict[str, float]
+
+
+class GradeUpdateRequest(BaseModel):
+    student_email: str
+    assignment: str
+    updated_score: float
