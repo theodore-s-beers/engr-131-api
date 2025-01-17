@@ -1,18 +1,19 @@
+# Use a Python image and install uv manually
 FROM python:3.13-slim-bookworm
 
-# The installer requires curl (and certificates) to download the release archive
+# Install dependencies for uv
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
 
-# Download the latest installer
+# Download uv installer
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
 
-# Run the installer then remove it
+# Run installer, then remove it
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 
-# Ensure the installed binary is on the `PATH`
+# Ensure uv binary is on PATH
 ENV PATH="/root/.local/bin/:$PATH"
 
-# Define an environment variable for the working directory
+# Define environment variable for working directory
 ENV BASE=/fast
 
 WORKDIR $BASE
@@ -20,17 +21,17 @@ WORKDIR $BASE
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
 
-# Copy from the cache instead of linking since it's a mounted volume
+# Copy from cache instead of linking, since it's a mounted volume
 ENV UV_LINK_MODE=copy
 
-# Install the project's dependencies using the lockfile and settings
+# Install project dependencies using lockfile and settings
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-install-project --no-dev --verbose
 
-# Then, add the rest of the project source code and install it
-# Installing separately from its dependencies allows optimal layer caching
+# Then, add the project source code and install it
+# Installing separately from dependencies allows optimal layer caching
 COPY . $BASE
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --verbose
