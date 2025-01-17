@@ -255,6 +255,28 @@ def get_max_score_and_due_date_by_week_and_type(
     return (result[0], result[1]) if result else (None, None)
 
 
+def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
+    """
+    Retrieve the best score for each assignment for a given student
+
+    :param db: SQLAlchemy session
+    :param student_email: Email prefix of the student whose grades are to be fetched
+    :return: Dictionary mapping assignments to their best scores
+    """
+
+    stmt = (
+        select(
+            models.AssignmentSubmission.assignment,
+            func.max(models.AssignmentSubmission.submitted_score).label("best_score"),
+        )
+        .where(models.AssignmentSubmission.student_email == student_email)
+        .group_by(models.AssignmentSubmission.assignment)
+    )
+
+    best_scores = db.execute(stmt).all()
+    return {assignment: best_score for assignment, best_score in best_scores}
+
+
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
     """
     Retrieve a notebook from the database by its title.
