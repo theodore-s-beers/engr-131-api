@@ -23,8 +23,7 @@ jobs:
       - name: Build and Push Multi-Platform Docker Image
         run: |
           TAG=$(date +%s)
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
+          docker build \
             --tag "katomyomachia/engr-131-api:$TAG" \
             --tag katomyomachia/engr-131-api:latest \
             --push .
