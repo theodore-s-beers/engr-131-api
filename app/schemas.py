@@ -91,6 +91,7 @@ class AssignmentSubmission(BaseModel):
     late_assignment_percentage: float
     submitted_score: float
     current_max_score: float
+    updated_score: Optional[float]
 
 
 class Notebook(BaseModel):
