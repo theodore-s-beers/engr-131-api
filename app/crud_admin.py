@@ -467,6 +467,7 @@ def update_token(db: Session, token: schemas.TokenRequest):
 def find_best_submission_id(db: Session, student_email: str, assignment: str) -> int:
     # Given student email and assignment name, find the ID (sic) of the
     # submission with the highest submitted_score value
+    # TODO: Consider choosing the submission with the highest raw_score instead
     stmt = (
         select(models.AssignmentSubmission.id)
         .where(
