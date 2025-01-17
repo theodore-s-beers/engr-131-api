@@ -464,6 +464,28 @@ def update_token(db: Session, token: schemas.TokenRequest):
 #
 
 
+def find_best_submission_id(db: Session, student_email: str, assignment: str) -> int:
+    # Given student email and assignment name, find the ID (sic) of the
+    # submission with the highest submitted_score value
+    stmt = (
+        select(models.AssignmentSubmission.id)
+        .where(
+            models.AssignmentSubmission.student_email == student_email,
+            models.AssignmentSubmission.assignment == assignment,
+        )
+        .order_by(models.AssignmentSubmission.submitted_score.desc())
+    )
+    result = db.execute(stmt).scalar_one_or_none()
+
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No submissions found for the provided student and assignment",
+        )
+
+    return result
+
+
 def get_all_assignment_subs(db: Session) -> Sequence[models.AssignmentSubmission]:
     stmt = select(models.AssignmentSubmission)
     return db.execute(stmt).scalars().all()
