@@ -302,7 +302,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.6" },
     { name = "mypy", specifier = ">=1.14.1" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
-    { name = "pykubegrader", specifier = ">=0.2.31" },
+    { name = "pykubegrader", specifier = ">=0.2.35" },
     { name = "pynacl", specifier = ">=1.5.0" },
     { name = "ruff", specifier = ">=0.9.2" },
 ]
@@ -985,7 +985,7 @@ wheels = [
 
 [[package]]
 name = "pykubegrader"
-version = "0.2.31"
+version = "0.2.35"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -1006,9 +1006,9 @@ dependencies = [
     { name = "types-requests" },
     { name = "types-setuptools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a2/3b/cca56c905f48bf740c7c23d8d0c7720a66e0958092b2a58e9bf2dd63960a/pykubegrader-0.2.31.tar.gz", hash = "sha256:7636d5bf29a12203d3a6caddedef97e6fb6b3be25b730773c62c98ca8df2b788", size = 508102 }
+sdist = { url = "https://files.pythonhosted.org/packages/81/9e/41b014746c9c2bbb269c89f50fbd937929288d10dc416c746f47ec49d605/pykubegrader-0.2.35.tar.gz", hash = "sha256:268b890ddcfb646c0d6bd6811ad9e3544b2d13e68e4aef7ba0b9bbdc497fa8cb", size = 508281 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f5/78/5dd06544e2ceacff4ee53df6c6f948ea9bfa9d6463de1dcade0567e551e6/PyKubeGrader-0.2.31-py3-none-any.whl", hash = "sha256:1224fe453420e6aa037b44af0ff6cc73ce202dd1d6f04d098b52947d153c5923", size = 54049 },
+    { url = "https://files.pythonhosted.org/packages/72/24/8ad5c009f2da5c184917b4645c0f4687409ebceb6d20c48b24c48cfc21b1/PyKubeGrader-0.2.35-py3-none-any.whl", hash = "sha256:4a919ebd7d5ef3d8b391ce52dfdd95b4d14867ce299c93392f151afbccdfee32", size = 54362 },
 ]
 
 [[package]]
