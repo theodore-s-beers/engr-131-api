@@ -17,8 +17,8 @@ class Student(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(index=True, unique=True)
-    family_name: Mapped[Optional[str]] = mapped_column()
-    given_name: Mapped[Optional[str]] = mapped_column()
+    family_name: Mapped[Optional[str]]
+    given_name: Mapped[Optional[str]]
     lecture_section: Mapped[Optional[int]] = mapped_column(index=True)
     lab_section: Mapped[Optional[int]] = mapped_column(index=True)
 
@@ -44,8 +44,8 @@ class AssignmentSubmission(Base):
     __tablename__ = "assignment_submissions"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    student_email: Mapped[str]
-    assignment: Mapped[str]
+    student_email: Mapped[str] = mapped_column(index=True)
+    assignment: Mapped[str] = mapped_column(index=True)
     week_number: Mapped[Optional[int]]
     assignment_type: Mapped[Optional[str]]
     timestamp: Mapped[datetime] = mapped_column(
