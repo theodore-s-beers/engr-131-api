@@ -1,10 +1,10 @@
 import base64
 import datetime
+import math
 import os
 import random
 import textwrap
 
-import numpy as np
 from dateutil import parser as date_parser
 from fastapi import HTTPException, status
 from nacl.public import Box, PrivateKey, PublicKey
@@ -199,9 +199,9 @@ def get_grade_modifier(time_delta: int) -> float:
     k = 6.88e-5  # Decay constant per minute
 
     # Exponential decay function with piecewise definition
-    Q: float = Q0 * np.exp(-k * time_delta / 60)  # Convert seconds to minutes
-    Q = np.maximum(Q, Q_min)  # Apply floor condition
-    Q = np.minimum(Q, 100)  # Apply ceiling condition
+    Q: float = Q0 * math.exp(-k * time_delta / 60)  # Convert seconds to minutes
+    Q = max(Q, Q_min)  # Apply floor condition
+    Q = min(Q, 100)  # Apply ceiling condition
 
     return Q
 
