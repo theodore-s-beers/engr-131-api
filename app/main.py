@@ -18,11 +18,9 @@ from fastapi import (
 )
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from pykubegrader.log_parser.parse import LogParser  # type: ignore
-from pykubegrader.validate import read_logfile  # type: ignore
 from sqlalchemy.orm import Session
 
-from . import crud_admin, crud_student, schemas, utils
+from . import crud_admin, crud_student, log_parser, schemas, utils
 from .auth import verify_admin, verify_student, verify_ta_user, verify_testing
 from .db import SessionLocal
 from .live_scorer import Score, calculate_score
@@ -180,10 +178,10 @@ async def score_assignment(
         temp_file.flush()
 
         # decrypt the log file
-        out, b = read_logfile(temp_file.name, key_box)
+        out, b = log_parser.read_logfile(temp_file.name, key_box)
 
     # Parse the log file
-    parser = LogParser(log_lines=out, week_tag=assignment_title)
+    parser = log_parser.LogParser(log_lines=out, week_tag=assignment_title)
     parser.parse_logs()
     parser.calculate_total_scores()
     results = parser.get_results()
