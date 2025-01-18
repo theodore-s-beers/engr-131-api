@@ -1,13 +1,13 @@
 # Use a Python image and install uv manually
-FROM python:3.13-slim-bookworm
+FROM python:3.13-slim AS builder
 
 # Install dependencies for uv
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Download uv installer
+# Download and install uv, then remove installer
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
-
-# Run installer, then remove it
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 # Ensure uv binary is on PATH
@@ -15,7 +15,6 @@ ENV PATH="/root/.local/bin/:$PATH"
 
 # Define environment variable for working directory
 ENV BASE=/fast
-
 WORKDIR $BASE
 
 # Enable bytecode compilation
@@ -35,6 +34,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY . $BASE
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --verbose
+
+# Start again with a lightweight image
+FROM python:3.13-slim
+
+# Again define environment variable for working directory
+ENV BASE=/fast
+WORKDIR $BASE
+
+# Copy only the necessary files from the builder stage
+COPY --from=builder $BASE $BASE
 
 # Place executables in the environment at the front of the path
 ENV PATH="$BASE/.venv/bin:$PATH"
