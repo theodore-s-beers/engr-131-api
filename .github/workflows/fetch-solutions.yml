@@ -28,7 +28,7 @@ jobs:
           export PATH=$PATH:~/.local/bin:~/.cargo/bin
           uv venv
           source .venv/bin/activate
-          uv sync
+          uv sync --all-extras
           python move_solutions.py
           fd -e py . 'app/solutions/winter_2025' \
           -x sd 'total_points: float' 'total_points: list[float]'
