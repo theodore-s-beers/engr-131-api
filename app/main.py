@@ -156,39 +156,38 @@ async def score_assignment(
     log_file: UploadFile = File(...),
 ):
     """
-    Endpoint for uploading a student's score along with a log file.
+    Endpoint for uploading a student's score along with a log file
 
     Args:
-        cred (Credentials): Basic authentication credentials for the student.
-        submission (schemas.FullSubmission): The full submission details.
-        log_file (UploadFile): The log file being uploaded.
+        cred (Credentials): Basic Auth credentials for the student
+        submission (schemas.FullSubmission): The full submission details
+        log_file (UploadFile): The log file being uploaded
 
     Returns:
-        str: A message indicating that the file and submission were received.
+        str: A message indicating that the file and submission were received
     """
-    # Validate the student's credentials
-    verify_student(cred)  # Verify the student's credentials
 
-    # Get the public/private keypair for decryption
+    verify_student(cred)  # Raises HTTPException (401) on failure
+
+    # Get public/private keypair for decryption
     key_box = utils.get_key_box()
 
-    # reads and decrypts the log file
+    # Decrypt log file
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
         temp_file.write(await log_file.read())
         temp_file.flush()
 
-        # decrypt the log file
-        out, b = log_parser.read_logfile(temp_file.name, key_box)
+        decrypted = log_parser.read_logfile(temp_file.name, key_box)
 
-    # Parse the log file
-    parser = log_parser.LogParser(log_lines=out, week_tag=assignment_title)
+    # Parse log file
+    parser = log_parser.LogParser(log_lines=decrypted, week_tag=assignment_title)
     parser.parse_logs()
     parser.calculate_total_scores()
     results = parser.get_results()
 
-    # extract the week number, assignment type, and submission time from the log file
-    week_number: Optional[int] = results["week_num"]  # type: ignore
-    assignment_type: Optional[str] = results["assignment_type"]  # type: ignore
+    # Extract week number, assignment type, and submission time from log file
+    week_number: Optional[int] = results["week_num"]
+    assignment_type: Optional[str] = results["assignment_type"]
     submission_time: str = results["student_information"]["timestamp"]
     notebook_score: float = results["assignment_information"][notebook_title][
         "total_score"
@@ -209,13 +208,13 @@ async def score_assignment(
     if not max_score_db:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Max score not found",
+            detail="Assignment max score not found in database",
         )
 
     if not due_date_db:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Due date not found",
+            detail="Assignment due date not found in database",
         )
 
     max_score_notebook = crud_student.get_notebook_max_score_by_notebook(
@@ -226,11 +225,10 @@ async def score_assignment(
     if not max_score_notebook:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Max score for notebook not found",
+            detail="Notebook max score not found in database",
         )
 
     time_delta = utils.calculate_delta_seconds(submission_time, due_date_db)
-
     grade_modifier = utils.get_grade_modifier(time_delta)
 
     assignment_info: dict[str, dict[str, Any]] = results["assignment_information"]
@@ -241,22 +239,18 @@ async def score_assignment(
 
     student_email = results["student_information"]["username"]
 
-    modified_grade = total_score / max_score_db * grade_modifier / 100
+    modified_grade = (total_score / max_score_db) * (grade_modifier / 100)
 
-    # checks the student database for their best score, and returns their current best score.
+    # Find the student's best score for this assignment
     current_best_db = crud_student.get_best_score(
         db=db, student_email=student_email, assignment=assignment_title
     )
 
-    current_best = None
-
-    if current_best_db is not None:
-        current_best = float(current_best_db.current_max_score)
-
+    current_best = current_best_db.current_max_score if current_best_db else None
     if current_best is None or modified_grade > current_best:
         current_best = modified_grade
 
-    # adds the score for the assignment to the database
+    # Add assignment and notebook scores to the database
     crud_student.add_submitted_assignment_score(
         db=db,
         submission=schemas.AssignmentSubmission(
@@ -291,10 +285,10 @@ async def score_assignment(
         ),
     )
 
-    # Start building the message
+    # Start building return message
     build_message = ""
 
-    # Add the congratulatory header
+    # Add congratulatory header
     build_message += utils.format_section(
         "🎉 Congratulations! 🎉",
         f"{student_email}, you've successfully submitted your assignment for Week {week_number} - {assignment_type}! 🚀\n\n",
@@ -318,13 +312,13 @@ async def score_assignment(
         )
 
     # Calculate percentage score
-    percentage_score = 100 * notebook_score / max_score_notebook
+    percentage_score = 100 * (notebook_score / max_score_notebook)
     build_message += utils.format_section(
         "\n🎯 Percentage Score",
         f"Your percentage score for this notebook is {percentage_score:.2f}%.\n\n",
     )
 
-    # Add motivational messages based on the score
+    # Add motivational messages based on score
     build_message += utils.score_based_message(percentage_score)
 
     # Include detailed grade information
@@ -344,10 +338,8 @@ async def score_assignment(
             "This score includes deductions for late submission. Aim for on-time submissions to maximize your grade! 🕒\n\n",
         )
 
-    # Randomly select one motivational note
+    # Randomly select a motivational note
     final_note = random.choice(utils.MOTIVATIONAL_NOTES)
-
-    # Add it to the final motivational send-off
     build_message += utils.format_section("\n✨ Final Note", final_note)
 
     return {"message": f"{build_message}"}
