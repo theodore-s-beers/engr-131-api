@@ -144,7 +144,7 @@ wheels = [
 [[package]]
 name = "engr-131-api"
 version = "0.1.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "alembic" },
     { name = "bcrypt" },
