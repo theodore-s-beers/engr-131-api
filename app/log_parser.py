@@ -1,5 +1,4 @@
 import base64
-import re
 from dataclasses import dataclass, field
 from typing import Any, Optional, TypedDict
 
@@ -206,7 +205,7 @@ class LogParser:
         }
 
 
-def read_logfile(filepath: str, key_box: Box) -> tuple[list[str], list[str]]:
+def read_logfile(filepath: str, key_box: Box) -> list[str]:
     with open(filepath, "r") as logfile:
         encrypted_lines = logfile.readlines()
 
@@ -218,12 +217,4 @@ def read_logfile(filepath: str, key_box: Box) -> tuple[list[str], list[str]]:
             decrypted = key_box.decrypt(decoded).decode()
             decrypted_log.append(decrypted)
 
-    # Where possible, we should work with this reduced list of relevant entries
-    # Here we take only lines with student info or question scores
-    log_reduced = [
-        entry
-        for entry in decrypted_log
-        if re.match(r"info,", entry) or re.match(r"q\d+_\d+,", entry)
-    ]
-
-    return decrypted_log, log_reduced
+    return decrypted_log
