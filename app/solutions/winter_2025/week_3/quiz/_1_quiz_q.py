@@ -7,8 +7,8 @@ solutions: dict[str, Any] = {
     "q1-2-Default-Data-Type-in-Smart-Toaster-Arrays": "int",
     "q1-3-NumPy Basics in Smart Toasters": "Creates a 3x3 array filled with zeros.",
     "q2-1-SymPy-Capabilities-in-Toaster-Mechanics": [
-        "Solving equations symbolically",
-        "Calculating definite integrals",
+        "Solving equations symbolically.",
+        "Calculating definite integrals.",
         "Performing symbolic differentiation.",
     ],
     "q2-2-Valid-NumPy-Array-Creation-Methods": [
