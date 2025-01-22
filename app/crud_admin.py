@@ -422,6 +422,20 @@ def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
     return db_token
 
 
+def get_all_tokens(db: Session) -> Sequence[models.Token]:
+    """
+    Retrieve all tokens from the database
+
+    Args:
+        db (Session): The database session to use for the query
+
+    Returns:
+        Sequence[models.Token]: A sequence of Token objects
+    """
+    stmt = select(models.Token)
+    return db.execute(stmt).scalars().all()
+
+
 def get_token_by_value(db: Session, value: str) -> Optional[models.Token]:
     """
     Retrieve a token from the database by its value.

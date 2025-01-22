@@ -682,6 +682,20 @@ async def get_student_by_email(
     return db_student
 
 
+@app.get("/tokens", response_model=list[tuple[str, str]])
+async def get_all_tokens(cred: Credentials, db: Session = Depends(get_db)):
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
+    db_tokens = crud_admin.get_all_tokens(db=db)
+    if not db_tokens:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No tokens found",
+        )
+
+    return [(token.value, token.expires.isoformat()) for token in db_tokens]
+
+
 @app.put("/assignments/{title}", response_model=schemas.Assignment)
 async def update_assignment(
     cred: Credentials,
