@@ -140,6 +140,7 @@ def calculate_score(
         if responses[k] == v:
             scores[k] = (points[i], points[i])
         elif isinstance(responses[k], list) and sorted(responses[k]) == sorted(v):
+            print("Found correct list response out of order")
             scores[k] = (points[i], points[i])
         else:
             scores[k] = (0, points[i])
