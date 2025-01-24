@@ -278,7 +278,7 @@ def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     return {assignment: best_score for assignment, best_score in best_scores}
 
 
-def get_my_grades_testing(db: Session, student_email: str) -> dict[str, float]:
+def get_my_grades_testing(db: Session, student_email: str):
     """
     Retrieve the best score for each assignment for a given student
 

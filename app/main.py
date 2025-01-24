@@ -456,7 +456,7 @@ async def get_my_grades(
     return crud_student.get_my_grades(db=db, student_email=username)
 
 
-@app.get("/my-grades-testing", response_model=dict[str, float])
+@app.get("/my-grades-testing")
 async def get_my_grades_testing(
     request: Request, cred: Credentials, username: str, db: Session = Depends(get_db)
 ):
