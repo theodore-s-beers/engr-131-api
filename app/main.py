@@ -522,6 +522,26 @@ async def validate_token(
 # --------------------
 
 
+@app.get("/student-grades-testing")
+async def get_student_grades_testing(
+    request: Request, cred: Credentials, username: str, db: Session = Depends(get_db)
+):
+    """
+    Endpoint for a student to retrieve their own grades
+
+    Args:
+        cred (Credentials): Basic Auth credentials for the student
+        username (str): Student's email address prefix
+        db (Session): Database session dependency
+
+    Returns:
+        dict: Student's best grade for each assignment
+    """
+
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
+    return crud_student.get_my_grades_testing(db=db, student_email=username)
+
 @app.post("/notebook", response_model=schemas.Notebook)
 async def add_notebook(
     cred: Credentials, notebook: schemas.Notebook, db: Session = Depends(get_db)
