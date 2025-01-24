@@ -24,6 +24,8 @@ from typing import Any, Dict, List, Optional, Sequence
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import NoResultFound
+
 
 from . import models, schemas
 
@@ -377,16 +379,27 @@ def get_scoring_subs_by_email(
         email (str): The email address of the student.
 
     Returns:
-        Sequence[models.ScoringSubmission]: A sequence of ScoringSubmission objects
+        Sequence[models.AssignmentSubmission]: A sequence of ScoringSubmission objects
         associated with the given email, ordered by timestamp in descending order.
     """
+    # Validate the email
+    if not email:
+        raise ValueError("Email must be provided and cannot be empty.")
+    
+    # Query the database
     stmt = (
         select(models.AssignmentSubmission)
-        .where(models.AssignmentSubmission.student_email == email.split("@")[0])
+        .where(models.AssignmentSubmission.student_email == email)
         .order_by(models.AssignmentSubmission.timestamp.desc())
     )
 
-    return db.execute(stmt).scalars().all()
+    try:
+        results = db.execute(stmt).scalars().all()
+        if not results:
+            raise NoResultFound(f"No submissions found for email: {email}")
+        return results
+    except Exception as e:
+        raise RuntimeError(f"An error occurred while fetching submissions: {e}")
 
 
 #
