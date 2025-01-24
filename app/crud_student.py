@@ -286,18 +286,8 @@ def get_my_grades_testing(db: Session, student_email: str) -> dict[str, float]:
     :param student_email: Email prefix of the student whose grades are to be fetched
     :return: Dictionary mapping assignments to their best scores
     """
-
-    stmt = (
-        select(
-            models.AssignmentSubmission.assignment,
-            func.max(models.AssignmentSubmission.submitted_score).label("best_score"),
-        )
-        .where(models.AssignmentSubmission.student_email == student_email)
-        .group_by(models.AssignmentSubmission.assignment)
-    )
-
-    best_scores = db.execute(stmt).all()
-    return {assignment: best_score for assignment, best_score in best_scores}
+    
+    return crud_admin.get_assignments(db)
 
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
