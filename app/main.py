@@ -540,7 +540,7 @@ async def get_student_grades_testing(
 
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
-    return crud_student.get_my_grades_testing(db=db, student_email=username)
+    return True #crud_student.get_my_grades_testing(db=db, student_email=username)
 
 @app.post("/notebook", response_model=schemas.Notebook)
 async def add_notebook(
