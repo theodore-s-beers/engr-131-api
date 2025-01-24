@@ -456,6 +456,42 @@ async def get_my_grades(
     return crud_student.get_my_grades(db=db, student_email=username)
 
 
+@app.get("/my-grades-testing", response_model=dict[str, float])
+async def get_my_grades(
+    request: Request, cred: Credentials, username: str, db: Session = Depends(get_db)
+):
+    """
+    Endpoint for a student to retrieve their own grades
+
+    Args:
+        cred (Credentials): Basic Auth credentials for the student
+        username (str): Student's email address prefix
+        db (Session): Database session dependency
+
+    Returns:
+        dict: Student's best grade for each assignment
+    """
+
+    real_ip = request.headers.get("x-real-ip")
+    client_ip = real_ip or (request.client.host if request.client else None)
+    if not client_ip:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Client IP not found",
+        )
+
+    client_ip_addr = ipaddress.ip_address(client_ip)
+    if not client_ip_addr.is_private:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied from outside JuptyerHub",
+        )
+
+    verify_student(cred)  # Raises HTTPException (401) on failure
+
+    return crud_student.get_my_grades_testing(db=db, student_email=username)
+    
+
 @app.get("/validate-token/{token_value}")
 async def validate_token(
     cred: Credentials, token_value: str, db: Session = Depends(get_db)
