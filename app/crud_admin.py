@@ -368,7 +368,7 @@ def update_notebook(
 
 def get_scoring_subs_by_email(
     db: Session, email: str
-) -> Sequence[models.ScoringSubmission]:
+) -> Sequence[models.AssignmentSubmission]:
     """
     Retrieve scoring submissions by student email.
 
@@ -381,9 +381,9 @@ def get_scoring_subs_by_email(
         associated with the given email, ordered by timestamp in descending order.
     """
     stmt = (
-        select(models.ScoringSubmission)
-        .where(models.ScoringSubmission.student_email == email)
-        .order_by(models.ScoringSubmission.timestamp.desc())
+        select(models.AssignmentSubmission)
+        .where(models.AssignmentSubmission.student_email == email)
+        .order_by(models.AssignmentSubmission.timestamp.desc())
     )
 
     return db.execute(stmt).scalars().all()
