@@ -31,6 +31,8 @@ from typing import Optional
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+from fastapi.encoders import jsonable_encoder  # For JSON serialization
+
 
 from . import models, schemas
 from . import crud_admin
@@ -289,16 +291,12 @@ def get_my_grades_testing(db: Session, student_email: str):
     
     # get a list of all assignments from the database
     assignments_ = crud_admin.get_assignments(db)
-    assignments_.raise_for_status()
-    assignments = assignments_.json()
     
     # get all assignment submissions
     student_submissions_ = crud_admin.get_scoring_subs_by_email(db=db, email=student_email)
-    student_submissions_.raise_for_status()
-    student_submissions = student_submissions_.json()
     
-    
-    return assignments, student_submissions
+
+    return jsonable_encoder(assignments_), jsonable_encoder(student_submissions_)
 
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
