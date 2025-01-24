@@ -269,7 +269,7 @@ def get_all_student_grades(db: Session, student_email: str):
 
     stmt = (
         select(
-            models.AssignmentSubmission,
+            models.AssignmentSubmission.assignment,
         )
         .where(models.AssignmentSubmission.student_email == student_email)
         .group_by(models.AssignmentSubmission.assignment)
