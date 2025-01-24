@@ -280,7 +280,7 @@ def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
 
 def get_my_grades_testing(db: Session, student_email: str):
 
-    return crud_admin.get_assignments(db)
+    return "crud_admin.get_assignments(db)"
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
     """
