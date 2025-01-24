@@ -312,7 +312,7 @@ def get_my_grades_testing(db: Session, student_email: str):
     assignments_ = crud_admin.get_assignments(db)
 
     # get all assignment submissions
-    student_submissions_ = get_all_student_grades(db=db, email=student_email)
+    student_submissions_ = get_all_student_grades(db=db, student_email=student_email)
 
     return jsonable_encoder(assignments_), jsonable_encoder(student_submissions_)
 
