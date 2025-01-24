@@ -288,13 +288,14 @@ def get_my_grades_testing(db: Session, student_email: str):
     :param student_email: Email prefix of the student whose grades are to be fetched
     :return: Dictionary mapping assignments to their best scores
     """
-    
+
     # get a list of all assignments from the database
     assignments_ = crud_admin.get_assignments(db)
-    
+
     # get all assignment submissions
-    student_submissions_ = crud_admin.get_scoring_subs_by_email(db=db, email=student_email)
-    
+    student_submissions_ = crud_admin.get_scoring_subs_by_email(
+        db=db, email=student_email
+    )
 
     return jsonable_encoder(assignments_), jsonable_encoder(student_submissions_)
 

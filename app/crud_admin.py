@@ -385,12 +385,12 @@ def get_scoring_subs_by_email(
     # Validate the email
     if not email:
         raise ValueError("Email must be provided and cannot be empty.")
-    
+
     # Query the database
     stmt = (
-        select(models.AssignmentSubmission).where(
-            models.AssignmentSubmission.student_email == email.split('@')[0]).order_by(
-            models.AssignmentSubmission.timestamp.desc())
+        select(models.AssignmentSubmission)
+        .where(models.AssignmentSubmission.student_email == email.split("@")[0])
+        .order_by(models.AssignmentSubmission.timestamp.desc())
     )
 
     # try:
