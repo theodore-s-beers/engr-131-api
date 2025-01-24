@@ -287,7 +287,11 @@ def get_my_grades_testing(db: Session, student_email: str):
     :return: Dictionary mapping assignments to their best scores
     """
     
-    return crud_admin.get_assignments(db)
+    assignments_ = crud_admin.get_assignments(db)
+    assignments_.raise_for_status()
+    assignments = assignments_res.json()
+    
+    return assignments
 
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
