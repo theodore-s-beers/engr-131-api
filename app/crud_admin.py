@@ -389,7 +389,7 @@ def get_scoring_subs_by_email(
     # Query the database
     stmt = (
         select(models.AssignmentSubmission).where(
-            models.AssignmentSubmission.student_email == email).order_by(
+            models.AssignmentSubmission.student_email == email.split('@')[0]).order_by(
             models.AssignmentSubmission.timestamp.desc())
     )
 
