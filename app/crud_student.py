@@ -279,12 +279,12 @@ def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
 
 
 def get_my_grades_testing(db: Session, student_email: str):
-
     res = crud_admin.get_assignments(db)
     res.raise_for_status()
     assignments = res.json()
-    
+
     return assignments
+
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
     """
