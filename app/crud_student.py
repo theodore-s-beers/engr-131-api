@@ -287,11 +287,18 @@ def get_my_grades_testing(db: Session, student_email: str):
     :return: Dictionary mapping assignments to their best scores
     """
     
+    # get a list of all assignments from the database
     assignments_ = crud_admin.get_assignments(db)
     assignments_.raise_for_status()
-    assignments = assignments_res.json()
+    assignments = assignments_.json()
     
-    return assignments
+    # get all assignment submissions
+    student_submissions_ = crud_admin.get_scoring_subs_by_email(db=db, email=student_email)
+    student_submissions_.raise_for_status()
+    student_submissions = student_submissions_.json()
+    
+    
+    return assignments, student_submissions
 
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
