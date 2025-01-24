@@ -258,6 +258,25 @@ def get_max_score_and_due_date_by_week_and_type(
     return (result[0], result[1]) if result else (None, None)
 
 
+def get_all_student_grades(db: Session, student_email: str):
+    """
+    Retrieve the best score for each assignment for a given student
+
+    :param db: SQLAlchemy session
+    :param student_email: Email prefix of the student whose grades are to be fetched
+    :return: Dictionary mapping assignments to their best scores
+    """
+
+    stmt = (
+        select(
+            models.AssignmentSubmission.assignment,
+        )
+        .where(models.AssignmentSubmission.student_email == student_email)
+        .group_by(models.AssignmentSubmission.assignment)
+    )
+    
+    return db.execute(stmt).all()
+
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     """
     Retrieve the best score for each assignment for a given student
@@ -293,9 +312,7 @@ def get_my_grades_testing(db: Session, student_email: str):
     assignments_ = crud_admin.get_assignments(db)
 
     # get all assignment submissions
-    student_submissions_ = crud_admin.get_scoring_subs_by_email(
-        db=db, email=student_email
-    )
+    student_submissions_ = get_all_student_grades(db=db, email=student_email)
 
     return jsonable_encoder(assignments_), jsonable_encoder(student_submissions_)
 
