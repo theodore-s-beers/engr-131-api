@@ -524,7 +524,7 @@ async def validate_token(
 
 @app.get("/student-grades-testing")
 async def get_student_grades_testing(
-    cred: Credentials, username: str, db: Session = Depends(get_db)
+    cred: Credentials, username: str = Query(...), db: Session = Depends(get_db)
 ):
     """
     Endpoint for a student to retrieve their own grades
@@ -538,9 +538,26 @@ async def get_student_grades_testing(
         dict: Student's best grade for each assignment
     """
 
-    verify_admin(cred)  # Raises HTTPException (401) on failure
+     # Verify admin credentials
+    try:
+        verify_admin(cred)  # Replace with your admin verification logic
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Admin verification failed: {str(e)}",
+        )
 
-    return crud_student.get_my_grades_testing(db=db, student_email=username)
+    # Fetch student grades
+    try:
+        grades = crud_student.get_my_grades_testing(db=db, student_email=username)
+        return grades
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch grades: {str(e)}",
+        )
 
 @app.post("/notebook", response_model=schemas.Notebook)
 async def add_notebook(
