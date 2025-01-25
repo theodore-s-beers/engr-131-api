@@ -259,7 +259,9 @@ def get_max_score_and_due_date_by_week_and_type(
     return (result[0], result[1]) if result else (None, None)
 
 
-def get_all_student_grades(db: Session, student_email: str) -> Sequence[models.AssignmentSubmission]:
+def get_all_student_grades(
+    db: Session, student_email: str
+) -> Sequence[models.AssignmentSubmission]:
     """
     Retrieve all assignment submissions for a given student with error handling.
 
@@ -268,13 +270,10 @@ def get_all_student_grades(db: Session, student_email: str) -> Sequence[models.A
     :return: Dictionary mapping assignments to their best scores or an empty dictionary in case of errors
     """
     try:
-        stmt = (
-            select(
-                models.AssignmentSubmission,
-            )
-            .where(models.AssignmentSubmission.student_email == student_email)
-        )
-        
+        stmt = select(
+            models.AssignmentSubmission,
+        ).where(models.AssignmentSubmission.student_email == student_email)
+
         results = db.execute(stmt).scalars().all()
         return results
 
@@ -286,6 +285,7 @@ def get_all_student_grades(db: Session, student_email: str) -> Sequence[models.A
         # Handle any other unforeseen exceptions
         print(f"An unexpected error occurred: {str(e)}")
         return {f"An unexpected error occurred: {str(e)}"}
+
 
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     """
@@ -317,23 +317,27 @@ def get_my_grades_testing(db: Session, student_email: str):
     :param student_email: Email prefix of the student whose grades are to be fetched
     :return: Dictionary mapping assignments to their best scores
     """
-    
+
     # get a list of all assignments from the database
     assignments_ = crud_admin.get_assignments(db)
-    
-    try: 
+
+    try:
         assignment_JSON = jsonable_encoder(assignments_)
     except Exception as e:
-        print(f"An unexpected error occurred when converting assignments to JSON: {str(e)}")
+        print(
+            f"An unexpected error occurred when converting assignments to JSON: {str(e)}"
+        )
         return {}
 
     # get all assignment submissions
     student_submissions_ = get_all_student_grades(db=db, student_email=student_email)
-    
-    try: 
+
+    try:
         student_submissions_JSON = jsonable_encoder(student_submissions_)
     except Exception as e:
-        print(f"An unexpected error occurred when converting student submissions to JSON: {str(e)}")
+        print(
+            f"An unexpected error occurred when converting student submissions to JSON: {str(e)}"
+        )
         return {}
 
     return assignment_JSON, student_submissions_JSON
