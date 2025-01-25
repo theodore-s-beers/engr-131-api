@@ -33,8 +33,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder  # For JSON serialization
 from sqlalchemy.exc import SQLAlchemyError
-from typing import Dict, Any
-
+from typing import Dict, Any, List, Optional, Sequence
 
 from . import models, schemas
 from . import crud_admin
@@ -260,7 +259,7 @@ def get_max_score_and_due_date_by_week_and_type(
     return (result[0], result[1]) if result else (None, None)
 
 
-def get_all_student_grades(db: Session, student_email: str) -> Dict[str, Any]:
+def get_all_student_grades(db: Session, student_email: str) -> Sequence[models.AssignmentSubmission]:
     """
     Retrieve all assignment submissions for a given student with error handling.
 
@@ -277,7 +276,7 @@ def get_all_student_grades(db: Session, student_email: str) -> Dict[str, Any]:
             .group_by(models.AssignmentSubmission.assignment)
         )
         
-        results = db.execute(stmt).all()
+        results = db.execute(stmt).scalars().all()
         return results
 
     except SQLAlchemyError as e:
@@ -323,11 +322,23 @@ def get_my_grades_testing(db: Session, student_email: str):
     
     # get a list of all assignments from the database
     assignments_ = crud_admin.get_assignments(db)
+    
+    try: 
+        assignment_JSON = jsonable_encoder(assignments_)
+    except Exception as e:
+        print(f"An unexpected error occurred when converting assignments to JSON: {str(e)}")
+        return {}
 
     # get all assignment submissions
     student_submissions_ = get_all_student_grades(db=db, student_email=student_email)
+    
+    try: 
+        student_submissions_JSON = jsonable_encoder(student_submissions_)
+    except Exception as e:
+        print(f"An unexpected error occurred when converting student submissions to JSON: {str(e)}")
+        return {}
 
-    return jsonable_encoder(assignments_), jsonable_encoder(student_submissions_)
+    return assignment_JSON, student_submissions_JSON
 
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
