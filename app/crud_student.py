@@ -274,10 +274,8 @@ def get_all_student_grades(db: Session, student_email: str):
         .where(models.AssignmentSubmission.student_email == student_email)
         .group_by(models.AssignmentSubmission.assignment)
     )
-
-    res = db.execute(stmt).all()
-    return res
-
+    
+    return db.execute(stmt).all()
 
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     """
@@ -314,7 +312,7 @@ def get_my_grades_testing(db: Session, student_email: str):
     assignments_ = crud_admin.get_assignments(db)
 
     # get all assignment submissions
-    student_submissions_ = get_all_student_grades(db=db, student_email=student_email)
+    student_submissions_ = get_all_student_grades(db=db, email=student_email)
 
     return jsonable_encoder(assignments_), jsonable_encoder(student_submissions_)
 
