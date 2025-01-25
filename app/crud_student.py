@@ -260,7 +260,7 @@ def get_max_score_and_due_date_by_week_and_type(
 
 def get_all_student_grades(db: Session, student_email: str):
     """
-    Retrieve the best score for each assignment for a given student
+    Retrieve all assignment submissions for a given student
 
     :param db: SQLAlchemy session
     :param student_email: Email prefix of the student whose grades are to be fetched
@@ -269,7 +269,7 @@ def get_all_student_grades(db: Session, student_email: str):
 
     stmt = (
         select(
-            models.AssignmentSubmission.assignment,
+            models.AssignmentSubmission,
         )
         .where(models.AssignmentSubmission.student_email == student_email)
         .group_by(models.AssignmentSubmission.assignment)
