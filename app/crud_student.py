@@ -273,21 +273,19 @@ def get_all_student_grades(db: Session, student_email: str) -> Sequence[models.A
                 models.AssignmentSubmission,
             )
             .where(models.AssignmentSubmission.student_email == student_email)
-            .group_by(models.AssignmentSubmission.assignment)
         )
         
         results = db.execute(stmt).scalars().all()
         return results
 
     except SQLAlchemyError as e:
-        # Log the error if needed (replace 'print' with appropriate logging)
         print(f"Database error occurred: {str(e)}")
-        return {}
+        return {f"Database error occurred: {str(e)}"}
 
     except Exception as e:
         # Handle any other unforeseen exceptions
         print(f"An unexpected error occurred: {str(e)}")
-        return {}
+        return {f"An unexpected error occurred: {str(e)}"}
 
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     """
