@@ -32,6 +32,8 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder  # For JSON serialization
+from sqlalchemy.exc import SQLAlchemyError
+from typing import Dict, Any
 
 
 from . import models, schemas
@@ -258,24 +260,35 @@ def get_max_score_and_due_date_by_week_and_type(
     return (result[0], result[1]) if result else (None, None)
 
 
-def get_all_student_grades(db: Session, student_email: str):
+def get_all_student_grades(db: Session, student_email: str) -> Dict[str, Any]:
     """
-    Retrieve all assignment submissions for a given student
+    Retrieve all assignment submissions for a given student with error handling.
 
     :param db: SQLAlchemy session
     :param student_email: Email prefix of the student whose grades are to be fetched
-    :return: Dictionary mapping assignments to their best scores
+    :return: Dictionary mapping assignments to their best scores or an empty dictionary in case of errors
     """
-
-    stmt = (
-        select(
-            models.AssignmentSubmission,
+    try:
+        stmt = (
+            select(
+                models.AssignmentSubmission,
+            )
+            .where(models.AssignmentSubmission.student_email == student_email)
+            .group_by(models.AssignmentSubmission.assignment)
         )
-        .where(models.AssignmentSubmission.student_email == student_email)
-        .group_by(models.AssignmentSubmission.assignment)
-    )
-    
-    return db.execute(stmt).all()
+        
+        results = db.execute(stmt).all()
+        return results
+
+    except SQLAlchemyError as e:
+        # Log the error if needed (replace 'print' with appropriate logging)
+        print(f"Database error occurred: {str(e)}")
+        return {}
+
+    except Exception as e:
+        # Handle any other unforeseen exceptions
+        print(f"An unexpected error occurred: {str(e)}")
+        return {}
 
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     """
