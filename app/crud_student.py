@@ -307,7 +307,7 @@ def get_my_grades_testing(db: Session, student_email: str):
     :param student_email: Email prefix of the student whose grades are to be fetched
     :return: Dictionary mapping assignments to their best scores
     """
-
+    
     # get a list of all assignments from the database
     assignments_ = crud_admin.get_assignments(db)
 

@@ -24,8 +24,8 @@ from typing import Any, Dict, List, Optional, Sequence
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound
-
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
+from fastapi import HTTPException, status
 
 from . import models, schemas
 
@@ -229,8 +229,21 @@ def get_assignments(db: Session) -> Sequence[models.Assignment]:
     Returns:
         Sequence[models.Assignment]: A sequence of Assignment objects.
     """
-    stmt = select(models.Assignment)
-    return db.execute(stmt).scalars().all()
+    try:
+        stmt = select(models.Assignment)
+        return db.execute(stmt).scalars().all()
+    except SQLAlchemyError as e:
+        # Handle database-related errors
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error occurred while retrieving assignments: {str(e)}",
+        )
+    except Exception as e:
+        # Handle other unexpected errors
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An unexpected error occurred while retrieving assignments: {str(e)}",
+        )
 
 
 def update_assignment(
