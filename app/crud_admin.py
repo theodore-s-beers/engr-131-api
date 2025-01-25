@@ -389,18 +389,18 @@ def get_scoring_subs_by_email(
     # Query the database
     stmt = (
         select(models.AssignmentSubmission).where(
-            models.AssignmentSubmission.student_email == email.split('@')[0])#.order_by(
-            # models.AssignmentSubmission.timestamp.desc())
+            models.AssignmentSubmission.student_email == email.split("@")[0]
+        )  # .order_by(
+        # models.AssignmentSubmission.timestamp.desc())
     )
 
     try:
-        results = db.execute(stmt).scalar()#.all()
+        results = db.execute(stmt).scalar()  # .all()
         if not results:
             raise NoResultFound(f"No submissions found for email: {email}")
         return results
     except Exception as e:
         raise RuntimeError(f"An error occurred while fetching submissions: {e}")
-    
 
 
 #

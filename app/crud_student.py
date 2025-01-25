@@ -274,9 +274,10 @@ def get_all_student_grades(db: Session, student_email: str):
         .where(models.AssignmentSubmission.student_email == student_email)
         .group_by(models.AssignmentSubmission.assignment)
     )
-    
+
     res = db.execute(stmt).all()
     return res
+
 
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     """

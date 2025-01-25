@@ -538,7 +538,7 @@ async def get_student_grades_testing(
         dict: Student's best grade for each assignment
     """
 
-     # Verify admin credentials
+    # Verify admin credentials
     try:
         verify_admin(cred)  # Replace with your admin verification logic
     except HTTPException as e:
@@ -558,6 +558,7 @@ async def get_student_grades_testing(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to fetch grades: {str(e)}",
         )
+
 
 @app.post("/notebook", response_model=schemas.Notebook)
 async def add_notebook(
