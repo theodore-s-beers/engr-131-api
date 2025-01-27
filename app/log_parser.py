@@ -212,7 +212,6 @@ def read_logfile(filepath: str, key_box: Box) -> list[str]:
     decrypted_log: list[str] = []
     for line in encrypted_lines:
         if "Encrypted Output: " in line:
-            
             trimmed = line.split("Encrypted Output: ")[1].strip()
             decoded = base64.b64decode(trimmed)
             decrypted = key_box.decrypt(decoded).decode()
