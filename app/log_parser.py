@@ -213,7 +213,7 @@ def read_logfile(filepath: str, key_box: Box) -> list[str]:
     for line in encrypted_lines:
         if "Encrypted Output: " in line:
             # here is a minor fix to the log parser to remove the line that contains JCA
-            if "'Student Info, 463, JCA," in line:
+            if "Student Info, 463, JCA," in line:
                 continue
             trimmed = line.split("Encrypted Output: ")[1].strip()
             decoded = base64.b64decode(trimmed)
