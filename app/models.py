@@ -2,7 +2,7 @@ import enum
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, func
+from sqlalchemy import DateTime, ForeignKey, LargeBinary, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base
@@ -49,8 +49,7 @@ class AssignmentSubmission(Base):
     week_number: Mapped[Optional[int]]
     assignment_type: Mapped[Optional[str]]
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
+        DateTime(timezone=True), server_default=func.now()
     )
     student_seed: Mapped[int]
     due_date: Mapped[datetime]
@@ -81,8 +80,7 @@ class NotebookSubmission(Base):
     week_number: Mapped[Optional[int]]
     assignment_type: Mapped[Optional[str]]
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
+        DateTime(timezone=True), server_default=func.now()
     )
     student_seed: Mapped[int]
     due_date: Mapped[datetime]
@@ -101,8 +99,7 @@ class QuestionSubmission(Base):
     question: Mapped[str]
 
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
+        DateTime(timezone=True), server_default=func.now()
     )
     responses: Mapped[dict]
     max_points: Mapped[float]
@@ -118,8 +115,7 @@ class ScoringSubmission(Base):
     question: Mapped[str]
 
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
+        DateTime(timezone=True), server_default=func.now()
     )
     max_points: Mapped[float]
     points_earned: Mapped[float]
@@ -140,8 +136,7 @@ class Login(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
+        DateTime(timezone=True), server_default=func.now()
     )
     role: Mapped[Role]
     ip_address: Mapped[str]
@@ -161,3 +156,20 @@ class Token(Base):
     created: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     requester: Mapped[str]
+
+
+#
+# Cell execution logs
+#
+
+
+class ExecutionLog(Base):
+    __tablename__ = "execution_logs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    upload_time: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    student_email: Mapped[str] = mapped_column(index=True)
+    assignment: Mapped[str] = mapped_column(index=True)
+    encrypted_content: Mapped[bytes] = mapped_column(LargeBinary)
