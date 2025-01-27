@@ -217,7 +217,7 @@ def read_logfile(filepath: str, key_box: Box) -> list[str]:
             decoded = base64.b64decode(trimmed)
             decrypted = key_box.decrypt(decoded).decode()
             # here is a minor fix to the log parser to remove the line that contains JCA
-            if "Student Info, 463, JCA," in line:
+            if "Student Info, 463, JCA," in decrypted:
                 continue
             decrypted_log.append(decrypted)
 
