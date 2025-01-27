@@ -26,17 +26,15 @@ Dependencies:
 """
 
 import datetime
-from typing import Optional
+from typing import Optional, Sequence
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder  # For JSON serialization
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
-from typing import Dict, Any, List, Optional, Sequence
+from sqlalchemy.orm import Session
 
-from . import models, schemas
-from . import crud_admin
+from . import crud_admin, models, schemas
 from .live_scorer import Score
 
 #
@@ -278,13 +276,17 @@ def get_all_student_grades(
         return results
 
     except SQLAlchemyError as e:
-        print(f"Database error occurred: {str(e)}")
-        return {f"Database error occurred: {str(e)}"}
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error occurred: {e}",
+        )
 
     except Exception as e:
         # Handle any other unforeseen exceptions
-        print(f"An unexpected error occurred: {str(e)}")
-        return {f"An unexpected error occurred: {str(e)}"}
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An unexpected error occurred: {e}",
+        )
 
 
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:

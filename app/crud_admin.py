@@ -23,9 +23,8 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError
-from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 
 from . import models, schemas
 
