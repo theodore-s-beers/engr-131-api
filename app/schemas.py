@@ -125,3 +125,9 @@ class GradeUpdateRequest(BaseModel):
     student_email: str
     assignment: str
     updated_score: float
+
+
+class ExecutionLogUpload(BaseModel):
+    student_email: str
+    assignment: str
+    encrypted_content: bytes
