@@ -72,10 +72,26 @@ async def root(req: Request, jhub_user: str = Query(None)):
 # ----------------------------
 
 
+@app.post("/execution-logs")
+async def add_execution_log(
+    cred: Credentials, req: schemas.ExecutionLogUpload, db: Session = Depends(get_db)
+) -> str:
+    verify_student(cred)  # Raises HTTPException (401) on failure
+
+    upload_timestamp = crud_student.add_execution_log(db=db, log=req)
+    if not upload_timestamp:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to add execution log",
+        )
+
+    return "Code execution log uploaded successfully"
+
+
 @app.post("/live-scorer")
 async def live_scorer(
     cred: Credentials, req: schemas.ScoringSubmission, db: Session = Depends(get_db)
-):
+) -> dict[str, tuple[float, float]]:
     """
     Endpoint for scoring a student's live submission.
 

@@ -394,3 +394,37 @@ def get_token_expiry(db: Session, value: str) -> str:
         )
 
     return db_token.expires.isoformat()
+
+
+#
+# Code execution log
+#
+
+
+def add_execution_log(
+    db: Session, log: schemas.ExecutionLogUpload
+) -> datetime.datetime:
+    """
+    Inserts a new code execution log into the database
+
+    :param db: SQLAlchemy Session instance
+    :param log: ExecutionLogUpload object containing log content and details
+    :return: Upload timestamp of the created ExecutionLog
+    """
+
+    try:
+        db_log = models.ExecutionLog(
+            student_email=log.student_email,
+            assignment=log.assignment,
+            encrypted_content=log.encrypted_content,
+        )
+
+        db.add(db_log)
+        db.commit()
+        db.refresh(db_log)
+
+        return db_log.upload_time
+
+    except SQLAlchemyError as err:
+        db.rollback()
+        raise err
