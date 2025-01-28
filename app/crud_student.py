@@ -287,8 +287,11 @@ def get_all_student_grades(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred: {e}",
         )
-        
-def get_all_student_assignments(db: Session, username: str) -> Sequence[models.Assignment]:
+
+
+def get_all_student_assignments(
+    db: Session, username: str
+) -> Sequence[models.Assignment]:
     """
     Retrieve all assignments from the database.
 
@@ -300,8 +303,9 @@ def get_all_student_assignments(db: Session, username: str) -> Sequence[models.A
     """
     try:
         stmt = select(models.Assignment).where(
-            models.Assignment.student_email == username)
-        
+            models.Assignment.student_email == username
+        )
+
         return db.execute(stmt).scalars().all()
     except SQLAlchemyError as e:
         # Handle database-related errors
@@ -315,6 +319,7 @@ def get_all_student_assignments(db: Session, username: str) -> Sequence[models.A
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred while retrieving assignments: {str(e)}",
         )
+
 
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     """
@@ -349,7 +354,7 @@ def get_my_grades_testing(db: Session, student_email: str):
 
     # get a list of all assignments from the database
     # assignments_ = crud_admin.get_assignments(db)
-    
+
     stmt = select(models.Assignment)
     assignments_ = db.execute(stmt).scalars().all()
 
