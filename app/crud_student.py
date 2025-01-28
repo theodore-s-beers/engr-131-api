@@ -350,28 +350,30 @@ def get_my_grades_testing(db: Session, student_email: str):
     # get a list of all assignments from the database
     # assignments_ = crud_admin.get_assignments(db)
     
-    assignments_ = select(models.Assignment)
+    stmt = select(models.Assignment)
+    assignments_ = db.execute(stmt).scalars().all()
 
-    try:
-        assignment_JSON = jsonable_encoder(assignments_)
-    except Exception as e:
-        print(
-            f"An unexpected error occurred when converting assignments to JSON: {str(e)}"
-        )
-        return {}
+    # try:
+    #     assignment_JSON = jsonable_encoder(assignments_)
+    # except Exception as e:
+    #     print(
+    #         f"An unexpected error occurred when converting assignments to JSON: {str(e)}"
+    #     )
+    #     return {}
 
     # get all assignment submissions
     student_submissions_ = get_all_student_grades(db=db, student_email=student_email)
 
-    try:
-        student_submissions_JSON = jsonable_encoder(student_submissions_)
-    except Exception as e:
-        print(
-            f"An unexpected error occurred when converting student submissions to JSON: {str(e)}"
-        )
-        return {}
+    return assignments_, student_submissions_
+    # try:
+    #     student_submissions_JSON = jsonable_encoder(student_submissions_)
+    # except Exception as e:
+    #     print(
+    #         f"An unexpected error occurred when converting student submissions to JSON: {str(e)}"
+    #     )
+    #     return {}
 
-    return assignment_JSON, student_submissions_JSON
+    # return assignment_JSON, student_submissions_JSON
 
 
 def get_notebook_by_title(db: Session, title: str) -> Optional[models.Notebook]:
