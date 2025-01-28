@@ -287,7 +287,34 @@ def get_all_student_grades(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred: {e}",
         )
+        
+def get_all_student_assignments(db: Session, username: str) -> Sequence[models.Assignment]:
+    """
+    Retrieve all assignments from the database.
 
+    Args:
+        db (Session): The database session to use for the query.
+
+    Returns:
+        Sequence[models.Assignment]: A sequence of Assignment objects.
+    """
+    try:
+        stmt = select(models.Assignment).where(
+            models.Assignment.student_email == username)
+        
+        return db.execute(stmt).scalars().all()
+    except SQLAlchemyError as e:
+        # Handle database-related errors
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error occurred while retrieving assignments: {str(e)}",
+        )
+    except Exception as e:
+        # Handle other unexpected errors
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An unexpected error occurred while retrieving assignments: {str(e)}",
+        )
 
 def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     """
@@ -321,7 +348,9 @@ def get_my_grades_testing(db: Session, student_email: str):
     """
 
     # get a list of all assignments from the database
-    assignments_ = crud_admin.get_assignments(db)
+    # assignments_ = crud_admin.get_assignments(db)
+    
+    assignments_ = select(models.Assignment)
 
     try:
         assignment_JSON = jsonable_encoder(assignments_)
