@@ -29,12 +29,11 @@ import datetime
 from typing import Optional, Sequence
 
 from fastapi import HTTPException, status
-from fastapi.encoders import jsonable_encoder  # For JSON serialization
 from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from . import crud_admin, models, schemas
+from . import models, schemas
 from .live_scorer import Score
 
 #
