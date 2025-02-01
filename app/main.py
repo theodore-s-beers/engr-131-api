@@ -66,13 +66,12 @@ async def root(req: Request, jhub_user: str = Query(None)):
 
     return response
 
+
 @app.get("/check_pass")
 async def check_pass(password: str):
     if password == "antiferroelectric5^":
         return True
     return False
-    
-   
 
 
 # ----------------------------
