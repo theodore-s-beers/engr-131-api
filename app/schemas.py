@@ -78,14 +78,15 @@ class TokenRequest(BaseModel):
     duration: int = 120
     requester: str = "admin"
 
-# class Question(BaseModel):
-#     title: str
-#     assignment: str
-#     max_points: float
-#     due_date: datetime
-#     week_number: Optional[int]
-#     assignment_type: Optional[str]
-    
+
+class QuestionSchema(BaseModel):
+    title: Optional[str] = None
+    assignment: Optional[str] = None
+    max_points: Optional[float] = None
+    due_date: Optional[datetime] = None
+    week_number: Optional[int] = None
+    assignment_type: Optional[str] = None
+
 
 class AssignmentSubmission(BaseModel):
     student_email: str
