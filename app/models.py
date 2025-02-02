@@ -27,6 +27,17 @@ class Student(Base):
 # Assignments/notebooks
 #
 
+class Question(Base):
+    __tablename__ = "questions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    assignment: Mapped[str] = mapped_column(ForeignKey("assignments.title"))
+    title: Mapped[str]
+    max_points: Mapped[float]
+    due_date: Mapped[datetime]
+    week_number: Mapped[Optional[int]]
+    assignment_type: Mapped[Optional[str]]
+    
 
 class Assignment(Base):
     __tablename__ = "assignments"

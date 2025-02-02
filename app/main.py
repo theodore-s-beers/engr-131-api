@@ -838,6 +838,25 @@ async def get_all_submission_emails(cred: Credentials, db: Session = Depends(get
 
     return crud_admin.get_all_submission_emails(db)
 
+@app.post("/question", response_model=schemas.Questions)
+async def add_question(
+    cred: Credentials, question: schemas.Questions, db: Session = Depends(get_db)
+):
+    verify_admin(cred)
+
+    existing_question = crud_admin.get_question_by_title(db=db, title=question.title)
+
+    if existing_question:
+        # Update existing question
+        updated_question = crud_admin.update_question(
+            db=db, title=question.title, question=question
+        )
+        if updated_question:
+            return updated_question
+
+    # Create a new question
+    return crud_admin.add_question(db=db, question=question)
+
 
 # -----------------
 # Testing endpoints
