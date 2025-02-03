@@ -320,7 +320,7 @@ async def score_assignment(
     # Add raw score and status
     build_message += utils.format_section(
         "\n📊 Raw Score",
-        f"Your raw score is {notebook_score}/{max_score_notebook}. -- on this assignment you have earned {total_score}/{max_score_db} points\n\n",
+        f"Your raw score is {notebook_score}/{max_score_notebook}. Note: the raw score include all possible bonus points. -- on this assignment you have earned {total_score}/{max_score_db} points\n\n",
     )
 
     if time_delta < 0:
@@ -338,7 +338,7 @@ async def score_assignment(
     percentage_score = 100 * (notebook_score / max_score_notebook)
     build_message += utils.format_section(
         "\n🎯 Percentage Score",
-        f"Your percentage score for this notebook is {percentage_score:.2f}%.\n\n",
+        f"Your percentage score earned for this notebook is {percentage_score:.2f}% -- This includes all possible bonus points.\n\n",
     )
 
     # Add motivational messages based on score
