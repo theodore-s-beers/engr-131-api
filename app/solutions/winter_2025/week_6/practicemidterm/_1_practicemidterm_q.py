@@ -106,7 +106,7 @@ solutions: dict[str, Any] = {
     "q2-8-python-dictionaries": [
         "Dictionaries store key-value pairs.",
         "Dictionary keys must be unique.",
-        "Dictionaries are ordered modern Python versions.",
+        "Dictionaries are ordered in modern Python versions.",
     ],
     "q2-9-python-mutability": ["List", "Dictionary"],
     "q2-10-floating-point-numbers": [
