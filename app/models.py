@@ -32,8 +32,8 @@ class Question(Base):
     __tablename__ = "questions"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    title: Mapped[Optional[str]] = mapped_column(nullable=True)
-    assignment: Mapped[Optional[str]] = mapped_column(nullable=True)  # No ForeignKey
+    title: Mapped[str] = mapped_column(index=True, unique=True)
+    assignment: Mapped[str] = mapped_column(index=True)
     max_points: Mapped[Optional[float]] = mapped_column(nullable=True)
     due_date: Mapped[Optional[datetime]] = mapped_column(nullable=True)
     week_number: Mapped[Optional[int]] = mapped_column(nullable=True)
