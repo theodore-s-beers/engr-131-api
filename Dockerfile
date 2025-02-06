@@ -13,14 +13,13 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 # Ensure uv binary is on PATH
 ENV PATH="/root/.local/bin/:$PATH"
 
-# Define environment variable for working directory
-ENV BASE=/fast
-WORKDIR $BASE
+# Set working directory
+WORKDIR /fast
 
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
 
-# Copy from cache instead of linking, since it's a mounted volume
+# Copy from cache instead of linking
 ENV UV_LINK_MODE=copy
 
 # Install project dependencies using lockfile and settings
@@ -31,26 +30,33 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Then, add the project source code and install it
 # Installing separately from dependencies allows optimal layer caching
-COPY . $BASE
+COPY alembic alembic
+COPY app app
+COPY alembic.ini alembic.ini
+COPY pyproject.toml pyproject.toml
+COPY uv.lock uv.lock
+
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --verbose
+
+# Clean up
+RUN rm -rf /root/.cache /var/lib/apt/lists/* /tmp/*
 
 # Start again with a lightweight image
 FROM python:3.13-slim
 
-# Again define environment variable for working directory
-ENV BASE=/fast
-WORKDIR $BASE
+# Again set working directory
+WORKDIR /fast
 
-# Copy only the necessary files from the builder stage
-COPY --from=builder $BASE $BASE
+# Copy only necessary files from builder stage
+COPY --from=builder . .
 
-# Place executables in the environment at the front of the path
-ENV PATH="$BASE/.venv/bin:$PATH"
+# Place venv executables at front of PATH
+ENV PATH="/fast/.venv/bin:$PATH"
 
-# Reset the entrypoint, don't invoke `uv`
+# Reset entrypoint
 ENTRYPOINT []
 
-# Run the FastAPI application by default
-# Uses `--host 0.0.0.0` to allow access from outside the container
+# Run Alembric migrations (if any) and start FastAPI server
+# Use `--host 0.0.0.0` to allow access from outside container
 CMD ["bash", "-c", "alembic upgrade head && fastapi run app/main.py --host 0.0.0.0 --port 8080"]
