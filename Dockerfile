@@ -45,11 +45,11 @@ RUN rm -rf /root/.cache /var/lib/apt/lists/* /tmp/*
 # Start again with a lightweight image
 FROM python:3.13-slim
 
-# Again set working directory
-WORKDIR /fast
-
 # Copy only necessary files from builder stage
-COPY --from=builder . .
+COPY --from=builder /fast /fast
+
+# Working directory is also /fast
+WORKDIR /fast
 
 # Place venv executables at front of PATH
 ENV PATH="/fast/.venv/bin:$PATH"
