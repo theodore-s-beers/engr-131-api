@@ -376,6 +376,38 @@ def update_notebook(
 
 
 #
+# Questions table
+#
+
+
+def add_question(db: Session, question: schemas.Question) -> models.Question:
+    """
+    Add a new question to the database
+
+    Args:
+        db (Session): Database session to use for the operation.
+        question (schemas.Question): Question metadata to be added
+
+    Returns:
+        models.Question: The newly created question object
+    """
+    db_question = models.Question(
+        title=question.title,
+        assignment=question.assignment,
+        max_points=question.max_points,
+        due_date=question.due_date,
+        week_number=question.week_number,
+        assignment_type=question.assignment_type,
+    )
+
+    db.add(db_question)
+    db.commit()
+    db.refresh(db_question)
+
+    return db_question
+
+
+#
 # Scoring submissions table
 #
 
