@@ -79,9 +79,9 @@ class TokenRequest(BaseModel):
     requester: str = "admin"
 
 
-class QuestionSchema(BaseModel):
-    title: Optional[str] = None
-    assignment: Optional[str] = None
+class Question(BaseModel):
+    title: str
+    assignment: str
     max_points: Optional[float] = None
     due_date: Optional[datetime] = None
     week_number: Optional[int] = None
