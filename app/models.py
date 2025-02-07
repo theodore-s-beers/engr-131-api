@@ -31,7 +31,7 @@ class Student(Base):
 class Question(Base):
     __tablename__ = "questions"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(index=True, unique=True)
     assignment: Mapped[str] = mapped_column(index=True)
     max_points: Mapped[Optional[float]] = mapped_column(nullable=True)
@@ -158,6 +158,17 @@ class Login(Base):
 #
 # Other
 #
+
+
+class DueDateExtension(Base):
+    __tablename__ = "due_date_extensions"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    student_email: Mapped[str] = mapped_column(index=True)
+    assignment: Mapped[str] = mapped_column(index=True)
+    week_number: Mapped[Optional[int]]
+    new_due_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    orig_due_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
 
 
 class Token(Base):
