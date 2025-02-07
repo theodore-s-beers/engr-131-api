@@ -26,7 +26,7 @@ ENV UV_LINK_MODE=copy
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev --verbose
+    uv sync --frozen --no-install-project --no-dev
 
 # Then, add the project source code and install it
 # Installing separately from dependencies allows optimal layer caching
@@ -37,7 +37,7 @@ COPY pyproject.toml pyproject.toml
 COPY uv.lock uv.lock
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --verbose
+    uv sync --frozen --no-dev
 
 # Clean up
 RUN rm -rf /root/.cache /var/lib/apt/lists/* /tmp/*
