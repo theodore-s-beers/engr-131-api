@@ -170,6 +170,18 @@ async def login(cred: Credentials):
     return "Student credentials verified"
 
 
+@app.post("/questions", response_model=schemas.Question)
+async def add_question(
+    cred: Credentials, question: schemas.Question, db: Session = Depends(get_db)
+):
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
+    # Add question to database
+    # Raises 400 if question already exists
+    # TODO: Add logic to update existing question
+    return crud_admin.add_question(db=db, question=question)
+
+
 @app.post("/score-assignment")
 async def score_assignment(
     cred: Credentials,
@@ -853,26 +865,6 @@ async def get_all_submission_emails(cred: Credentials, db: Session = Depends(get
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
     return crud_admin.get_all_submission_emails(db)
-
-
-# @app.post("/question", response_model=schemas.Questions)
-# async def add_question(
-#     cred: Credentials, question: schemas.Questions, db: Session = Depends(get_db)
-# ):
-#     verify_admin(cred)
-
-#     existing_question = crud_admin.get_question_by_title(db=db, title=question.title)
-
-#     if existing_question:
-#         # Update existing question
-#         updated_question = crud_admin.update_question(
-#             db=db, title=question.title, question=question
-#         )
-#         if updated_question:
-#             return updated_question
-
-#     # Create a new question
-#     return crud_admin.add_question(db=db, question=question)
 
 
 # -----------------

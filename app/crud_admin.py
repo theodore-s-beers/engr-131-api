@@ -391,6 +391,14 @@ def add_question(db: Session, question: schemas.Question) -> models.Question:
     Returns:
         models.Question: The newly created question object
     """
+    stmt = select(models.Question).where(models.Question.title == question.title)
+    existing_question = db.execute(stmt).scalar_one_or_none()
+    if existing_question:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Question with the same title already exists",
+        )
+
     db_question = models.Question(
         title=question.title,
         assignment=question.assignment,
