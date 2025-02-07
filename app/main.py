@@ -832,6 +832,22 @@ async def delete_student_by_email(
     return db_student
 
 
+@app.delete("/tokens/{value}", response_model=schemas.Token)
+async def delete_token_by_value(
+    cred: Credentials, value: str, db: Session = Depends(get_db)
+):
+    verify_admin(cred)  # Raises HTTPException (401) on failure
+
+    db_token = crud_admin.delete_token(db=db, token_value=value)
+    if not db_token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Token not found",
+        )
+
+    return db_token
+
+
 @app.get("/get-all-submission-emails")
 async def get_all_submission_emails(cred: Credentials, db: Session = Depends(get_db)):
     verify_admin(cred)  # Raises HTTPException (401) on failure

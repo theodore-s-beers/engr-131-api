@@ -499,6 +499,29 @@ def update_token(db: Session, token: schemas.TokenRequest):
     return db_token
 
 
+def delete_token(db: Session, token_value: str) -> Optional[models.Token]:
+    """
+    Delete a token, identified by its value, from the database
+
+    Args:
+        db (Session): Database session to use for the operation
+        token_value (str): Value of the token to delete
+
+    Returns:
+        Optional[models.Token]: Deleted token object if found and deleted; else None
+    """
+    stmt = select(models.Token).where(models.Token.value == token_value)
+    db_token = db.execute(stmt).scalar_one_or_none()
+
+    if not db_token:
+        return None
+
+    db.delete(db_token)
+    db.commit()
+
+    return db_token
+
+
 #
 # Grades table
 #
