@@ -538,7 +538,7 @@ async def validate_token(
     token_value: str,
     db: Session = Depends(get_db),
     assignment: Optional[str] = Query(None),  # ✅ Optional query param
-    student_id: Optional[int] = Query(None),  # ✅ Optional query param
+    student_id: Optional[str] = Query(None),  # ✅ Optional query param
 ) -> dict[str, str]:
     """
     Validate if a token exists and is not expired.
