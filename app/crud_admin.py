@@ -460,6 +460,34 @@ def get_scoring_subs_by_email(
 #
 
 
+def create_token_testing(db: Session, token_req: schemas.TokenRequest) -> models.Token:
+    """
+    Create a new token and store it in the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        token_req (schemas.TokenRequest): The token request containing the value and duration for the token.
+
+    Returns:
+        models.Token: The created token object with value, created, and expires fields populated.
+    """
+    created: datetime = datetime.now()
+    expires: datetime = created + timedelta(minutes=token_req.duration)
+
+    db_token = models.Token(
+        value=token_req.value,
+        created=created,
+        expires=expires,
+        requester=token_req.requester,
+    )
+
+    db.add(db_token)
+    db.commit()
+    db.refresh(db_token)
+
+    return db_token
+
+
 def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
     """
     Create a new token and store it in the database.

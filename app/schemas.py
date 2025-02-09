@@ -71,6 +71,8 @@ class Token(BaseModel):
     created: datetime
     expires: datetime
     requester: str
+    student_id: Optional[str] = None
+    assignment: Optional[str] = None
 
 
 class TokenRequest(BaseModel):
