@@ -442,21 +442,17 @@ def validate_token_filters(
 ) -> str:
     stmt = select(models.Token).where(models.Token.value == value)
 
-    # ✅ Correctly handle student_id being None
-    if student_id is not None:
-        stmt = stmt.where(
-            or_(
-                models.Token.student_id == student_id, models.Token.student_id.is_(None)
-            )
+    stmt = stmt.where(
+        or_(
+            models.Token.student_id == student_id, models.Token.student_id.is_(None)
         )
+    )
 
-    # ✅ Correctly handle assignment being None
-    if assignment is not None:
-        stmt = stmt.where(
-            or_(
-                models.Token.assignment == assignment, models.Token.assignment.is_(None)
-            )
+    stmt = stmt.where(
+        or_(
+            models.Token.assignment == assignment, models.Token.assignment.is_(None)
         )
+    )
 
     db_token = db.execute(stmt).scalar_one_or_none()
 
