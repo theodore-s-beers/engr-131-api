@@ -679,18 +679,18 @@ async def add_student(
     return crud_admin.add_student(db=db, student=student)
 
 
-@app.post("/tokens-testing", response_model=schemas.Token)
-async def create_token_testing(
-    cred: Credentials, token: schemas.TokenRequest, db: Session = Depends(get_db)
-):
-    try:
-        # Admins can create tokens
-        verify_admin(cred)  # Raises HTTPException (401) on failure
-    except HTTPException:
-        # TAs can request tokens (with limited permissions)
-        verify_ta_user(username=token.requester)  # Raises HTTPException (403)
+# @app.post("/tokens-testing", response_model=schemas.Token)
+# async def create_token_testing(
+#     cred: Credentials, token: schemas.TokenRequest, db: Session = Depends(get_db)
+# ):
+#     try:
+#         # Admins can create tokens
+#         verify_admin(cred)  # Raises HTTPException (401) on failure
+#     except HTTPException:
+#         # TAs can request tokens (with limited permissions)
+#         verify_ta_user(username=token.requester)  # Raises HTTPException (403)
 
-    return crud_admin.create_token_testing(db=db, token_req=token)
+#     return crud_admin.create_token_testing(db=db, token_req=token)
 
 
 @app.post("/tokens", response_model=schemas.Token)

@@ -179,7 +179,7 @@ class Token(Base):
     created: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     expires: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     requester: Mapped[str]
-    student_id: Mapped{Optional[str])
+    student_id: Mapped[Optional[str]]
     assignment: Mapped[Optional[str]]
 
 
