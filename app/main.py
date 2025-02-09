@@ -693,7 +693,8 @@ async def create_token(
 
     existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
 
-    # TODO: Revisit this logic; does it make sense to update an old token?
+    # TODO: Revisit this logic; does it make sense to update an old token? 
+    # Josh, yes, I think it does, or you could just add a more recent token if that is what you are thinking
     if existing_token:
         return crud_admin.update_token(db=db, token=token)
 
