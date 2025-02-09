@@ -561,7 +561,10 @@ async def validate_token(
     expiry = crud_student.get_token_expiry(db=db, value=token_value)
 
     token = crud_student.validate_token_filters(
-        db, value=token_value, assignment=assignment, student_id=student_id,
+        db,
+        value=token_value,
+        assignment=assignment,
+        student_id=student_id,
     )
     if not token:
         raise HTTPException(
@@ -751,7 +754,7 @@ async def create_token(
 
     existing_token = crud_admin.get_token_by_value(db=db, value=token.value)
 
-    # TODO: Revisit this logic; does it make sense to update an old token? 
+    # TODO: Revisit this logic; does it make sense to update an old token?
     # Josh, yes, I think it does, or you could just add a more recent token if that is what you are thinking
     if existing_token:
         return crud_admin.update_token(db=db, token=token)
