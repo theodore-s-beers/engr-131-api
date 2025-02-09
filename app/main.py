@@ -189,6 +189,7 @@ async def score_assignment(
     notebook_title: str,
     db: Session = Depends(get_db),
     log_file: UploadFile = File(...),
+    key_used: str = Query(None),
 ):
     """
     Endpoint for uploading a student's score along with a log file
@@ -300,6 +301,7 @@ async def score_assignment(
             late_assignment_percentage=grade_modifier,
             submitted_score=modified_grade,
             current_max_score=current_best,
+            key_used=key_used,
         ),
     )
 

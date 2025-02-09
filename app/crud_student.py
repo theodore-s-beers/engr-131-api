@@ -168,6 +168,7 @@ def add_submitted_assignment_score(
         late_assignment_percentage=submission.late_assignment_percentage,
         submitted_score=submission.submitted_score,
         current_max_score=submission.current_max_score,
+        key_used=submission.key_used,
     )
 
     db.add(db_submission)
