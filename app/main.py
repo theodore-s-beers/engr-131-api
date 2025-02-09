@@ -561,7 +561,7 @@ async def validate_token(
     expiry = crud_student.get_token_expiry(db=db, value=token_value)
 
     token = crud_student.validate_token_filters(
-        db, value=token_value, assignment=assignment, student_id=student_id
+        db, value=token_value, assignment=assignment, student_id=student_id,
     )
     if not token:
         raise HTTPException(

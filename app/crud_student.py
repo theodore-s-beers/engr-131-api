@@ -432,7 +432,7 @@ def get_token_expiry(db: Session, value: str) -> str:
 
 
 def validate_token_filters(
-    db: Session, value: str, student_id: Optional[str], assignment: Optional[str]
+    db: Session, value: str, student_id: Optional[str] = None, assignment: Optional[str] = None
 ) -> str:
     stmt = select(models.Token).where(models.Token.value == value)
 
