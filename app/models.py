@@ -70,6 +70,7 @@ class AssignmentSubmission(Base):
     submitted_score: Mapped[float]
     current_max_score: Mapped[float]
     updated_score: Mapped[Optional[float]]
+    key_used: Mapped[Optional[str]]
 
 
 class Notebook(Base):

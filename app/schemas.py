@@ -105,6 +105,7 @@ class AssignmentSubmission(BaseModel):
     submitted_score: float
     current_max_score: float
     updated_score: Optional[float] = None
+    key_used: Optional[str] = None
 
 
 class Notebook(BaseModel):
