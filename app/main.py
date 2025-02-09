@@ -776,8 +776,20 @@ async def get_assignment_grades(
 
 
 @app.get("/assignments", response_model=list[schemas.Assignment])
-async def get_all_assignments(cred: Credentials, db: Session = Depends(get_db)):
-    verify_admin(cred)
+async def get_all_assignments(
+    cred: Credentials,
+    requester: Optional[str] = Query(
+        None, description="The username making the request"
+    ),
+    db: Session = Depends(get_db),
+):
+    try:
+        # Admins can of course create tokens
+        verify_admin(cred)  # Raises HTTPException (401) on failure
+    except HTTPException:
+        # This endpoint will, however, be used primarily by TAs
+        # TODO: Make this non-spoofable if possible
+        verify_ta_user(username=requester)  # Raises HTTPException (403)
 
     return crud_admin.get_assignments(db=db)
 
