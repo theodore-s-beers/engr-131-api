@@ -800,9 +800,21 @@ async def get_scoring_subs_by_email(
 
 @app.get("/students", response_model=list[schemas.Student])
 async def get_all_students(
-    cred: Credentials, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+    cred: Credentials,
+    requester: Optional[str] = Query(
+        None, description="The username making the request"
+    ),
+    skip: int = 0,
+    limit: int = 500,
+    db: Session = Depends(get_db),
 ):
-    verify_admin(cred)  # Raises HTTPException (401) on failure
+    try:
+        # Admins can of course create tokens
+        verify_admin(cred)  # Raises HTTPException (401) on failure
+    except HTTPException:
+        # This endpoint will, however, be used primarily by TAs
+        # TODO: Make this non-spoofable if possible
+        verify_ta_user(username=requester)  # Raises HTTPException (403)
 
     return crud_admin.get_all_students(db=db, skip=skip, limit=limit)
 

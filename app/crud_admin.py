@@ -60,7 +60,7 @@ def add_student(db: Session, student: schemas.Student) -> models.Student:
 
 
 def get_all_students(
-    db: Session, skip: int = 0, limit: int = 100
+    db: Session, skip: int = 0, limit: int = 500
 ) -> Sequence[models.Student]:
     """
     Retrieve a list of students from the database, ordered by family name.
