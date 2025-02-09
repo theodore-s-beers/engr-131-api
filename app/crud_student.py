@@ -32,6 +32,9 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from sqlalchemy import select, or_
+
+import datetime
 
 from . import models, schemas
 from .live_scorer import Score
@@ -439,16 +442,21 @@ def validate_token_filters(
 ) -> str:
     stmt = select(models.Token).where(models.Token.value == value)
 
-    # Checks if student id matches or is None in the database
+    # ✅ Correctly handle student_id being None
+    if student_id is not None:
+        stmt = stmt.where(
+            or_(
+                models.Token.student_id == student_id, models.Token.student_id.is_(None)
+            )
+        )
 
-    stmt = stmt.where(
-        models.Token.student_id == student_id or models.Token.student_id is None
-    )
-
-    # Checks if assignment matches or is None in the database
-    stmt = stmt.where(
-        models.Token.assignment == assignment or models.Token.assignment is None
-    )
+    # ✅ Correctly handle assignment being None
+    if assignment is not None:
+        stmt = stmt.where(
+            or_(
+                models.Token.assignment == assignment, models.Token.assignment.is_(None)
+            )
+        )
 
     db_token = db.execute(stmt).scalar_one_or_none()
 
