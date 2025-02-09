@@ -431,6 +431,39 @@ def get_token_expiry(db: Session, value: str) -> str:
     return db_token.expires.isoformat()
 
 
+def validate_token_filters(
+    db: Session, value: str, student_id: Optional[str], assignment: Optional[str]
+) -> str:
+    stmt = select(models.Token).where(models.Token.value == value)
+
+    # Checks if student id matches or is None in the database
+    if student_id:
+        stmt = stmt.where(
+            models.Token.student_id == student_id or models.Token.student_id is None
+        )
+    
+    # Checks if assignment matches or is None in the database
+    if assignment:
+        stmt = stmt.where(
+            models.Token.assignment == assignment or models.Token.assignment is None
+        )
+
+    db_token = db.execute(stmt).scalar_one_or_none()
+
+    if not db_token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Token not found, for token: {value}, student id: {student_id}, assignment: {assignment}",
+        )
+
+    if db_token.expires < datetime.datetime.now(datetime.UTC):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Token has expired"
+        )
+
+    return db_token.expires.isoformat()
+
+
 #
 # Code execution log
 #

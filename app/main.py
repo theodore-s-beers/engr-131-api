@@ -527,9 +527,18 @@ async def get_my_grades_testing(
     return crud_student.get_my_grades_testing(db=db, student_email=username)
 
 
+from fastapi import Depends, Query, HTTPException
+from sqlalchemy.orm import Session
+from typing import Optional
+
+
 @app.get("/validate-token/{token_value}")
 async def validate_token(
-    cred: Credentials, token_value: str, db: Session = Depends(get_db)
+    cred: Credentials,
+    token_value: str,
+    db: Session = Depends(get_db),
+    assignment: Optional[str] = Query(None),  # ✅ Optional query param
+    student_id: Optional[int] = Query(None),  # ✅ Optional query param
 ) -> dict[str, str]:
     """
     Validate if a token exists and is not expired.
@@ -537,6 +546,8 @@ async def validate_token(
     Args:
         token_value (str): The value of the token to validate.
         db (Session): Database session dependency.
+        assignment (Optional[str]): Optional assignment filter.
+        student_id (Optional[int]): Optional student ID filter.
 
     Returns:
         dict: Validation result.
@@ -546,10 +557,43 @@ async def validate_token(
     """
     verify_student(cred)
 
-    # Raises 404 if token not found, 400 if already expired
+    # Raises 404 if token not found, 400 if expired
     expiry = crud_student.get_token_expiry(db=db, value=token_value)
 
+    token = crud_student.validate_token_filters(
+        db, value=token_value, assignment=assignment, student_id=student_id
+    )
+    if not token:
+        raise HTTPException(
+            status_code=404, detail="Token with given filters not found"
+        )
+
     return {"status": "valid", "expires_at": expiry}
+
+
+# @app.get("/validate-token/{token_value}")
+# async def validate_token(
+#     cred: Credentials, token_value: str, db: Session = Depends(get_db)
+# ) -> dict[str, str]:
+#     """
+#     Validate if a token exists and is not expired.
+
+#     Args:
+#         token_value (str): The value of the token to validate.
+#         db (Session): Database session dependency.
+
+#     Returns:
+#         dict: Validation result.
+
+#     Raises:
+#         HTTPException: If the token does not exist or is expired.
+#     """
+#     verify_student(cred)
+
+#     # Raises 404 if token not found, 400 if already expired
+#     expiry = crud_student.get_token_expiry(db=db, value=token_value)
+
+#     return {"status": "valid", "expires_at": expiry}
 
 
 # --------------------
