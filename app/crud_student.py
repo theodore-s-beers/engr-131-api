@@ -443,15 +443,11 @@ def validate_token_filters(
     stmt = select(models.Token).where(models.Token.value == value)
 
     stmt = stmt.where(
-        or_(
-            models.Token.student_id == student_id, models.Token.student_id.is_(None)
-        )
+        or_(models.Token.student_id == student_id, models.Token.student_id.is_(None))
     )
 
     stmt = stmt.where(
-        or_(
-            models.Token.assignment == assignment, models.Token.assignment.is_(None)
-        )
+        or_(models.Token.assignment == assignment, models.Token.assignment.is_(None))
     )
 
     db_token = db.execute(stmt).scalar_one_or_none()

@@ -566,7 +566,7 @@ async def validate_token(
         assignment=assignment,
         student_id=student_id,
     )
-    
+
     if not token:
         raise HTTPException(
             status_code=404, detail="Token with given filters not found"
