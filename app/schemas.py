@@ -79,6 +79,8 @@ class TokenRequest(BaseModel):
     value: str
     duration: int = 120
     requester: str = "admin"
+    student_id: Optional[str] = None
+    assignment: Optional[str] = None
 
 
 class Question(BaseModel):
