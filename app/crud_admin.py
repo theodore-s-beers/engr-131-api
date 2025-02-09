@@ -507,6 +507,8 @@ def create_token(db: Session, token_req: schemas.TokenRequest) -> models.Token:
         created=created,
         expires=expires,
         requester=token_req.requester,
+        student_id = token_req.student_id,
+        assignment = token_req.assignment
     )
 
     db.add(db_token)
