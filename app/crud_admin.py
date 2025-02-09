@@ -562,6 +562,8 @@ def update_token(db: Session, token: schemas.TokenRequest):
     db_token.created = datetime.now()
     db_token.expires = db_token.created + timedelta(minutes=token.duration)
     db_token.requester = token.requester
+    db_token.student_id = token.student_id
+    db_token.assignment = token.assignment
 
     db.commit()
     db.refresh(db_token)
