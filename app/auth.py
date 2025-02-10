@@ -15,7 +15,7 @@ Dependencies:
 """
 
 import os
-from typing import NoReturn
+from typing import NoReturn, Optional
 
 import bcrypt
 from fastapi import HTTPException, status
@@ -98,7 +98,13 @@ def verify_student(cred: HTTPBasicCredentials) -> None:
         raise auth_exception()
 
 
-def verify_ta_user(username: str) -> None:
+def verify_ta_user(username: Optional[str]) -> None:
+    if username is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No username provided",
+        )
+
     if username not in TA_USERS:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
