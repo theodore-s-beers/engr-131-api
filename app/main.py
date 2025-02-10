@@ -529,11 +529,6 @@ async def get_my_grades_testing(
     return crud_student.get_my_grades_testing(db=db, student_email=username)
 
 
-from fastapi import Depends, Query, HTTPException
-from sqlalchemy.orm import Session
-from typing import Optional
-
-
 @app.get("/validate-token/{token_value}")
 async def validate_token(
     cred: Credentials,

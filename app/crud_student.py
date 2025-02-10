@@ -29,12 +29,9 @@ import datetime
 from typing import Optional, Sequence
 
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from sqlalchemy import select, or_
-
-import datetime
 
 from . import models, schemas
 from .live_scorer import Score
