@@ -8,6 +8,6 @@ solutions: dict[str, Any] = {
     "q3-1-diamond-problem": 'True',
     "q3-2-mro-sequence": 'True',
     "q3-3-single-inheritance-requirement": 'False',
-    "q2-1-rolex-inheritance-benefits": ['- Combines functionalities from different classes (e.g., time display and GMT tracking).', '- Allows the class to inherit and override methods from multiple sources.', '- Simplifies code reuse by leveraging existing class behaviors.'],
-    "q2-2-rolex-diamond-mix": ['- `class Timekeeping:`', '- `class LuxuryBrand:`', '- `class GoldPlated:`'],
+    "q2-1-rolex-inheritance-benefits": ['Combines functionalities from different classes (e.g., time display and GMT tracking).', 'Allows the class to inherit and override methods from multiple sources.', 'Simplifies code reuse by leveraging existing class behaviors.'],
+    "q2-2-rolex-diamond-mix": ['`class Timekeeping:`', '`class LuxuryBrand:`', '`class GoldPlated:`'],
 }
