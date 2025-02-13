@@ -88,9 +88,10 @@ def get_solution_paths() -> list[Path]:
     paths = [
         path
         for path in SUBMODULE_BASE.rglob("*_q.py")
-        if "blah" not in path.parts
+        if "jupyterbook" in path.parts
         and "_solutions" in path.parts
         and "autograder" in path.parts
+        and "blah" not in path.parts
     ]
 
     if not paths:
