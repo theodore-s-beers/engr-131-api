@@ -25,14 +25,14 @@ total_points: list[float] = [
 ]
 
 solutions: dict[str, Any] = {
-    "q1-1-train-test-split": "`sklearn.model_selection`",
-    "q1-2-standard-scaler": "`StandardScaler`",
-    "q1-3-one-hot-encoder": "`OneHotEncoder`",
-    "q1-4-linear-regression": "`sklearn.linear_model`",
-    "q1-5-random-forest": "Bagging",
-    "q1-6-svc-default-kernel": "RBF",
-    "q1-7-model-evaluation": "`confusion_matrix`",
-    "q1-8-pipeline-usage": "To chain multiple transformers and estimators.",
+    "q2-1-train-test-split": "`sklearn.model_selection`",
+    "q2-2-standard-scaler": "`StandardScaler`",
+    "q2-3-one-hot-encoder": "`OneHotEncoder`",
+    "q2-4-linear-regression": "`sklearn.linear_model`",
+    "q2-5-random-forest": "Bagging",
+    "q2-6-svc-default-kernel": "RBF",
+    "q2-7-model-evaluation": "`confusion_matrix`",
+    "q2-8-pipeline-usage": "To chain multiple transformers and estimators.",
     "q1-1-scikit-learn-import": "False",
     "q1-2-train-test-split": "True",
     "q1-3-standard-scaler": "True",
