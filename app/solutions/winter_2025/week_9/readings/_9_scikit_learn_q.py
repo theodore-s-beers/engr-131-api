@@ -42,14 +42,14 @@ solutions: dict[str, Any] = {
     "q1-7-svc-kernel": "False",
     "q1-8-cross-validation": "True",
     "q1-9-pipeline": "True",
-    "q2-1-supervised-learning": [
+    "q3-1-supervised-learning": [
         "`LinearRegression`",
         "`KNeighborsClassifier`",
         "`RandomForestClassifier`",
     ],
-    "q2-2-feature-scaling": ["`MinMaxScaler`", "`StandardScaler`", "`Normalizer`"],
-    "q2-3-model-selection": ["`sklearn.model_selection`", "`sklearn.metrics`"],
-    "q2-4-dimensionality-reduction": [
+    "q3-2-feature-scaling": ["`MinMaxScaler`", "`StandardScaler`", "`Normalizer`"],
+    "q3-3-model-selection": ["`sklearn.model_selection`", "`sklearn.metrics`"],
+    "q3-4-dimensionality-reduction": [
         "`PCA`",
         "`TruncatedSVD`",
         "`LinearDiscriminantAnalysis`",
