@@ -346,7 +346,6 @@ def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
 def get_my_grades_testing(db: Session, student_email: str):
     """
     Retrieve the best score for each assignment for a given student
-
     :param db: SQLAlchemy session
     :param student_email: Email prefix of the student whose grades are to be fetched
     :return: Dictionary mapping assignments to their best scores
