@@ -107,6 +107,17 @@ class AssignmentSubmission(BaseModel):
     updated_score: Optional[float] = None
     key_used: Optional[str] = None
 
+# This is a schema for the students_completed_assignments table
+# It is used to store students who have turned in final versions of assignments
+# and thus cannot submit again
+class StudentsCompletedAssignments(BaseModel):
+    student_email: str
+    assignment: str
+    week_number: Optional[int]
+    assignment_type: Optional[str]
+    timestamp: datetime
+    student_seed: int
+    key_used: Optional[str] = None
 
 class Notebook(BaseModel):
     title: str

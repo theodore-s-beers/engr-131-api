@@ -71,6 +71,20 @@ class AssignmentSubmission(Base):
     current_max_score: Mapped[float]
     updated_score: Mapped[Optional[float]]
     key_used: Mapped[Optional[str]]
+    
+class StudentsCompletedAssignments(Base):
+    __tablename__ = "students_completed_assignments"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    student_email: Mapped[str] = mapped_column(index=True)
+    assignment: Mapped[str] = mapped_column(index=True)
+    week_number: Mapped[Optional[int]]
+    assignment_type: Mapped[Optional[str]]
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    student_seed: Mapped[int]
+    key_used: Mapped[Optional[str]]
 
 
 class Notebook(Base):
