@@ -71,7 +71,8 @@ class AssignmentSubmission(Base):
     current_max_score: Mapped[float]
     updated_score: Mapped[Optional[float]]
     key_used: Mapped[Optional[str]]
-    
+
+
 class StudentsCompletedAssignments(Base):
     __tablename__ = "students_completed_assignments"
 

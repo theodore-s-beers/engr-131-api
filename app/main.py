@@ -529,7 +529,6 @@ async def get_my_grades_testing(
     return crud_student.get_my_grades_testing(db=db, student_email=username)
 
 
-
 @app.get("/validate-token/{token_value}")
 async def validate_token(
     cred: Credentials,
@@ -749,8 +748,10 @@ async def create_token(
 
 @app.post("/students/completed-assignments")
 async def submit_completed_assignment(
-    cred: Credentials, req: schemas.StudentsCompletedAssignments, db: Session = Depends(get_db)
-) :
+    cred: Credentials,
+    req: schemas.StudentsCompletedAssignments,
+    db: Session = Depends(get_db),
+):
     """
     Endpoint for students to submit completed assignments.
 
@@ -765,9 +766,12 @@ async def submit_completed_assignment(
     verify_student(cred)  # Raises HTTPException (401) on failure
 
     # Add the completed assignment to the database
-    completed_assignment = crud_student.students_completed_assignments(db=db, students_completed_assignments=req)
+    completed_assignment = crud_student.students_completed_assignments(
+        db=db, students_completed_assignments=req
+    )
 
     return completed_assignment
+
 
 @app.get("/assignment-grades", response_model=List[schemas.AssignmentSubmission])
 async def get_assignment_grades(
@@ -1000,6 +1004,3 @@ async def get_all_grades(cred: Credentials, db: Session = Depends(get_db)):
     response.headers["Content-Disposition"] = "attachment; filename=student_grades.csv"
 
     return response
-
-
-

@@ -343,7 +343,6 @@ def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     return {assignment: best_score for assignment, best_score in best_scores}
 
 
-
 def get_my_grades_testing(db: Session, student_email: str):
     """
     Retrieve the best score for each assignment for a given student
@@ -447,7 +446,7 @@ def validate_token_filters(
     stmt = stmt.where(
         or_(models.Token.assignment == assignment, models.Token.assignment.is_(None))
     )
-    
+
     # Check if the student has already completed the assignment
     if student_id is not None and assignment is not None:
         stmt_check = select(models.StudentsCompletedAssignments).where(
@@ -511,7 +510,9 @@ def add_execution_log(
         raise err
 
 
-def students_completed_assignments(db: Session, students_completed_assignments: schemas.StudentsCompletedAssignments) -> models.StudentsCompletedAssignments:
+def students_completed_assignments(
+    db: Session, students_completed_assignments: schemas.StudentsCompletedAssignments
+) -> models.StudentsCompletedAssignments:
     """
     Create a new token and store it in the database.
 
@@ -529,7 +530,7 @@ def students_completed_assignments(db: Session, students_completed_assignments: 
         assignment=students_completed_assignments.assignment,
         week_number=students_completed_assignments.week_number,
         assignment_type=students_completed_assignments.assignment_type,
-        timestamp = created,
+        timestamp=created,
         student_seed=students_completed_assignments.student_seed,
         key_used=students_completed_assignments.key_used,
     )
