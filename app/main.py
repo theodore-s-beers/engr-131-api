@@ -747,6 +747,28 @@ async def create_token(
     return crud_admin.create_token(db=db, token_req=token)
 
 
+@app.post("/students/completed-assignments")
+async def submit_completed_assignment(
+    cred: Credentials, req: schemas.StudentsCompletedAssignments, db: Session = Depends(get_db)
+) :
+    """
+    Endpoint for students to submit completed assignments.
+
+    Args:
+        cred (Credentials): Basic authentication credentials for the student.
+        req (schemas.StudentsCompletedAssignments): The completed assignment details.
+        db (Session): Database session dependency.
+
+    Returns:
+        models.StudentsCompletedAssignments: The created assignment record.
+    """
+    verify_student(cred)  # Raises HTTPException (401) on failure
+
+    # Add the completed assignment to the database
+    completed_assignment = crud_student.students_completed_assignments(db=db, students_completed_assignments=req)
+
+    return completed_assignment
+
 @app.get("/assignment-grades", response_model=List[schemas.AssignmentSubmission])
 async def get_assignment_grades(
     cred: Credentials,
@@ -978,3 +1000,6 @@ async def get_all_grades(cred: Credentials, db: Session = Depends(get_db)):
     response.headers["Content-Disposition"] = "attachment; filename=student_grades.csv"
 
     return response
+
+
+
