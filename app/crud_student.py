@@ -508,3 +508,33 @@ def add_execution_log(
     except SQLAlchemyError as err:
         db.rollback()
         raise err
+
+
+def students_completed_assignments(db: Session, students_completed_assignments: schemas.StudentsCompletedAssignments) -> models.StudentsCompletedAssignments:
+    """
+    Create a new token and store it in the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        token_req (schemas.TokenRequest): The token request containing the value and duration for the token.
+
+    Returns:
+        models.Token: The created token object with value, created, and expires fields populated.
+    """
+    created: datetime = datetime.now()
+
+    db_token = models.StudentsCompletedAssignments(
+        student_email=students_completed_assignments.student_email,
+        assignment=students_completed_assignments.assignment,
+        week_number=students_completed_assignments.week_number,
+        assignment_type=students_completed_assignments.assignment_type,
+        timestamp = created,
+        student_seed=students_completed_assignments.student_seed,
+        key_used=students_completed_assignments.key_used,
+    )
+
+    db.add(db_token)
+    db.commit()
+    db.refresh(db_token)
+
+    return db_token
