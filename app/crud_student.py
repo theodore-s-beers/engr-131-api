@@ -343,6 +343,7 @@ def get_my_grades(db: Session, student_email: str) -> dict[str, float]:
     return {assignment: best_score for assignment, best_score in best_scores}
 
 
+
 def get_my_grades_testing(db: Session, student_email: str):
     """
     Retrieve the best score for each assignment for a given student
@@ -446,6 +447,18 @@ def validate_token_filters(
     stmt = stmt.where(
         or_(models.Token.assignment == assignment, models.Token.assignment.is_(None))
     )
+    
+    if student_id is not None and assignment is not None:
+        stmt_check = select(models.StudentsCompletedAssignments).where(
+            models.StudentsCompletedAssignments.student_email == student_id,
+            models.StudentsCompletedAssignments.assignment == assignment,
+        )
+        completed_assignment = db.execute(stmt_check).scalar_one_or_none()
+        if completed_assignment:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Student has already completed this assignment and cannot submit again.",
+            )
 
     db_token = db.execute(stmt).scalar_one_or_none()
 
