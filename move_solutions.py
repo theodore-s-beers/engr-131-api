@@ -109,7 +109,9 @@ def get_module_details(paths: list[Path]) -> dict[Path, SolutionDetails]:
             week_index = next(
                 i
                 for i, part in enumerate(path.parts)
-                if part.startswith("week") or part.startswith("midterm")
+                if part.startswith("week")
+                or part.startswith("midterm")
+                or part.startswith("practicefinal")
             )
             week = path.parts[week_index]
             category = path.parts[week_index + 1]
