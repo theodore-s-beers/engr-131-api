@@ -448,6 +448,7 @@ def validate_token_filters(
         or_(models.Token.assignment == assignment, models.Token.assignment.is_(None))
     )
     
+    # Check if the student has already completed the assignment
     if student_id is not None and assignment is not None:
         stmt_check = select(models.StudentsCompletedAssignments).where(
             models.StudentsCompletedAssignments.student_email == student_id,
