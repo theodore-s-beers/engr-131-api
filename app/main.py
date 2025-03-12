@@ -879,7 +879,7 @@ async def get_all_tokens(cred: Credentials, db: Session = Depends(get_db)):
     if not db_tokens:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No tokens found",
+            detail="No tokens found at endpoint /tokens",
         )
 
     return [(token.value, token.expires.isoformat()) for token in db_tokens]
