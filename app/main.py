@@ -745,33 +745,43 @@ async def create_token(
 
     return crud_admin.create_token(db=db, token_req=token)
 
-
-@app.post("/completed-assignments")
-async def submit_completed_assignment(
-    cred: Credentials,
-    req: schemas.StudentsCompletedAssignments,
-    db: Session = Depends(get_db),
+@app.post("/completed-assignments", response_model=schemas.Question)
+async def add_question(
+    cred: Credentials, StudentsCompletedAssignments: schemas.StudentsCompletedAssignments, db: Session = Depends(get_db)
 ):
-    """
-    Endpoint for students to submit completed assignments.
-
-    Args:
-        cred (Credentials): Basic authentication credentials for the student.
-        req (schemas.StudentsCompletedAssignments): The completed assignment details.
-        db (Session): Database session dependency.
-
-    Returns:
-        models.StudentsCompletedAssignments: The created assignment record.
-    """
-
     verify_student(cred)  # Raises HTTPException (401) on failure
 
-    # Add the completed assignment to the database
-    completed_assignment = crud_student.students_completed_assignments(
-        db=db, students_completed_assignments=req
-    )
+    # Add question to database
+    # Raises 400 if question already exists
+    # TODO: Add logic to update existing question
+    return crud_student.students_completed_assignments(db=db, StudentsCompletedAssignments=StudentsCompletedAssignments)
 
-    return completed_assignment
+# @app.post("/completed-assignments")
+# async def submit_completed_assignment(
+#     cred: Credentials,
+#     req: schemas.StudentsCompletedAssignments,
+#     db: Session = Depends(get_db),
+# ):
+#     """
+#     Endpoint for students to submit completed assignments.
+
+#     Args:
+#         cred (Credentials): Basic authentication credentials for the student.
+#         req (schemas.StudentsCompletedAssignments): The completed assignment details.
+#         db (Session): Database session dependency.
+
+#     Returns:
+#         models.StudentsCompletedAssignments: The created assignment record.
+#     """
+
+#     verify_student(cred)  # Raises HTTPException (401) on failure
+
+#     # Add the completed assignment to the database
+#     completed_assignment = crud_student.students_completed_assignments(
+#         db=db, students_completed_assignments=req
+#     )
+
+#     return completed_assignment
 
 
 @app.get("/assignment-grades", response_model=List[schemas.AssignmentSubmission])
