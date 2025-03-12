@@ -745,16 +745,22 @@ async def create_token(
 
     return crud_admin.create_token(db=db, token_req=token)
 
+
 @app.post("/completed-assignments", response_model=schemas.Question)
 async def add_question(
-    cred: Credentials, StudentsCompletedAssignments: schemas.StudentsCompletedAssignments, db: Session = Depends(get_db)
+    cred: Credentials,
+    StudentsCompletedAssignments: schemas.StudentsCompletedAssignments,
+    db: Session = Depends(get_db),
 ):
     verify_student(cred)  # Raises HTTPException (401) on failure
 
     # Add question to database
     # Raises 400 if question already exists
     # TODO: Add logic to update existing question
-    return crud_student.students_completed_assignments(db=db, StudentsCompletedAssignments=StudentsCompletedAssignments)
+    return crud_student.students_completed_assignments(
+        db=db, StudentsCompletedAssignments=StudentsCompletedAssignments
+    )
+
 
 # @app.post("/completed-assignments")
 # async def submit_completed_assignment(
