@@ -763,6 +763,7 @@ async def submit_completed_assignment(
     Returns:
         models.StudentsCompletedAssignments: The created assignment record.
     """
+    
     verify_student(cred)  # Raises HTTPException (401) on failure
 
     # Add the completed assignment to the database
