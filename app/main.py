@@ -865,7 +865,7 @@ async def get_student_by_email(
     if not db_student:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Student not found",
+            detail=f"Student not found at endpoint /students/{email}",
         )
 
     return db_student
