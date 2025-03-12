@@ -746,7 +746,7 @@ async def create_token(
     return crud_admin.create_token(db=db, token_req=token)
 
 
-@app.post("/students/completed-assignments")
+@app.post("/completed-assignments")
 async def submit_completed_assignment(
     cred: Credentials,
     req: schemas.StudentsCompletedAssignments,
