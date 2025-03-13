@@ -785,3 +785,58 @@ def update_assignment_score(
     db.refresh(db_submission)
 
     return db_submission
+
+
+def delete_completed_assignment(
+    db: Session,
+    student_email: str,
+    assignment: str,
+    week_number: Optional[int],
+    assignment_type: Optional[str],
+    key_used: Optional[str]
+    ) -> models.StudentsCompletedAssignments:
+    """
+    Delete a completed assignment from the database.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        student_email (str): The email of the student to delete the assignment for.
+        assignment (str): The name of the assignment to delete.
+        week_number (Optional[int]): The week number of the assignment to delete.
+        assignment_type (Optional[str]): The type of assignment to delete.
+        key_used (Optional[str]): The key used to delete the assignment.
+
+    Returns:
+        models.StudentsCompletedAssignments: The deleted assignment object.
+    """
+    # Find the relevant submission by ID (sic)
+    stmt = select(models.StudentsCompletedAssignments).where(
+        models.StudentsCompletedAssignments.student_email == student_email,
+        models.StudentsCompletedAssignments.assignment == assignment,
+        models.StudentsCompletedAssignments.week_number == week_number,
+        models.StudentsCompletedAssignments.assignment_type == assignment_type,
+        models.StudentsCompletedAssignments.key_used == key_used
+    )
+    db_submission = db.execute(stmt).scalar_one_or_none()
+
+    # Raise 500 because the ID will have come from another CRUD function
+    # i.e., the request itself has already been validated
+    if not db_submission:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Submission not found in DB",
+        )
+
+    # Again raise 500; ID was found via student email and assignment name
+    if (
+        db_submission.student_email != student_email
+        or db_submission.assignment != assignment
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Submission in DB does not match student email and assignment name",
+        )
+
+    db.delete(db_submission)
+    db.commit()
+    return db_submission
