@@ -181,7 +181,6 @@ async def add_question(
     # TODO: Add logic to update existing question
     return crud_admin.add_question(db=db, question=question)
 
-
 @app.post("/score-assignment")
 async def score_assignment(
     cred: Credentials,
