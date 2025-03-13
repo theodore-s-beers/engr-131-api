@@ -430,7 +430,10 @@ def get_token_expiry(db: Session, value: str) -> str:
 
     return db_token.expires.isoformat()
 
-def check_completed_assignment(db: Session, student_id: str, assignment_type: str, week_number: int):
+
+def check_completed_assignment(
+    db: Session, student_id: str, assignment_type: str, week_number: int
+):
     """
     Check if the student has already completed the assignment.
 
@@ -446,33 +449,32 @@ def check_completed_assignment(db: Session, student_id: str, assignment_type: st
     Returns:
         None
     """
-    
+
     # TODO: Feature optional check for unique name added to schema -- or check for week number and assignment type
     if student_id is not None and assignment_type is not None:
-        
         if student_id is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Student ID is required to check if the student has completed the assignment.",
             )
-        
+
         if assignment_type is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Assignment type is required to check if the student has completed the assignment.",
             )
-            
+
         if week_number is None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Week number is required to check if the student has completed the assignment.",
             )
-        
+
         # builds a list of conditions that are the student ID and assignment
         conditions = [
-        models.StudentsCompletedAssignments.student_email == student_id,
-        models.StudentsCompletedAssignments.assignment_type == assignment_type,
-        models.StudentsCompletedAssignments.week_number == week_number
+            models.StudentsCompletedAssignments.student_email == student_id,
+            models.StudentsCompletedAssignments.assignment_type == assignment_type,
+            models.StudentsCompletedAssignments.week_number == week_number,
         ]
 
         # builds the select statement
