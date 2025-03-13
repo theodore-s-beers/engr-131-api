@@ -227,6 +227,7 @@ async def score_assignment(
     notebook_score: float = results["assignment_information"][notebook_title][
         "total_score"
     ]
+    
     student_id: str = results["student_information"]["student_id"]
     
     crud_student.check_completed_assignment(db=db, student_id=student_id, assignment=assignment_title, week_number=week_number)

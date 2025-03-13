@@ -446,12 +446,24 @@ def check_completed_assignment(db: Session, student_id: str, assignment: str, we
         None
     """
     if student_id is not None and assignment is not None:
-        stmt_check = select(models.StudentsCompletedAssignments).where(
-            models.StudentsCompletedAssignments.student_email == student_id,
-            models.StudentsCompletedAssignments.assignment == assignment,
-            models.StudentsCompletedAssignments.week_number == week_number if week_number is not None else True,
-        )
+        
+        # builds a list of conditions that are the student ID and assignment
+        conditions = [
+        models.StudentsCompletedAssignments.student_email == student_id,
+        models.StudentsCompletedAssignments.assignment == assignment
+        ]
+
+        # if the week number is not None, add it to the conditions
+        if week_number is not None:
+            conditions.append(models.StudentsCompletedAssignments.week_number == week_number)
+
+        # builds the select statement
+        stmt_check = select(models.StudentsCompletedAssignments).where(*conditions)
+        
+        # executes the statement and returns the first result
         completed_assignment = db.execute(stmt_check).scalar_one_or_none()
+        
+        # if the student has already completed the assignment, raise an error
         if completed_assignment:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
