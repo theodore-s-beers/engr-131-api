@@ -569,6 +569,9 @@ def students_completed_assignments(
     Returns:
         models.Token: The created token object with value, created, and expires fields populated.
     """
+    
+    if StudentsCompletedAssignments.key_used is not None:
+        validate_token_filters(db=db, value=StudentsCompletedAssignments.key_used, assignment=f"{StudentsCompletedAssignments.assignment}-submission")
 
     db_completed_assignments = models.StudentsCompletedAssignments(
         student_email=StudentsCompletedAssignments.student_email,
