@@ -524,7 +524,7 @@ def students_completed_assignments(
         models.Token: The created token object with value, created, and expires fields populated.
     """
 
-    db_token = models.StudentsCompletedAssignments(
+    db_completed_assignments = models.StudentsCompletedAssignments(
         student_email=StudentsCompletedAssignments.student_email,
         assignment=StudentsCompletedAssignments.assignment,
         week_number=StudentsCompletedAssignments.week_number,
@@ -533,8 +533,8 @@ def students_completed_assignments(
         key_used=StudentsCompletedAssignments.key_used,
     )
 
-    db.add(db_token)
+    db.add(db_completed_assignments)
     db.commit()
-    db.refresh(db_token)
+    db.refresh(db_completed_assignments)
 
-    return db_token
+    return db_completed_assignments
