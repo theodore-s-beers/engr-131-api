@@ -747,7 +747,7 @@ async def create_token(
 
 
 @app.post("/completed-assignments", response_model=schemas.Question)
-async def add_question(
+async def completed_assignments(
     cred: Credentials,
     StudentsCompletedAssignments: schemas.StudentsCompletedAssignments,
     db: Session = Depends(get_db),
