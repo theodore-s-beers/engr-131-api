@@ -203,8 +203,6 @@ async def score_assignment(
     """
 
     verify_student(cred)  # Raises HTTPException (401) on failure
-    
-    crud_student.check_completed_assignment(db=db, student_id=cred.username, assignment=assignment_title)
 
     # Get public/private keypair for decryption
     key_box = utils.get_key_box()
@@ -229,6 +227,9 @@ async def score_assignment(
     notebook_score: float = results["assignment_information"][notebook_title][
         "total_score"
     ]
+    student_id: str = results["student_information"]["student_id"]
+    
+    crud_student.check_completed_assignment(db=db, student_id=student_id, assignment=assignment_title, week_number=week_number)
 
     if not week_number or not assignment_type:
         raise HTTPException(

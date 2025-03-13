@@ -430,7 +430,7 @@ def get_token_expiry(db: Session, value: str) -> str:
 
     return db_token.expires.isoformat()
 
-def check_completed_assignment(db: Session, student_id: str, assignment: str):
+def check_completed_assignment(db: Session, student_id: str, assignment: str, week_number: int):
     """
     Check if the student has already completed the assignment.
 
@@ -449,6 +449,7 @@ def check_completed_assignment(db: Session, student_id: str, assignment: str):
         stmt_check = select(models.StudentsCompletedAssignments).where(
             models.StudentsCompletedAssignments.student_email == student_id,
             models.StudentsCompletedAssignments.assignment == assignment,
+            models.StudentsCompletedAssignments.week_number == week_number if week_number is not None else True,
         )
         completed_assignment = db.execute(stmt_check).scalar_one_or_none()
         if completed_assignment:
