@@ -231,7 +231,7 @@ async def score_assignment(
 
     student_id: str = results["student_information"]["student_id"]
     
-    crud_student.check_completed_assignment(db=db, student_id=student_id, assignment=assignment_type, week_number=week_number)
+    # crud_student.check_completed_assignment(db=db, student_id=student_id, assignment=assignment_type, week_number=week_number)
 
     if not week_number or not assignment_type:
         raise HTTPException(

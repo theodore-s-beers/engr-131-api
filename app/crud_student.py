@@ -446,6 +446,8 @@ def check_completed_assignment(db: Session, student_id: str, assignment_type: st
     Returns:
         None
     """
+    
+    # TODO: Feature optional check for unique name added to schema -- or check for week number and assignment type
     if student_id is not None and assignment_type is not None:
         
         if student_id is None:
