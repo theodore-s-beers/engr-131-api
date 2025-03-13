@@ -793,8 +793,8 @@ def delete_completed_assignment(
     assignment: str,
     week_number: Optional[int],
     assignment_type: Optional[str],
-    key_used: Optional[str]
-    ) -> models.StudentsCompletedAssignments:
+    key_used: Optional[str],
+) -> models.StudentsCompletedAssignments:
     """
     Delete a completed assignment from the database.
 
@@ -815,7 +815,7 @@ def delete_completed_assignment(
         models.StudentsCompletedAssignments.assignment == assignment,
         models.StudentsCompletedAssignments.week_number == week_number,
         models.StudentsCompletedAssignments.assignment_type == assignment_type,
-        models.StudentsCompletedAssignments.key_used == key_used
+        models.StudentsCompletedAssignments.key_used == key_used,
     )
     db_submission = db.execute(stmt).scalar_one_or_none()
 

@@ -769,7 +769,9 @@ async def completed_assignments(
     )
 
 
-@app.delete("/completed-assignments", response_model=schemas.StudentsCompletedAssignments)
+@app.delete(
+    "/completed-assignments", response_model=schemas.StudentsCompletedAssignments
+)
 async def delete_completed_assignment(
     cred: Credentials,
     student_email: str,
@@ -777,16 +779,18 @@ async def delete_completed_assignment(
     week_number: Optional[int],
     assignment_type: Optional[str],
     key_used: Optional[str],
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     verify_admin(cred)  # Raises HTTPException (401) on failure
 
-    db_submission = crud_admin.delete_completed_assignment(db=db,
-                                                        student_email=student_email,
-                                                        assignment=assignment,
-                                                        week_number=week_number,
-                                                        assignment_type=assignment_type,
-                                                        key_used=key_used )
+    db_submission = crud_admin.delete_completed_assignment(
+        db=db,
+        student_email=student_email,
+        assignment=assignment,
+        week_number=week_number,
+        assignment_type=assignment_type,
+        key_used=key_used,
+    )
     if not db_submission:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
