@@ -116,8 +116,8 @@ class StudentsCompletedAssignments(BaseModel):
     assignment: str
     week_number: Optional[int]
     assignment_type: Optional[str]
-    timestamp: datetime
-    student_seed: int
+    timestamp: Optional[datetime] = None
+    student_seed: Optional[int] = None
     key_used: Optional[str] = None
 
 

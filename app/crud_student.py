@@ -511,7 +511,7 @@ def add_execution_log(
 
 
 def students_completed_assignments(
-    db: Session, students_completed_assignments: schemas.StudentsCompletedAssignments
+    db: Session, StudentsCompletedAssignments: schemas.StudentsCompletedAssignments
 ) -> models.StudentsCompletedAssignments:
     """
     Create a new token and store it in the database.
@@ -523,20 +523,18 @@ def students_completed_assignments(
     Returns:
         models.Token: The created token object with value, created, and expires fields populated.
     """
-    created: datetime = datetime.now()
 
-    db_token = models.StudentsCompletedAssignments(
-        student_email=students_completed_assignments.student_email,
-        assignment=students_completed_assignments.assignment,
-        week_number=students_completed_assignments.week_number,
-        assignment_type=students_completed_assignments.assignment_type,
-        timestamp=created,
-        student_seed=students_completed_assignments.student_seed,
-        key_used=students_completed_assignments.key_used,
+    db_completed_assignments = models.StudentsCompletedAssignments(
+        student_email=StudentsCompletedAssignments.student_email,
+        assignment=StudentsCompletedAssignments.assignment,
+        week_number=StudentsCompletedAssignments.week_number,
+        assignment_type=StudentsCompletedAssignments.assignment_type,
+        student_seed=StudentsCompletedAssignments.student_seed,
+        key_used=StudentsCompletedAssignments.key_used,
     )
 
-    db.add(db_token)
+    db.add(db_completed_assignments)
     db.commit()
-    db.refresh(db_token)
+    db.refresh(db_completed_assignments)
 
-    return db_token
+    return db_completed_assignments
