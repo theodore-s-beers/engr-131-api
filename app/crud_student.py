@@ -505,8 +505,6 @@ def validate_token_filters(
         or_(models.Token.assignment == assignment, models.Token.assignment.is_(None))
     )
 
-    check_completed_assignment(db=db, student_id=student_id, assignment=assignment)
-
     db_token = db.execute(stmt).scalar_one_or_none()
 
     if not db_token:
