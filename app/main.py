@@ -229,9 +229,9 @@ async def score_assignment(
         "total_score"
     ]
 
-    student_id: str = results["student_information"]["student_id"]
+    student_email = results["student_information"]["username"]
     
-    crud_student.check_completed_assignment(db=db, student_id=student_id, assignment_type=assignment_type, week_number=week_number)
+    crud_student.check_completed_assignment(db=db, student_id=student_email, assignment_type=assignment_type, week_number=week_number)
 
     if not week_number or not assignment_type:
         raise HTTPException(
@@ -276,8 +276,6 @@ async def score_assignment(
     for info in assignment_info.values():
         next_score: float = info["total_score"]
         total_score += next_score
-
-    student_email = results["student_information"]["username"]
 
     modified_grade = (total_score / max_score_db) * (grade_modifier / 100)
 
