@@ -523,14 +523,12 @@ def students_completed_assignments(
     Returns:
         models.Token: The created token object with value, created, and expires fields populated.
     """
-    created: datetime = datetime.utcnow()
 
     db_token = models.StudentsCompletedAssignments(
         student_email=StudentsCompletedAssignments.student_email,
         assignment=StudentsCompletedAssignments.assignment,
         week_number=StudentsCompletedAssignments.week_number,
         assignment_type=StudentsCompletedAssignments.assignment_type,
-        timestamp=created,
         student_seed=StudentsCompletedAssignments.student_seed,
         key_used=StudentsCompletedAssignments.key_used,
     )
