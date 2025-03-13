@@ -204,6 +204,8 @@ async def score_assignment(
     """
 
     verify_student(cred)  # Raises HTTPException (401) on failure
+    
+    crud_student.check_completed_assignment(db=db, student_id=cred.username, assignment=assignment_title)
 
     # Get public/private keypair for decryption
     key_box = utils.get_key_box()

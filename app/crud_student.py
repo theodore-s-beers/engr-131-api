@@ -430,6 +430,33 @@ def get_token_expiry(db: Session, value: str) -> str:
 
     return db_token.expires.isoformat()
 
+def check_completed_assignment(db: Session, student_id: str, assignment: str):
+    """
+    Check if the student has already completed the assignment.
+
+    Args:
+        db (Session): The database session to use for the query.
+        student_id (str): The ID of the student.
+        assignment (str): The assignment to check.
+
+    Raises:
+        HTTPException: If the student has already completed the assignment.
+
+    Returns:
+        None
+    """
+    if student_id is not None and assignment is not None:
+        stmt_check = select(models.StudentsCompletedAssignments).where(
+            models.StudentsCompletedAssignments.student_email == student_id,
+            models.StudentsCompletedAssignments.assignment == assignment,
+        )
+        completed_assignment = db.execute(stmt_check).scalar_one_or_none()
+        if completed_assignment:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Student has already completed this assignment and cannot submit again.",
+            )
+
 
 def validate_token_filters(
     db: Session,
@@ -447,18 +474,7 @@ def validate_token_filters(
         or_(models.Token.assignment == assignment, models.Token.assignment.is_(None))
     )
 
-    # Check if the student has already completed the assignment
-    if student_id is not None and assignment is not None:
-        stmt_check = select(models.StudentsCompletedAssignments).where(
-            models.StudentsCompletedAssignments.student_email == student_id,
-            models.StudentsCompletedAssignments.assignment == assignment,
-        )
-        completed_assignment = db.execute(stmt_check).scalar_one_or_none()
-        if completed_assignment:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Student has already completed this assignment and cannot submit again.",
-            )
+    check_completed_assignment(db=db, student_id=student_id, assignment=assignment)
 
     db_token = db.execute(stmt).scalar_one_or_none()
 
