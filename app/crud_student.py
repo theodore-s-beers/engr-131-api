@@ -475,10 +475,10 @@ def check_completed_assignment(db: Session, student_id: str, assignment_type: st
 
         # builds the select statement
         stmt_check = select(models.StudentsCompletedAssignments).where(*conditions)
-        
+
         # executes the statement and returns the first result
         completed_assignment = db.execute(stmt_check).scalar_one_or_none()
-        
+
         # if the student has already completed the assignment, raise an error
         if completed_assignment:
             raise HTTPException(

@@ -181,6 +181,7 @@ async def add_question(
     # TODO: Add logic to update existing question
     return crud_admin.add_question(db=db, question=question)
 
+
 @app.post("/score-assignment")
 async def score_assignment(
     cred: Credentials,
@@ -227,7 +228,7 @@ async def score_assignment(
     notebook_score: float = results["assignment_information"][notebook_title][
         "total_score"
     ]
-    
+
     student_id: str = results["student_information"]["student_id"]
     
     crud_student.check_completed_assignment(db=db, student_id=student_id, assignment=assignment_type, week_number=week_number)
