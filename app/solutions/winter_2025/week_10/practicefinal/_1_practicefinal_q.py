@@ -84,12 +84,12 @@ solutions: dict[str, Any] = {
         "Feature engineering can significantly impact model performance.",
         "Ensemble methods can help reduce variance and improve generalization.",
     ],
-    "q6-1-Model-Performance": [
+    "q7-1-Model-Performance": [
         "The model is very accurate at predicting cats on the training dataset",
         "The model is very accurate at predicting dogs on the training dataset",
         "The model is overfit to the training data",
     ],
-    "q6-2-Model-Improvements": [
+    "q7-2-Model-Improvements": [
         "The model might be improved by adding more training data",
         "The model might be improved using a different model",
         "The model might be improved using data augmentation to manipulate the training data",
