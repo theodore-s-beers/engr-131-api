@@ -231,18 +231,18 @@ async def score_assignment(
 
     student_email = results["student_information"]["username"]
 
+    if not week_number or not assignment_type:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Week number or assignment type not found",
+        )
+
     crud_student.check_completed_assignment(
         db=db,
         student_id=student_email,
         assignment_type=assignment_type,
         week_number=week_number,
     )
-
-    if not week_number or not assignment_type:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Week number or assignment type not found",
-        )
 
     max_score_db, due_date_db = (
         crud_student.get_max_score_and_due_date_by_week_and_type(
