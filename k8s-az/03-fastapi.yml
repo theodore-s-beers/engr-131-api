@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: engr-131-api
 spec:
-  replicas: 2
+  replicas: 12
   selector:
     matchLabels:
       app: fastapi-app
