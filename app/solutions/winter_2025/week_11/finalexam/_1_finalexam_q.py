@@ -22,6 +22,6 @@ solutions: dict[str, Any] = {
     "q2-9-python-inheritance-basics": ['A child class can use methods from its parent class.', 'Inheritance helps avoid repeating code.'],
     "q2-10-valid-python-syntax": ['for i in range(5):', 'if x > 0:', 'def my_function(param):', 'while True:', 'class MyClass:', 'import os'],
     "q2-11-machine-learning-basics": ['Machine learning models learn from data.', 'More data can help improve model performance.', 'Some models work better on certain types of data.', 'Most machine learning models are biased in some way.'],
-    "q5-1-Model-Performance": ['The model is very accurate at predicting handwritten digits on the training dataset', 'The model is very accurate at predicting handwritten digits on the test dataset', 'The model is useful for predicting handwritten digits', 'The model is a supervised model'],
-    "q5-2-Model-Improvements": ['The model might be improved by adding more training data', 'The model might be improved using data augmentation to manipulate the training data', 'The model is sufficient to be practically useful for this task'],
+    "q5-1-Model-Improvements": ['The model might be improved by adding more training data', 'The model might be improved using data augmentation to manipulate the training data', 'The model is sufficient to be practically useful for this task'],
+    "q5-2-Model-Performance": ['The model is very accurate at predicting handwritten digits on the training dataset', 'The model is very accurate at predicting handwritten digits on the test dataset', 'The model is useful for predicting handwritten digits', 'The model is a supervised model'],
 }
