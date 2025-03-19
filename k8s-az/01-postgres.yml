@@ -6,7 +6,7 @@ spec:
   teamId: engr-131-team
   volume:
     size: 25Gi
-  numberOfInstances: 6
+  numberOfInstances: 2
   users:
     fastapi:
       - superuser
