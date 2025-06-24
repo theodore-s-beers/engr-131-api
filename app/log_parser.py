@@ -176,18 +176,18 @@ class LogParser:
         """
         Returns the parsed results as a hierarchical dictionary with three sections:
         """
-        return {
-            "student_information": self.student_info,
-            "week": self.week_tag,
-            "week_num": (
+        return LogParserResults(
+            student_information=self.student_info,
+            week=self.week_tag,
+            week_num=(
                 int(self.week_tag.split("-")[0].strip().replace("week", ""))
                 if self.week_tag
                 else None
             ),
-            "assignment_type": (
+            assignment_type=(
                 self.week_tag.split("-")[1].strip() if self.week_tag else None
             ),
-            "assignment_information": {
+            assignment_information={
                 assignment: {
                     "latest_timestamp": data["latest_timestamp"],
                     "total_score": data["total_score"],
@@ -195,14 +195,14 @@ class LogParser:
                 }
                 for assignment, data in self.assignments.items()
             },
-            "assignment_scores": {
+            assignment_scores={
                 assignment: {
                     "questions": data["questions"],
                     "total_score": data["total_score"],
                 }
                 for assignment, data in self.assignments.items()
             },
-        }
+        )
 
 
 def read_logfile(filepath: str, key_box: Box) -> list[str]:
